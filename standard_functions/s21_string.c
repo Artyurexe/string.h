@@ -1,7 +1,7 @@
 #include "s21_string.h"
 #include <string.h>
 
-void *s21_memchr(const void *str, int c, size_t n){
+void *s21_memchr(const void *str, int c, s21_size_t n){
     const unsigned char *s = (const unsigned char *) str;
     char* res = NULL;
     for(int i = 0; i < n; i ++){
@@ -11,7 +11,7 @@ void *s21_memchr(const void *str, int c, size_t n){
   return res;
 }
 
-int s21_memcmp(const void *str1, const void *str2, size_t n){
+int s21_memcmp(const void *str1, const void *str2, s21_size_t n){
   const unsigned char *s1 = (const unsigned char *) str1;
    const unsigned char *s2 = (const unsigned char *) str2;
    int res = 0;
@@ -21,14 +21,14 @@ int s21_memcmp(const void *str1, const void *str2, size_t n){
    }
    return res;
 }
-void *s21_memcpy(void *dest, const void *src, size_t n){
+void *s21_memcpy(void *dest, const void *src, s21_size_t n){
   unsigned char *dest_s = (unsigned char *)dest;
   const unsigned char *src_s = (const unsigned char *)src;
   for (s21_size_t i = 0; i < n; i++)
     dest_s[i] = src_s[i];
   return dest_s;
 }
-void *s21_memmove(void *dest, const void *src, size_t n){
+void *s21_memmove(void *dest, const void *src, s21_size_t n){
     unsigned char *dest_s = (unsigned char *)dest;
     const unsigned char *src_s = (const unsigned char *)src;
     unsigned char* buffer = malloc(sizeof(char) *n);
@@ -41,7 +41,7 @@ void *s21_memmove(void *dest, const void *src, size_t n){
 
 }
 
-void *s21_memset(void *str, int c, size_t n){
+void *s21_memset(void *str, int c, s21_size_t n){
   unsigned char *s = (unsigned char *)str;
   for(int i = 0; i < n; i++){
     s[i] = c;
@@ -55,7 +55,7 @@ char *s21_strcat(char *dest, const char *src){
   dest[dest_l + strlen(dest)+ 1] = '\0';  
   return dest;
 }
-char *s21_strncat(char *dest, const char *src, size_t n){
+char *s21_strncat(char *dest, const char *src, s21_size_t n){
   int dest_l = strlen(dest); // заменить на s21_strlen
   for(int i = 0; dest[i] != '\0' && i < n; i++)
     dest[dest_l + i] = src[i];
@@ -80,7 +80,7 @@ int s21_strcmp(const char *str1, const char *str2){
   return *str1 - *str2;
 }
 
-int s21_strncmp(const char *str1, const char *str2, size_t n){
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n){
   for(int i =  0; i < n && (*str1 == *str2); str1++, str2++){
   }
   return *str1 - *str2;
@@ -93,7 +93,7 @@ char *s21_strcpy(char *dest, const char *src){ //посмотреть перек
   dest[i] = '\0';
   return dest;
 }
-char *s21_strncpy(char *dest, const char *src, size_t n){
+char *s21_strncpy(char *dest, const char *src, s21_size_t n){
   int i;
   for (i = 0; i < n; i++) 
     dest[i] = src[i];
@@ -130,7 +130,7 @@ char *s21_strrchr(const char *str, int c){
   }
   return res;
 }
-const char *s21_strstr(const char *haystack, const char *needle) {
+char *s21_strstr(const char *haystack, const char *needle){
   int i = 0, j = 0;
   char * res = NULL;
   do {
@@ -145,20 +145,20 @@ const char *s21_strstr(const char *haystack, const char *needle) {
   return res;
 }
 
-char *s21_strtok(char *str, const char *delim) {
-  static char *start = S21_NULL;
-  if (!str) str = start;
-  str += s21_strspn(str, delim);
-  if (!*str) return S21_NULL;
-  char *r;
-  for (r = str; !s21_strchr(delim, *r) && *r != '\0'; r++) {
-  }
-  if (*r) *r++ = '\0';
-  start = r;
-  return str;
-}
+// char *s21_strtok(char *str, const char *delim) {
+//   static char *start = S21_NULL;
+//   if (!str) str = start;
+//   str += s21_strspn(str, delim);
+//   if (!*str) return S21_NULL;
+//   char *r;
+//   for (r = str; !s21_strchr(delim, *r) && *r != '\0'; r++) {
+//   }
+//   if (*r) *r++ = '\0';
+//   start = r;
+//   return str;
+// }
 
-
+/*
 int main(){
     char str1[30] = "abcd12f";
     char str2[] = "abc";
@@ -185,5 +185,5 @@ int main(){
     //
   return 0;
 }
-
+*/
 //error ?

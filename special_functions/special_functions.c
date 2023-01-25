@@ -24,11 +24,12 @@ void *s21_to_lower(const char *str) {
 }
 
 
-void *trim(const char *src, const char *trim_chars) {
+void *s21_trim(const char *src, const char *trim_chars) {
     if (s21_strlen(src) == 0)
         return S21_NULL;
-    size_t from_start = 0, from_end = 0;
+    s21_size_t from_start = 0, from_end = 0;
     int flag = 0, other_flag = 0, i = 0;
+    /*
     while (!flag) {
         for (int j = 0; j < s21_strlen(trim_chars) && !other_flag; j++)
             if (s21_strchr(src + from_start, trim_chars[j]) == src + from_start) {
@@ -37,9 +38,9 @@ void *trim(const char *src, const char *trim_chars) {
             }
         if (!other_flag)
             flag = 1;
-    }
+    }*/
     flag = 0, other_flag = 0;
-    while (!flag) {
+    /*while (!flag) {
         i = s21_strlen(src) - 2;
         for (int j = s21_strlen(trim_chars) - 1; j >= 0 && !other_flag; j--)
             if (strchr(src + i - from_end, trim_chars[j]) == src + i - from_end) {
@@ -48,12 +49,11 @@ void *trim(const char *src, const char *trim_chars) {
             }
         if (!other_flag)
             flag = 1;
-    }
+    }*/
     if (from_end + from_start >= s21_strlen(src))
         return S21_NULL;
     char *res = malloc(sizeof(char) * (s21_strlen(src) - from_end - from_start));
-    for (int i = 0; i < s21_strlen(src) - from_end - from_start; i++)
-        res[i] = src + from_start;
+    res = s21_strncpy(res, src + from_start, (s21_strlen(src) - from_end - from_start));
     return res;
 }
 
@@ -72,4 +72,11 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
       buff[i] = src[i - s21_strlen(str)];
   }
   return buff;
+}
+
+int main () {
+    char charsToTrim[] = " *";
+    char* banner = "*** Much Ado About Nothing ***";
+    char* result = s21_trim(banner, charsToTrim);
+    printf("%s", result);
 }

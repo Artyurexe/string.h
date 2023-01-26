@@ -77,40 +77,39 @@ char *s21_strchr(const char *str, int c) {
   return res;
 }
 
-int s21_strcmp(const char *str1, const char *str2){
-  for(;*str2 && *str1 && (*str1 == *str2); str1++, str2++){
+int s21_strcmp(const char *str1, const char *str2) {
+  for(;*str2 && *str1 && (*str1 == *str2); str1++, str2++) {
   }
   return *str1 - *str2;
 }
 
-// int s21_strncmp(const char *str1, const char *str2, size_t n){
-//   for(int i =  0; i < n && (*str1 == *str2); str1++, str2++){
-//   }
-//   return *str1 - *str2;
-// }
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
+  int i =  0;
+  for(;str2[i] && str1[i] && i < n && (str1[i] == str2[i]); i++) {
+  }
+  return str1[i] - str2[i];
+}
 
-// char *s21_strcpy(char *dest, const char *src){ //посмотреть перекрытие
-//   int i;
-//   for (i = 0; src[i] != '\0'; i++) 
-//     dest[i] = src[i];
-//   dest[i] = '\0';
-//   return dest;
-// }
+char *s21_strcpy(char *dest, const char *src) {
+  int i, len = s21_strlen(src);
+  for (i = 0; i <= len; i++) 
+    dest[i] = src[i];
+  return dest;
+}
 
-// char *s21_strncpy(char *dest, const char *src, size_t n){
-//   int i;
-//   for (i = 0; i < n; i++) 
-//     dest[i] = src[i];
-//   dest[i] = '\0';
-//   return dest;
-// }
-// s21_size_t s21_strcspn(const char *str1, const char *str2){  // то начала?
+char *s21_strncpy(char *dest, const char *src, size_t n) {
+  int i, len = s21_strlen(src);
+  for (i = 0; i <= len && i < n; i++) 
+    dest[i] = src[i];
+  return dest;
+}
 
-//   s21_size_t i = 0;
-//   for (; !s21_strchr(str2, str1[i]) && str1[i]; i++) {
-//   }
-//   return i;
- //}
+s21_size_t s21_strcspn(const char *str1, const char *str2) {
+  s21_size_t i = 0;
+  for (; !s21_strchr(str2, str1[i]) && str1[i]; i++) {
+  }
+  return i;
+ }
 
 s21_size_t s21_strlen(const char *str){
   s21_size_t i;
@@ -119,22 +118,19 @@ s21_size_t s21_strlen(const char *str){
   return i;
 }
 
-// char *s21_strpbrk(const char *str1, const char *str2){ //??
-//   char * res = NULL;
-//   for(int i = 0; !s21_strchr(str1, str2[i]); i++){
-//      res = (char *)str1 + i;
-//      break;
-//   }
-// return res;
-// }
+char *s21_strpbrk(const char *str1, const char *str2) {
+  return (char *)str1 + s21_strcspn(str1, str2);
+}
+
 // char *s21_strrchr(const char *str, int c){
 //   char* res = NULL;
 //   for(int i = 0; str[i] != '\n'; i++){
-//     if(str[i] ==  c)
-//       res = *(str+i);
+//     if (str[i] ==  c)
+//       res = (char*) &str[i];
 //   }
 //   return res;
 // }
+
 // const char *s21_strstr(const char *haystack, const char *needle) {
 //   int i = 0, j = 0;
 //   char * res = NULL;
@@ -166,19 +162,11 @@ s21_size_t s21_strlen(const char *str){
 
 int main(){
      char str1[30] = "abcd12f2";
-    char str2[30] = "abcd12f";
+    char str2[30] = "1234567890";
 
     char str3[30] = "abcd12f2";
     char str4[30] = "1234567890";
 
-    // printf("s21_strncmp: %d strncmp: %d", s21_strncmp(str1, str2, 10), strncmp(str1, str2, 10));
-    // printf("s21_strcpy: %s  strcpy: %s" , s21_strcpy(str3, str1), strcpy(str3, str1));
-    // printf("s21_strncpy: %s  strncpy: %s" , s21_strncpy(str3, str1, 2), strncpy(str3, str1, 2));
-    // printf("s21_strcspn %d strcspn %lu", s21_strcspn(str1, str2), strcspn(str1, str2));
-    // printf("s21_strpbrk %s strpbrk %s", s21_strpbrk(str1, str2), strpbrk(str1, str2) );
-    // printf("s21_strrchr: %s strrchr: %s", s21_strrchr(str1, 'e'), strrchr(str1, 'e'));
-    //
+    printf("s21_strrchr: %s strrchr: %s", s21_strrchr(str1, '2'), strrchr(str1, '2'));
   return 0;
 }
-
-//error ?

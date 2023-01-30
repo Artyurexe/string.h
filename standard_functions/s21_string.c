@@ -14,11 +14,11 @@ void *s21_memchr(const void *str, int c, s21_size_t n){
 }
 
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
-  const unsigned char *s1 = (const unsigned char *) str1;
-   const unsigned char *s2 = (const unsigned char *) str2;
+  const char *s1 = (const char *) str1;
+  const char *s2 = (const char *) str2;
    s21_size_t i = 0;
-   while (i < n && s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i]) 
-      i++;
+   while (i < n - 1 && s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
+    i++;
    return s1[i] - s2[i];
 }
 
@@ -160,13 +160,13 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 // }
 
 
-int main(){
-     char str1[30] = "abcd12f2";
-    char str2[30] = "1234567890";
+// int main(){
+//      char str1[30] = "abcd12f2";
+//     char str2[30] = "1234567890";
 
-    char str3[30] = "abcd12f2";
-    char str4[30] = "1234567890";
+//     char str3[30] = "abcd12f2";
+//     char str4[30] = "1234567890";
 
-    printf("s21_strrchr: %s strrchr: %s", s21_strrchr(str1, '2'), strrchr(str1, '2'));
-  return 0;
-}
+//     // printf("s21_strrchr: %s strrchr: %s", s21_strrchr(str1, '2'), strrchr(str1, '2'));
+//   return 0;
+// }

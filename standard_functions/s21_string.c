@@ -197,11 +197,3 @@ s21_size_t s21_strspn(const char *str1, const char *str2) {
   }
   return i;
 }
-
-int main(){
-  int len = strspn("geeks for geeks","geek");
-   printf("Length of initial segment matching : %d\n", len );    
-   return(0);
-
-   return 0;
-}

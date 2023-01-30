@@ -123,7 +123,7 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 }
 
 char *s21_strrchr(const char *str, int c){
-  char* res = NULL;
+  char* res = S21_NULL;
   for(s21_size_t i = 0; str[i] != '\0'; i++) {
     if (str[i] == c) {
       res = (char *) str + i;
@@ -134,7 +134,7 @@ char *s21_strrchr(const char *str, int c){
 
 char *s21_strstr(const char *haystack, const char *needle) {
   s21_size_t i = 0, j = 0;
-  char * res = NULL;
+  char * res = S21_NULL;
   do {
     j = 0;
     while (haystack[i] == needle[j] && needle[j] != '\0') {
@@ -148,27 +148,40 @@ char *s21_strstr(const char *haystack, const char *needle) {
 }
 
 char *s21_strtok(char *str, const char *delim) {
-  static char *start = S21_NULL;
-  if (!str) str = start;
-  str += strspn(str, delim);
-  if (!*str) return S21_NULL;
-  char *r;
-  for (r = str; !s21_strchr(delim, *r) && *r != '\0'; r++) {
-  }
-  if (*r) *r++ = '\0';
-  start = r;
-  return str;
+  static char* adr;
+    char* newtok = S21_NULL;
+    char* oldtok = S21_NULL;
+    int i = 0, index_buffer = 0, flag2 = 1;
+    if (str != S21_NULL)
+        adr = str;
+    while (adr[i] != '\0' && flag2) {
+      for (s21_size_t k = 0; k < s21_strlen(delim); k++) {
+        if (adr[i] == delim[k] && !index_buffer) {
+            index_buffer = i;
+          break;
+        }
+        if (k == s21_strlen(delim) - 1 && adr[i] != delim[k] && index_buffer != 0) {
+          flag2 = 0;
+          newtok = adr + i;
+          adr[index_buffer] = '\0';
+        }
+      }
+      i++;
+    }
+    oldtok = adr;
+    adr = newtok;
+    return oldtok;
 }
 
 
 int main(){
     char str[] = "Geeks-for-Geeks";
  
-    char* token = strtok(str, " - ");
+    char* token = s21_strtok(str, " - ");
     
-    while (token != NULL) {
+    while (token != S21_NULL) {
         printf("%s\n", token);
-        token = s21_strtok(NULL, " - ");
+        token = s21_strtok(S21_NULL, " - ");
     }
 
   return 0;

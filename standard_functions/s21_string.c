@@ -191,21 +191,17 @@ char *s21_strtok(char *str, const char *delim) {
   return ret;
 }
 
+s21_size_t s21_strspn(const char *str1, const char *str2) {
+  s21_size_t i;
+  for (i = 0; !str1[i] && s21_strchr(str2, str1[i]); i++) {
+  }
+  return i;
+}
 
 int main(){
-  char str[80] = "This is - www.tutorialspoint.com - website";
-  const char s[2] = "-";
-  char *token;
-  
-  /* get the first token */
-  token = s21_strtok(str, s);
-  
-  /* walk through other tokens */
-  while( token != NULL ) {
-    printf("%s\n", token );
-  
-    token = s21_strtok(NULL, s);
-  }
-  
+  int len = strspn("geeks for geeks","geek");
+   printf("Length of initial segment matching : %d\n", len );    
    return(0);
+
+   return 0;
 }

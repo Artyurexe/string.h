@@ -14,11 +14,11 @@ void *s21_memchr(const void *str, int c, s21_size_t n){
 }
 
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
-  const unsigned char *s1 = (const unsigned char *) str1;
-   const unsigned char *s2 = (const unsigned char *) str2;
+  const char *s1 = (const char *) str1;
+  const char *s2 = (const char *) str2;
    s21_size_t i = 0;
-   while (i < n && s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i]) 
-      i++;
+   while (i < n - 1 && s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
+    i++;
    return s1[i] - s2[i];
 }
 
@@ -196,12 +196,4 @@ s21_size_t s21_strspn(const char *str1, const char *str2) {
   for (i = 0; !str1[i] && s21_strchr(str2, str1[i]); i++) {
   }
   return i;
-}
-
-int main(){
-  int len = strspn("geeks for geeks","geek");
-   printf("Length of initial segment matching : %d\n", len );    
-   return(0);
-
-   return 0;
 }

@@ -24,37 +24,27 @@ void *s21_to_lower(const char *str) {
 }
 
 
-void *trim(const char *src, const char *trim_chars) {
-    if (s21_strlen(src) == 0)
-        return S21_NULL;
-    size_t from_start = 0, from_end = 0;
-    int flag = 0, other_flag = 0, i = 0;
-    while (!flag) {
-        for (int j = 0; j < s21_strlen(trim_chars) && !other_flag; j++)
-            if (s21_strchr(src + from_start, trim_chars[j]) == src + from_start) {
-                from_start++;
-                other_flag = 1;
-            }
-        if (!other_flag)
-            flag = 1;
+
+void rtrim(char * string, const char* trim) {
+    int i;
+    for(i = s21_strlen(string) - 1; i >= 0 && s21_strchr(trim, string[i]) != NULL; i--) {  
+        string[i] = '\0';
     }
-    flag = 0, other_flag = 0;
-    while (!flag) {
-        i = s21_strlen(src) - 2;
-        for (int j = s21_strlen(trim_chars) - 1; j >= 0 && !other_flag; j--)
-            if (strchr(src + i - from_end, trim_chars[j]) == src + i - from_end) {
-                from_end++;
-                other_flag = 1;
-            }
-        if (!other_flag)
-            flag = 1;
+}
+ 
+void ltrim( char * string, const char* trim ){
+    while ( string[0] != '\0' && strchr (trim, string[0]) != NULL ) {
+        s21_memmove(&string[0], &string[1], strlen(string));
     }
-    if (from_end + from_start >= s21_strlen(src))
-        return S21_NULL;
-    char *res = malloc(sizeof(char) * (s21_strlen(src) - from_end - from_start));
-    for (int i = 0; i < s21_strlen(src) - from_end - from_start; i++)
-        res[i] = src + from_start;
-    return res;
+}
+
+void *s21_trim(const char *src, const char *trim_chars) {
+    char *new_str = malloc(strlen(src));
+    new_str = s21_strcpy(new_str, src);
+    rtrim(new_str, trim_chars);
+    ltrim(new_str, trim_chars);
+    new_str = realloc(new_str, s21_strlen(new_str));
+    return new_str;
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {

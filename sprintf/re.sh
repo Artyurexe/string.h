@@ -1,3 +1,3 @@
-cc s21_string.c
+cc main.c
 ./a.out
 rm a.out

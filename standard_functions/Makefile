@@ -16,4 +16,4 @@ test:
 	rm test
 
 clean:
-	rm -rf s21_string.a
+	rm -rf s21_string.a test

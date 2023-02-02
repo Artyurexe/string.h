@@ -24,9 +24,11 @@ int specifier_parsing(char *str, struct specifier* spec) {
   const char* types = "cdieEfgGosuxXpn%%";
   spec_length = strcspn(&format[i + 1], types) + 1
   s21_memcpy(buff, str, spec_length);
-  spec->type = str[spec_length];
+  spec->type = str[spec_length - 1];
   s21_size_t spec_length = s21_strspn((const char*) buff, flags);
   s21_memcpy(spec->flag, buff, spec_length);
+  if (spec_length > 1 && s21_strstr(spec->flag[spec_length - 2], "00") != S21_NULL)
+    err_num = 2;
   buff += spec_length;
   spec_length = s21_strspn((const char*) buff, numbers);
   s21_memcpy(spec->width, buff, spec_length);
@@ -53,7 +55,7 @@ void vararg_init(char type, va_list *ap) {
   } else if (type == 'e' || type == 'E' || type == 'f' || type == 'g' || type == 'G' ) {
     va_arg(*ap, double);
   } else if (type == 'o' || type == 'u' || type == 'x' || type == 'X') {
-    va_arg(*ap, unsinged int);
+    va_arg(*ap, unsigned int);
   } else if (type == 's') {
     va_arg(*ap, char *);
   } else if (type == 'p') {

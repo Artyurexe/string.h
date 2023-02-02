@@ -1,23 +1,48 @@
 #include "s21_sprintf.h"
 
 int s21_sprintf(char *str, const char *format, ...) {
-  char* types = "cdieEfgGosuxXpn%%";
+  int err_num = 0;
   va_list ap;
   va_start(ap, format);
   s21_size_t spec_num = 0;
   struct specifier* spec = S21_NULL;
-  specifier_init(&spec);
-  for (s21_size_t i = 0; i < s21_strlen(format); i++) {
+  for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
+    specifier_init(&spec);
     if (format[i] == 37) {
-      
-      specifier_parsing(&format[i + 1]), strcspn(&format[i + 1]) + 1, &spec);
+      err_num = specifier_parsing(&format[i + 1], &spec);
+      i += strcspn(&format[i + 1], types) + 1;
     }
   }
 }
 
-void specifier_parsing(char *str, s21_size_t length, struct specifier* spec) {
-  char type = str[length];
-  vararg_init(type, ap);
+int specifier_parsing(char *str, struct specifier* spec) {
+  int err_num = 0;
+  char* buff = S21_NULL;
+  const char* flags = "-+ #0";
+  const char* numbers = "1234567890*";
+  const char* length = "hlL";
+  const char* types = "cdieEfgGosuxXpn%%";
+  spec_length = strcspn(&format[i + 1], types) + 1
+  s21_memcpy(buff, str, spec_length);
+  spec->type = str[spec_length];
+  s21_size_t spec_length = s21_strspn((const char*) buff, flags);
+  s21_memcpy(spec->flag, buff, spec_length);
+  buff += spec_length;
+  spec_length = s21_strspn((const char*) buff, numbers);
+  s21_memcpy(spec->width, buff, spec_length);
+  err_num = star_check(spec_length, spec->width);
+  buff += spec_length;
+  if (*(buff + 1) == 46) {
+    spec_length = s21_strspn((const char*) buff, numbers);
+    err_num = star_check(spec_length, spec->precision);
+    buff += (spec_length + 1);
+  }
+  s21_memcpy(spec->length, buff, s21_strspn((const char*) buff, length));
+  return err_num;
+}
+
+int star_check(int length, char* str) {
+  return (length != 1 && s21_strchr(str, 42) != S21_NULL);
 }
 
 void vararg_init(char type, va_list *ap) {
@@ -44,10 +69,4 @@ void specifier_init(struct specifier* spec) {
   spec->precision = S21_NULL;
   spec->length = S21_NULL;
   spec->type = 0;
-}
-
-int main() {
-  va_list ap;
-  printf("%p", ap);
-  return 1;
 }

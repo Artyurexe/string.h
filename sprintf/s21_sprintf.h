@@ -8,12 +8,12 @@ struct specifier {
   char flag[4];
   char width[310];
   char precision[310];
-  char length;
-  char type[3];
+  char length[3];
+  char type;
 };
 
 int s21_sprintf(char *str, const char *format, ...);
-int specifier_parsing(char* str, va_list* ap);
+int specifier_parsing(char *str, struct specifier* spec);
 void vararg_init(char type, va_list *ap);
 void specifier_init(struct specifier* spec);
 int star_check(int length, char* str);

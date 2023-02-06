@@ -15,5 +15,11 @@ test:
 	./test
 	rm test
 
+test_linux:
+	make s21_string.a
+	$(CC) $(CFLAGS) s21_test.c s21_string.a  -o test -lcheck_pic -pthread -lrt -lm -lsubunit
+	./test
+	rm test	
+
 clean:
 	rm -rf s21_string.a test

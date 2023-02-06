@@ -3,6 +3,7 @@
 
 #include "s21_string.h"
 
+//memchr
 START_TEST(test_for_memchr) {
     char str[30] = "123qwer143";
     ck_assert_pstr_eq(s21_memchr(str, '3', 13), memchr(str, '3', 13));
@@ -255,7 +256,7 @@ START_TEST(test_for_memset_more_bytes) {
   }
 END_TEST
 
-// stracat
+// strcat
 START_TEST(test_for_strcat) {
     char str[30] = "123qwer143";
     char str1[30] = "qwer143";

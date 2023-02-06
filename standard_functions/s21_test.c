@@ -302,7 +302,92 @@ START_TEST(test_for_strncat_more_bytes) {
   }
 END_TEST
 
-//
+//strchr
+START_TEST(test_for_strchr) {
+    char str[30] = "123qwer143";
+    ck_assert_pstr_eq(s21_strchr(str, 'q'), strchr(str, 'q'));
+    char str1[30] = "qwer143";
+    ck_assert_pstr_eq(s21_strchr(str1, 'q'), strchr(str1, 'q'));
+  }
+END_TEST
+
+START_TEST(test_for_strchr_empty_str) {
+    ck_assert_pstr_eq(s21_strchr("", 'q'), strchr("", 'q'));
+  }
+
+START_TEST(test_for_strchr_with_no_char) {
+    ck_assert_pstr_eq(s21_strchr("werty", 'q'), strchr("werty", 'q'));
+  }
+END_TEST
+
+
+///strcmp
+START_TEST(test_for_strcmp_same_strings) {
+    const char str[30] = "123qwer143";
+    const char str1[30] = "123qwer143";
+    ck_assert_int_eq(s21_strcmp(str, str1), strcmp(str, str1));
+  }
+END_TEST
+
+START_TEST(test_for_strcmp_empty_str) {
+    const char str[30] = "";
+    const char str1[30] = "";
+    ck_assert_int_eq(s21_strcmp(str, str1), strcmp(str, str1));
+  }
+
+//чекните этот тест на маке пж
+START_TEST(test_for_strcmp_different_strings) {
+    const char str[30] = "123qwer143";
+    const char str1[30] = "123diffqwer143";
+    ck_assert_int_eq(s21_strcmp(str, str1), strcmp(str, str1));
+    const char str2[30] = "123qwer143";
+    const char str3[30] = "123qwer164";
+    ck_assert_int_eq(s21_strcmp(str2, str3), strcmp(str2, str3));
+  }
+END_TEST
+
+//strncmp
+START_TEST(test_for_strncmp_same_strings) {
+    const char str[30] = "123qwer143";
+    const char str1[30] = "123qwer143";
+    ck_assert_int_eq(s21_strncmp(str, str1, 10), strncmp(str, str1, 10));
+  }
+END_TEST
+
+START_TEST(test_for_strncmp_empty_str) {
+    const char str[30] = "";
+    const char str1[30] = "";
+    ck_assert_int_eq(s21_strncmp(str, str1, 3), strncmp(str, str1, 3));
+  }
+
+//чекните этот тест на маке пж
+START_TEST(test_for_strncmp_different_strings) {
+    const char str[30] = "qwer2143";
+    const char str1[30] = "qwer143";
+    ck_assert_int_eq(s21_strncmp(str, str1, 5), strncmp(str, str1, 5));
+    const char str2[30] = "143";
+    const char str3[30] = "1643";
+    ck_assert_int_eq(s21_strncmp(str2, str3, 2), strncmp(str2, str3, 2));
+  }
+END_TEST
+
+//strcpy
+
+//strcpy
+
+//strcspn
+
+//strlne
+
+//strpbrk
+
+//strrchr
+
+///strstr
+
+//strtok
+
+//strspn
 
 
 int main() {
@@ -315,6 +400,9 @@ int main() {
   TCase *tc_memset = tcase_create("Tests_for_memset ");
   TCase *tc_strcat = tcase_create("Tests_for_strcat ");
   TCase *tc_strncat = tcase_create("Tests_for_strcat ");
+  TCase *tc_strchr = tcase_create("Tests_for_strchr ");
+  TCase *tc_strcmp = tcase_create("Tests_for_strcmp ");
+  TCase *tc_strncmp = tcase_create("Tests_for_strncmp ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -325,7 +413,10 @@ int main() {
   suite_add_tcase(s1, tc_memset);
   suite_add_tcase(s1, tc_strcat);
   suite_add_tcase(s1, tc_strncat);
-  
+  suite_add_tcase(s1, tc_strchr);
+  suite_add_tcase(s1, tc_strcmp);
+  suite_add_tcase(s1, tc_strncmp);
+
   // memchr
   tcase_add_test(tc_memchr, test_for_memchr);
   tcase_add_test(tc_memchr, test_for_memchr_not_symbol);
@@ -368,7 +459,20 @@ int main() {
   tcase_add_test(tc_strncat, test_for_strncat_with_zero_bytes);
   tcase_add_test(tc_strncat, test_for_strncat_more_bytes);
 
+  //strchr
+  tcase_add_test(tc_strchr, test_for_strchr);
+  tcase_add_test(tc_strchr, test_for_strchr_empty_str);
+  tcase_add_test(tc_strchr, test_for_strchr_with_no_char);
 
+  //strcmp
+  tcase_add_test(tc_strcmp, test_for_strcmp_same_strings);
+  tcase_add_test(tc_strcmp, test_for_strcmp_empty_str);
+  tcase_add_test(tc_strcmp, test_for_strcmp_different_strings);
+
+  //strncmp
+  tcase_add_test(tc_strncmp, test_for_strncmp_same_strings);
+  tcase_add_test(tc_strncmp, test_for_strncmp_empty_str);
+  tcase_add_test(tc_strncmp, test_for_strncmp_different_strings);
 
   srunner_run_all(sr, CK_ENV);
   int a = srunner_ntests_failed(sr);

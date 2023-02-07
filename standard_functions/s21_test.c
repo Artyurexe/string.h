@@ -372,8 +372,35 @@ START_TEST(test_for_strncmp_different_strings) {
 END_TEST
 
 //strcpy
+START_TEST(test_for_strcpy) {
+    char str[30] = "xxxxxxxxxx";
+    char str1[30] = "123qwer143";
+    ck_assert_pstr_eq(s21_strcpy(str, str1), strcpy(str, str1));
+  }
+END_TEST
+
+START_TEST(test_for_strcpy_null_terminator) {
+    char str[30] = "xxxxxxxxxx";
+    char str1[30] = "\0";
+    ck_assert_pstr_eq(s21_strcpy(str, str1), strcpy(str, str1));
+  }
+END_TEST
 
 //strcpy
+START_TEST(test_for_strncpy) {
+    char str[30] = "xxxxxxxxxx";
+    char str1[30] = "123qwer143";
+    ck_assert_pstr_eq(s21_strncpy(str, str1, 5), strncpy(str, str1, 5));
+  }
+END_TEST
+
+START_TEST(test_for_strncpy_null_terminator) {
+    char str[30] = "xxxxxxxxxx";
+    char str1[30] = "\0";
+    ck_assert_pstr_eq(s21_strncpy(str, str1, 1), strncpy(str, str1, 1));
+    ck_assert_pstr_eq(s21_strncpy(str, str1, 2), strncpy(str, str1, 2));
+  }
+END_TEST
 
 //strcspn
 
@@ -403,6 +430,8 @@ int main() {
   TCase *tc_strchr = tcase_create("Tests_for_strchr ");
   TCase *tc_strcmp = tcase_create("Tests_for_strcmp ");
   TCase *tc_strncmp = tcase_create("Tests_for_strncmp ");
+  TCase *tc_strcpy = tcase_create("Tests_for_strcpy ");
+  TCase *tc_strncpy = tcase_create("Tests_for_strncpy ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -473,6 +502,14 @@ int main() {
   tcase_add_test(tc_strncmp, test_for_strncmp_same_strings);
   tcase_add_test(tc_strncmp, test_for_strncmp_empty_str);
   tcase_add_test(tc_strncmp, test_for_strncmp_different_strings);
+
+  //strcpy
+  tcase_add_test(tc_strcpy, test_for_strcpy);
+  tcase_add_test(tc_strcpy, test_for_strcpy_null_terminator);
+
+  //strncpy
+  tcase_add_test(tc_strncpy, test_for_strncpy);
+  tcase_add_test(tc_strncpy, test_for_strncpy_null_terminator);
 
   srunner_run_all(sr, CK_ENV);
   int a = srunner_ntests_failed(sr);

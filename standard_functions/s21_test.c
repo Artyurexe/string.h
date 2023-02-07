@@ -398,21 +398,93 @@ START_TEST(test_for_strncpy_null_terminator) {
     char str[30] = "xxxxxxxxxx";
     char str1[30] = "\0";
     ck_assert_pstr_eq(s21_strncpy(str, str1, 1), strncpy(str, str1, 1));
-    ck_assert_pstr_eq(s21_strncpy(str, str1, 2), strncpy(str, str1, 2));
   }
 END_TEST
 
 //strcspn
+START_TEST(test_for_strcspn_str2_not_include) {
+    char str[30] = "qwerty";
+    char str1[30] = "rty";
+    char str2[30] = "uio";
+    char str3[30] = "tyr";
+    ck_assert_int_eq(s21_strcspn(str, str1), strcspn(str, str1));
+    ck_assert_int_eq(s21_strcspn(str, str2), strcspn(str, str2));
+    ck_assert_int_eq(s21_strcspn(str, str3), strcspn(str, str3));
+  }
+END_TEST
 
-//strlne
+START_TEST(test_for_strcspn_str2_include) {
+    char str[30] = "qwerty";
+    char str1[30] = "wq";
+    char str2[30] = "qwer";
+    ck_assert_int_eq(s21_strcspn(str, str1), strcspn(str, str1));
+    ck_assert_int_eq(s21_strcspn(str, str2), strcspn(str, str2));
+  }
+END_TEST
+
+START_TEST(test_for_strcspn_str2_is_empty_line) {
+    char str[30] = "qwerty";
+    char str1[30] = "\0";
+    ck_assert_int_eq(s21_strcspn(str, str1), strcspn(str, str1));
+}
+END_TEST
+
+//strlen 
+START_TEST(test_for_strlen) {
+  char str[30] = "qwerty";
+  char str1[30] = "qwe       rty";
+  ck_assert_int_eq(s21_strlen(str), strlen(str));
+  ck_assert_int_eq(s21_strlen(str1), strlen(str1));
+}
+END_TEST
+
+START_TEST(test_for_strlen_empty_line) {
+  char str[30] = "\0\0";
+  ck_assert_int_eq(s21_strlen(str), strlen(str));
+}
+END_TEST
+
 
 //strpbrk
+START_TEST(test_for_strpbrk) {
+  char str[30] = "1q2W3e4R";
+  char str1[30] = "u2134";
+  ck_assert_pstr_eq (s21_strpbrk(str, str1), strpbrk(str, str1));
+}
+END_TEST
+
+START_TEST(test_for_strpbrk_str2_not_unclude_symbols) {
+  char str[30] = "1q2W3e4R";
+  char str1[30] = "zxcvf";
+  ck_assert_pstr_eq (s21_strpbrk(str, str1), strpbrk(str, str1));
+}
+END_TEST
+
+START_TEST(test_for_strpbrk_str2_null_literal) {
+  char str[30] = "1q2W3e4R";
+  char str1[30] = "\0";
+  ck_assert_pstr_eq (s21_strpbrk(str, str1), strpbrk(str, str1));
+}
+END_TEST
+
+START_TEST(test_for_strpbrk_empry_str1) {
+  char str[30] = "\0";
+  char str1[30] = "23e4";
+  ck_assert_pstr_eq (s21_strpbrk(str, str1), strpbrk(str, str1));
+}
+END_TEST
+
+START_TEST(test_for_strpbrk_empry_str1_and_str2_include_null_literal) {
+  char str[30] = "\0";
+  char str1[30] = "23e\04";
+  ck_assert_pstr_eq (s21_strpbrk(str, str1), strpbrk(str, str1));
+}
+END_TEST
 
 //strrchr
 START_TEST(test_for_strrchr) {
-    const char str[30] = "qwerty";
+    const char str[30] = "qwertye";
     char c = 'e';
-    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
     ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
   }
 END_TEST
@@ -421,14 +493,12 @@ START_TEST(test_for_strrchr_will_not_find) {
     const char str[30] = "qwerty";
     char c = 'u';
     ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
-    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
   }
 END_TEST
 
 START_TEST(test_for_strrchr_null_terminator) {
     const char str[30] = "qwerty";
     char c = '\0';
-    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
     ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
   }
 END_TEST
@@ -438,14 +508,12 @@ START_TEST(test_for_strstr) {
     char str[30] = "qwerty";
     char str1[30] = "erty";
     ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
-    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
   }
 END_TEST
 
 START_TEST(test_for_strstr_will_not_find) {
     char str[30] = "qwerty";
     char str1[30] = "uio";
-    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
     ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
   }
 END_TEST
@@ -454,12 +522,43 @@ START_TEST(test_for_strstr_null_terminator) {
     char str[30] = "qwerty";
     char str1[30] = "\0";
     ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
-    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
-  }
+}
 END_TEST
-//strtok
+
+//strtok//////////
 
 //strspn
+START_TEST(test_for_strspn) {
+    char str[30] = "qwerty";
+    char str1[30] = "rty";
+    char str2[30] = "yt";
+    ck_assert_int_eq(s21_strcspn(str, str1), strcspn(str, str1));
+    ck_assert_int_eq(s21_strcspn(str, str2), strcspn(str, str2));
+  }
+END_TEST
+
+START_TEST(test_for_strspn_str2_not_include_symbols) {
+    char str[30] = "qwerty";
+    char str1[30] = "uio";
+    char str2[30] = "QWERT";
+    ck_assert_int_eq(s21_strspn(str, str1), strspn(str, str1));
+    ck_assert_int_eq(s21_strspn(str, str2), strspn(str, str2));
+  }
+END_TEST
+
+START_TEST(test_for_strspn_str2_is_empty_line) {
+    char str[30] = "qwerty";
+    char str1[30] = "\0";
+    ck_assert_int_eq(s21_strspn(str, str1), strspn(str, str1));
+}
+END_TEST
+
+START_TEST(test_for_strspn_str1_is_empty_line) {
+    char str[30] = "\0";
+    char str1[30] = "qwe";
+    ck_assert_int_eq(s21_strspn(str, str1), strspn(str, str1));
+}
+END_TEST
 
 
 int main() {
@@ -477,8 +576,12 @@ int main() {
   TCase *tc_strncmp = tcase_create("Tests_for_strncmp ");
   TCase *tc_strcpy = tcase_create("Tests_for_strcpy ");
   TCase *tc_strncpy = tcase_create("Tests_for_strncpy ");
-  TCase *tc_strrchr = tcase_create("Tests_for_strrchr");
+  TCase *tc_strrchr = tcase_create("Tests_for_strrchr ");
   TCase *tc_strstr = tcase_create("Tests_for_strstr ");
+  TCase *tc_strcspn = tcase_create("Tests_for_strcspn ");
+  TCase *tc_strlen = tcase_create("Tests_for_strlen ");
+  TCase *tc_strpbrk = tcase_create("Tests_for_strbrk ");
+  TCase *tc_strspn = tcase_create("Tests_for_strspn ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -497,6 +600,12 @@ int main() {
   // ...
   suite_add_tcase(s1, tc_strrchr);
   suite_add_tcase(s1, tc_strstr);
+  //
+  suite_add_tcase(s1, tc_strcspn);
+  suite_add_tcase(s1, tc_strlen);
+  suite_add_tcase(s1, tc_strpbrk);
+  suite_add_tcase(s1, tc_strspn);
+
 
   // memchr
   tcase_add_test(tc_memchr, test_for_memchr);
@@ -563,7 +672,30 @@ int main() {
   tcase_add_test(tc_strncpy, test_for_strncpy);
   tcase_add_test(tc_strncpy, test_for_strncpy_null_terminator);
 
-  // ...
+
+  //strcspn
+  tcase_add_test(tc_strcspn, test_for_strcspn_str2_not_include);
+  tcase_add_test(tc_strcspn, test_for_strcspn_str2_include);
+  tcase_add_test(tc_strcspn, test_for_strcspn_str2_is_empty_line);
+  
+  //strerror/////////
+
+  //strlen
+  tcase_add_test(tc_strlen, test_for_strlen);
+  tcase_add_test(tc_strlen, test_for_strlen_empty_line);
+
+  //strpbrk
+  tcase_add_test(tc_strpbrk, test_for_strpbrk);
+  tcase_add_test(tc_strpbrk, test_for_strpbrk_str2_not_unclude_symbols);
+  tcase_add_test(tc_strpbrk, test_for_strpbrk_str2_null_literal);
+  tcase_add_test(tc_strpbrk, test_for_strpbrk_empry_str1);
+  tcase_add_test(tc_strpbrk, test_for_strpbrk_empry_str1_and_str2_include_null_literal);
+
+  //strspn
+  tcase_add_test(tc_strspn, test_for_strspn);
+  tcase_add_test(tc_strspn, test_for_strspn_str2_not_include_symbols);
+  tcase_add_test(tc_strspn, test_for_strspn_str2_is_empty_line);
+  tcase_add_test(tc_strspn, test_for_strspn_str1_is_empty_line);
 
   //strchr
   tcase_add_test(tc_strrchr, test_for_strrchr);

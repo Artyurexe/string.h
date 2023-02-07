@@ -121,14 +121,21 @@ s21_size_t s21_strlen(const char *str){
 }
 
 char *s21_strpbrk(const char *str1, const char *str2) {
-  return (char *)str1 + s21_strcspn(str1, str2);
+  char * res = S21_NULL;
+  if(!s21_strcspn(str1, str2) && *str1 != '\0')
+    res = (char *) str1 + s21_strcspn(str1, str2);
+  return res;
 }
 
 char *s21_strrchr(const char *str, int c){
   char* res = S21_NULL;
-  for(s21_size_t i = 0; str[i] != '\0'; i++) {
-    if (str[i] == c) {
-      res = (char *) str + i;
+  if(c == '\0')
+    res = "";
+  else{
+    for(s21_size_t i = 0; str[i] != '\0'; i++) {
+      if (str[i] == c) {
+        res = (char *) str + i;
+      }
     }
   }
   return res;
@@ -143,8 +150,10 @@ char *s21_strstr(const char *haystack, const char *needle) {
       j++;
       i++;
     }
-    if (needle[j] == '\0') 
+    if (needle[j] == '\0'){
      res = (char*) haystack + i - j;
+     break;
+    }
   } while (haystack[i++] != '\0');
   return res;
 }

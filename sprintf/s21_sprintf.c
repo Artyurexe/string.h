@@ -8,7 +8,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   struct specifier* spec = S21_NULL;
   for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
     specifier_init(&spec);
-    if (format[i] == 37) {
+    if (format[i] == '%') {
       err_num = specifier_parsing(&format[i + 1], &spec);
       i += strcspn(&format[i + 1], types) + 1;
     }
@@ -17,7 +17,7 @@ int s21_sprintf(char *str, const char *format, ...) {
 
 int specifier_parsing(char *str, struct specifier* spec) {
   int err_num = 0;
-  char* buff = S21_NULL;
+  char buff[1024] = S21_NULL;
   const char* flags = "-+ #0";
   const char* numbers = "1234567890*";
   const char* length = "hlL";
@@ -27,24 +27,22 @@ int specifier_parsing(char *str, struct specifier* spec) {
   spec->type = str[spec_length - 1];
   s21_size_t spec_length = s21_strspn((const char*) buff, flags);
   s21_memcpy(spec->flag, buff, spec_length);
-  if (spec_length > 1 && s21_strstr(spec->flag[spec_length - 2], "00") != S21_NULL)
-    err_num = 2;
   buff += spec_length;
   spec_length = s21_strspn((const char*) buff, numbers);
   s21_memcpy(spec->width, buff, spec_length);
-  err_num = star_check(spec_length, spec->width);
+  err_num = star_check(spec->width);
   buff += spec_length;
-  if (*(buff + 1) == 46) {
+  if (*(buff + 1) == '.') {
     spec_length = s21_strspn((const char*) buff, numbers);
-    err_num = star_check(spec_length, spec->precision);
+    err_num = star_check(spec->precision);
     buff += (spec_length + 1);
   }
   s21_memcpy(spec->length, buff, s21_strspn((const char*) buff, length));
   return err_num;
 }
 
-int star_check(int length, char* str) {
-  return (length != 1 && s21_strchr(str, 42) != S21_NULL);
+int star_check(char* str) {
+  return (s21_strlen(str) != 1 && s21_strchr(str, '*') != S21_NULL);
 }
 
 void vararg_init(char type, va_list *ap) {

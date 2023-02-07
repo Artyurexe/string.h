@@ -409,9 +409,54 @@ END_TEST
 //strpbrk
 
 //strrchr
+START_TEST(test_for_strrchr) {
+    const char str[30] = "qwerty";
+    char c = 'e';
+    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
+    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
+  }
+END_TEST
+
+START_TEST(test_for_strrchr_will_not_find) {
+    const char str[30] = "qwerty";
+    char c = 'u';
+    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
+    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
+  }
+END_TEST
+
+START_TEST(test_for_strrchr_null_terminator) {
+    const char str[30] = "qwerty";
+    char c = '\0';
+    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
+    ck_assert_pstr_eq(s21_strrchr(str, c), strrchr(str, c));
+  }
+END_TEST
 
 ///strstr
+START_TEST(test_for_strstr) {
+    char str[30] = "qwerty";
+    char str1[30] = "erty";
+    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
+    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
+  }
+END_TEST
 
+START_TEST(test_for_strstr_will_not_find) {
+    char str[30] = "qwerty";
+    char str1[30] = "uio";
+    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
+    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
+  }
+END_TEST
+
+START_TEST(test_for_strstr_null_terminator) {
+    char str[30] = "qwerty";
+    char str1[30] = "\0";
+    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
+    ck_assert_pstr_eq(s21_strstr(str, str1), strstr(str, str1));
+  }
+END_TEST
 //strtok
 
 //strspn
@@ -432,6 +477,8 @@ int main() {
   TCase *tc_strncmp = tcase_create("Tests_for_strncmp ");
   TCase *tc_strcpy = tcase_create("Tests_for_strcpy ");
   TCase *tc_strncpy = tcase_create("Tests_for_strncpy ");
+  TCase *tc_strrchr = tcase_create("Tests_for_strrchr");
+  TCase *tc_strstr = tcase_create("Tests_for_strstr ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -445,6 +492,11 @@ int main() {
   suite_add_tcase(s1, tc_strchr);
   suite_add_tcase(s1, tc_strcmp);
   suite_add_tcase(s1, tc_strncmp);
+  suite_add_tcase(s1, tc_strcpy);
+  suite_add_tcase(s1, tc_strncpy);
+  // ...
+  suite_add_tcase(s1, tc_strrchr);
+  suite_add_tcase(s1, tc_strstr);
 
   // memchr
   tcase_add_test(tc_memchr, test_for_memchr);
@@ -510,6 +562,18 @@ int main() {
   //strncpy
   tcase_add_test(tc_strncpy, test_for_strncpy);
   tcase_add_test(tc_strncpy, test_for_strncpy_null_terminator);
+
+  // ...
+
+  //strchr
+  tcase_add_test(tc_strrchr, test_for_strrchr);
+  tcase_add_test(tc_strrchr, test_for_strrchr_will_not_find);
+  tcase_add_test(tc_strrchr, test_for_strrchr_null_terminator);
+
+  //strstr
+  tcase_add_test(tc_strstr, test_for_strstr);
+  tcase_add_test(tc_strstr, test_for_strstr_will_not_find);
+  tcase_add_test(tc_strstr, test_for_strstr_null_terminator);
 
   srunner_run_all(sr, CK_ENV);
   int a = srunner_ntests_failed(sr);

@@ -1,7 +1,6 @@
 #include "s21_sprintf.h"
 
-int s21_sprintf(char *str, const char *format, ...) {
-  int err_num = 0;
+void s21_sprintf(char *str, const char *format, ...) {
   const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
   char test[100];
@@ -12,43 +11,59 @@ int s21_sprintf(char *str, const char *format, ...) {
   for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      err_num = specifier_parsing((char*) &format[i + 1], &spec);
+      specifier_parsing((char*) &format[i + 1], &spec);
       i += s21_strcspn(&format[i + 1], types) + 1;
       printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
     }
   }
-  return err_num;
 }
 
-int specifier_parsing(char *str, struct specifier* spec) {
+void specifier_parsing(char *str, struct specifier* spec) {
   int err_num = 0;
   char *buff = malloc(1024);
+  char *buff1 = malloc(1024);
+  int k = 0;
   const char* flags = "-+ #0";
   const char* numbers = "1234567890*";
-  const char* length = "hlL";
+  const char* length = "hLl";
   const char* types = "cdieEfgGosuxXpn%%";
   s21_size_t spec_length = s21_strcspn(str, types) + 1;
   s21_memcpy(buff, str, spec_length);
   spec->type = str[spec_length - 1];
   spec_length = s21_strspn((const char*) buff, flags);
-  s21_memcpy(spec->flag, buff, spec_length);
+  s21_memcpy(buff1, buff, spec_length);
+  for (int i = 0; i < 5; i++) {
+    if (s21_strchr(buff1, flags[i]) != S21_NULL)
+      spec->flag[k++] = flags[i];
+  }
+  spec->flag[k] = '\0';
+  k = 0;
   buff += spec_length;
   spec_length = s21_strspn((const char*) buff, numbers);
   s21_memcpy(spec->width, buff, spec_length);
-  err_num = star_check(spec->width);
   buff += spec_length;
   if (*(buff + 1) == '.' && errnum == 0) {
     spec_length = s21_strspn((const char*) buff, numbers);
-    err_num = star_check(spec->precision);
     buff += (spec_length + 1);
   }
-  s21_memcpy(spec->length, buff, s21_strspn((const char*) buff, length));
-  return err_num;
+  s21_memcpy(buff1, buff, s21_strspn((const char*) buff, length));
+  for (int i = 0; i < 3; i++) {
+    char* c = s21_strchr(buff1, length[i]);
+    if (c != S21_NULL) {
+      if (length[i] != 'l') {
+        spec->length[k++] = length[i];
+      } else if (s21_strchr(c, length[i]) != S21_NULL) {
+        spec->length[k++] = length[i];
+        spec->length[k++] = length[i];
+      } else
+        spec->length[k++] = length[i];
+    }
+  }
+  spec->length[k] = '\0';
+  free(buff);
+  free(buff1);
 }
 
-int star_check(char* str) {
-  return (s21_strlen(str) != 1 && s21_strchr(str, '*') != S21_NULL);
-}
 
 void vararg_init(char type, va_list *ap) {
   if (type == 'c') {

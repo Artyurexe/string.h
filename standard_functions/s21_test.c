@@ -530,10 +530,10 @@ END_TEST
 //strspn
 START_TEST(test_for_strspn) {
     char str[30] = "qwerty";
-    char str1[30] = "rty";
+    char str1[30] = "qrty";
     char str2[30] = "yt";
-    ck_assert_int_eq(s21_strcspn(str, str1), strcspn(str, str1));
-    ck_assert_int_eq(s21_strcspn(str, str2), strcspn(str, str2));
+    ck_assert_int_eq(s21_strspn(str, str1), strspn(str, str1));
+    ck_assert_int_eq(s21_strspn(str, str2), strspn(str, str2));
   }
 END_TEST
 

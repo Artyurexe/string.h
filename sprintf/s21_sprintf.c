@@ -2,30 +2,35 @@
 
 int s21_sprintf(char *str, const char *format, ...) {
   int err_num = 0;
+  const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
+  char test[100];
+  test[0] = '\0';
   va_start(ap, format);
   s21_size_t spec_num = 0;
-  struct specifier* spec = S21_NULL;
+  struct specifier spec;
   for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      err_num = specifier_parsing(&format[i + 1], &spec);
-      i += strcspn(&format[i + 1], types) + 1;
+      err_num = specifier_parsing((char*) &format[i + 1], &spec);
+      i += s21_strcspn(&format[i + 1], types) + 1;
+      printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
     }
   }
+  return err_num;
 }
 
 int specifier_parsing(char *str, struct specifier* spec) {
   int err_num = 0;
-  char buff[1024] = S21_NULL;
+  char *buff = malloc(1024);
   const char* flags = "-+ #0";
   const char* numbers = "1234567890*";
   const char* length = "hlL";
   const char* types = "cdieEfgGosuxXpn%%";
-  spec_length = strcspn(&format[i + 1], types) + 1
+  s21_size_t spec_length = s21_strcspn(str, types) + 1;
   s21_memcpy(buff, str, spec_length);
   spec->type = str[spec_length - 1];
-  s21_size_t spec_length = s21_strspn((const char*) buff, flags);
+  spec_length = s21_strspn((const char*) buff, flags);
   s21_memcpy(spec->flag, buff, spec_length);
   buff += spec_length;
   spec_length = s21_strspn((const char*) buff, numbers);
@@ -64,9 +69,15 @@ void vararg_init(char type, va_list *ap) {
 }
 
 void specifier_init(struct specifier* spec) {
-  spec->flag = S21_NULL;
-  spec->width = S21_NULL;
-  spec->precision = S21_NULL;
-  spec->length = S21_NULL;
+  spec->flag[0] = '\0';
+  spec->width[0] = '\0';
+  spec->precision[0] = '\0';
+  spec->length[0] = '\0';
   spec->type = 0;
+}
+
+int main() {
+  char test[] = "%+0ls";
+  char str[100];
+  s21_sprintf(str, test, "hey");
 }

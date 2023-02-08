@@ -37,7 +37,7 @@ int specifier_parsing(char *str, struct specifier* spec) {
   s21_memcpy(spec->width, buff, spec_length);
   err_num = star_check(spec->width);
   buff += spec_length;
-  if (*(buff + 1) == '.') {
+  if (*(buff + 1) == '.' && errnum == 0) {
     spec_length = s21_strspn((const char*) buff, numbers);
     err_num = star_check(spec->precision);
     buff += (spec_length + 1);
@@ -74,6 +74,32 @@ void specifier_init(struct specifier* spec) {
   spec->precision[0] = '\0';
   spec->length[0] = '\0';
   spec->type = 0;
+}
+
+void record(char *str, struct specifier spec, va_list *ap) {
+  if (spec.type == 'c') {
+
+
+  } else if (spec.type == 'd' || spec.type == 'i') {
+    int num = va_arg(*ap, int);
+  } else if (spec.type == 'e' || spec.type == 'E' || spec.type == 'f' || spec.type == 'g' || spec.type == 'G' ) {
+    double num = va_arg(*ap, double);
+  } else if (spec.type == 'o' || spec.type == 'u' || spec.type == 'x' || spec.type == 'X') {
+    unsigned int num = va_arg(*ap, unsigned int);
+  } else if (spec.type == 's') {
+    char *str = va_arg(*ap, char *);
+  } else if (spec.type == 'p') {
+    void *pointer = va_arg(*ap, void *);
+  } else if (spec.type == 'n') {
+    int *arr = va_arg(*ap, int *);
+  }
+
+}
+
+void record_char(char *str, struct specifier spec, va_list *ap) {
+  if (s21_strchr(spec.flag, "l"))
+    char c = va_arg(*ap, char);
+  if (s21_strspn(spec.flag, "Ll") != 0)
 }
 
 int main() {

@@ -6,9 +6,8 @@ void s21_sprintf(char *str, const char *format, ...) {
   char test[100];
   test[0] = '\0';
   va_start(ap, format);
-  s21_size_t spec_num = 0;
   struct specifier spec;
-  for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
+  for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char*) &format[i + 1], &spec);
@@ -19,7 +18,6 @@ void s21_sprintf(char *str, const char *format, ...) {
 }
 
 void specifier_parsing(char *str, struct specifier* spec) {
-  int err_num = 0;
   char *buff = malloc(1024);
   char *buff1 = malloc(1024);
   int k = 0;
@@ -42,7 +40,7 @@ void specifier_parsing(char *str, struct specifier* spec) {
   spec_length = s21_strspn((const char*) buff, numbers);
   s21_memcpy(spec->width, buff, spec_length);
   buff += spec_length;
-  if (*(buff + 1) == '.' && errnum == 0) {
+  if (*(buff + 1) == '.') {
     spec_length = s21_strspn((const char*) buff, numbers);
     buff += (spec_length + 1);
   }

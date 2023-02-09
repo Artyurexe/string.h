@@ -1,20 +1,23 @@
 #include "s21_sprintf.h"
 
-void s21_sprintf(char *str, const char *format, ...) {
+int s21_sprintf(char *str, const char *format, ...) {
+  int err_num = 0;
   const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
   char test[100];
   test[0] = '\0';
   va_start(ap, format);
+  s21_size_t spec_num = 0;
   struct specifier spec;
-  for (s21_size_t i = 0; i < s21_strlen(format); i++) {
+  for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      specifier_parsing((char*) &format[i + 1], &spec);
+      err_num = specifier_parsing((char*) &format[i + 1], &spec);
       i += s21_strcspn(&format[i + 1], types) + 1;
       printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
     }
   }
+  return err_num;
 }
 
 void specifier_parsing(char *str, struct specifier* spec) {
@@ -23,7 +26,7 @@ void specifier_parsing(char *str, struct specifier* spec) {
   int k = 0;
   const char* flags = "-+ #0";
   const char* numbers = "1234567890*";
-  const char* length = "hLl";
+  const char* length = "hlL";
   const char* types = "cdieEfgGosuxXpn%%";
   s21_size_t spec_length = s21_strcspn(str, types);
   spec->type = str[spec_length];
@@ -122,10 +125,64 @@ void record_int(char* str, struct specifier spec, va_list *ap) {
     int num = va_arg(*ap, int);
 }
 
-void record_char(char *str, struct specifier spec, va_list *ap) {
-  if (s21_strchr(spec.flag, "l"))
+int record_char(char *str, struct specifier spec, va_list *ap) {
+  s21_size_t width = 0;
+  if (s21_strlen(spec.width) != 0) {
+    width = atoi(spec.width);
+    if (!width)
+      return 1;
+    if (s21_strchr(spec.flag, '-') == S21_NULL)
+      for(int i = 0; i < width - 1; i++)
+        s21_strcat(str, " ");
+  }
+  if (s21_strchr(spec.length, 'l')) {
+    wchar_t wc = va_arg(*ap, wchar_t);
+    if (wcstombs(str + s21_strlen(str), &wc, 1) == 0)
+      return 1;
+  }
+  else {
     char c = va_arg(*ap, char);
-  if (s21_strspn(spec.flag, "Ll") != 0)
+    s21_size_t len = s21_strlen(str);
+    str[len] = c;
+    str[len + 1] = '\0';
+  }
+  if (width && s21_strchr(spec.flag, '-'))
+    for(int i = 0; i < width - 1; i++)
+        s21_strcat(str, " ");
+  return 0;
+}
+
+int record_str(char *str, struct specifier spec, va_list *ap) {
+  s21_size_t width = 0;
+  if (s21_strlen(spec.width) != 0) {
+    width = atoi(spec.width);
+    if (!width)
+      return 1;
+  }
+  if (s21_strchr(spec.length, 'l')) {
+    wchar_t *ws = va_arg(*ap, wchar_t*);
+    width -= wcslen(ws);
+    if (width) {
+      for(int i = 0; i < width; i++)
+        s21_strcat(str, " ");
+    }
+    if (wcstombs(str + s21_strlen(str), ws, wcslen(ws) * sizeof(wchar_t)) == 0)
+      return 1;
+  }
+  else {
+    char* s = va_arg(*ap, char*);
+    s21_size_t len = s21_strlen(str);
+    width -= s21_strlen(s);
+    if (width) {
+      for(int i = 0; i < width; i++)
+        s21_strcat(str, " ");
+    }
+    strcat(str, s);
+  }
+  if (width && s21_strchr(spec.flag, '-'))
+    for(int i = 0; i < width; i++)
+        s21_strcat(str, " ");
+  return 0;
 }
 
 int main() {

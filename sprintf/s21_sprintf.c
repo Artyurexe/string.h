@@ -42,8 +42,21 @@ int specifier_parsing(char *str, struct specifier* spec) {
     err_num = star_check(spec->precision);
     buff += (spec_length + 1);
   }
-  s21_memcpy(spec->length, buff, s21_strspn((const char*) buff, length));
-  return err_num;
+  s21_memcpy(buff1, buff, s21_strspn((const char*) buff, length));
+  for (int i = 0; i < 3; i++) {
+    char* c = s21_strchr(buff1, length[i]);
+    if (c != S21_NULL) {
+      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i]) == S21_NULL && spec.length[0] != 'h')) {
+        spec->length[k++] = length[i];
+      } else {
+        spec->length[k++] = length[i];
+        spec->length[k++] = length[i];
+      } 
+    }
+  }
+  spec->length[k] = '\0';
+  free(buff);
+  free(buff1);
 }
 
 int star_check(char* str) {
@@ -81,7 +94,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 
   } else if (spec.type == 'd' || spec.type == 'i') {
-    int num = va_arg(*ap, int);
+    
   } else if (spec.type == 'e' || spec.type == 'E' || spec.type == 'f' || spec.type == 'g' || spec.type == 'G' ) {
     double num = va_arg(*ap, double);
   } else if (spec.type == 'o' || spec.type == 'u' || spec.type == 'x' || spec.type == 'X') {

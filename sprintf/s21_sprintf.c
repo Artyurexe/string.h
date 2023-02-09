@@ -1,23 +1,17 @@
 #include "s21_sprintf.h"
 
-int s21_sprintf(char *str, const char *format, ...) {
-  int err_num = 0;
+void s21_sprintf(char *str, const char *format, ...) {
   const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
-  char test[100];
-  test[0] = '\0';
   va_start(ap, format);
-  s21_size_t spec_num = 0;
   struct specifier spec;
-  for (s21_size_t i = 0; i < s21_strlen(format) && err_num == 0; i++) {
+  for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      err_num = specifier_parsing((char*) &format[i + 1], &spec);
       i += s21_strcspn(&format[i + 1], types) + 1;
       printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
     }
   }
-  return err_num;
 }
 
 void specifier_parsing(char *str, struct specifier* spec) {
@@ -47,9 +41,9 @@ void specifier_parsing(char *str, struct specifier* spec) {
   for (int i = 0; i < 3; i++) {
     char* c = s21_strchr(buff1, length[i]);
     if (c != S21_NULL) {
-      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i]) == S21_NULL && spec.length[0] != 'h')) {
+      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i]) == S21_NULL && spec->length[0] != 'h')) {
         spec->length[k++] = length[i];
-      } else if (length[i] == 'l' && s21_strchr(c, length[i]) != S21_NULL && spec.length[0] != 'h') {
+      } else if (length[i] == 'l' && s21_strchr(c, length[i]) != S21_NULL && spec->length[0] != 'h') {
         spec->length[k++] = length[i];
         spec->length[k++] = length[i];
       } 
@@ -116,13 +110,6 @@ void record(char *str, struct specifier spec, va_list *ap) {
     int *arr = va_arg(*ap, int *);
   }
 
-}
-
-void record_int(char* str, struct specifier spec, va_list *ap) {
-  if (s21_strchr(spec.flag, "l"))
-    char c = va_arg(*ap, char);
-  if (s21_strspn(spec.flag, "ll") != 0)
-    int num = va_arg(*ap, int);
 }
 
 int record_char(char *str, struct specifier spec, va_list *ap) {

@@ -96,11 +96,64 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 }
 
-void record_char(char *str, struct specifier spec, va_list *ap) {
+int record_char(char *str, struct specifier spec, va_list *ap) {
+  s21_size_t width = 0;
+  if (s21_strlen(spec.width) != 0) {
+    width = atoi(spec.width);
+    if (!width)
+      return 1;
+    if (s21_strchr(spec.flag, '-') == S21_NULL)
+      for(int i = 0; i < width - 1; i++)
+        s21_strcat(str, " ");
+  }
   if (s21_strchr(spec.length, 'l')) {
     wchar_t wc = va_arg(*ap, wchar_t);
-
+    if (wcstombs(str + s21_strlen(str), &wc, 1) == 0)
+      return 1;
   }
+  else {
+    char c = va_arg(*ap, char);
+    s21_size_t len = s21_strlen(str);
+    str[len] = c;
+    str[len + 1] = '\0';
+  }
+  if (width && s21_strchr(spec.flag, '-'))
+    for(int i = 0; i < width - 1; i++)
+        s21_strcat(str, " ");
+  return 0;
+}
+
+int record_str(char *str, struct specifier spec, va_list *ap) {
+  s21_size_t width = 0;
+  if (s21_strlen(spec.width) != 0) {
+    width = atoi(spec.width);
+    if (!width)
+      return 1;
+  }
+  if (s21_strchr(spec.length, 'l')) {
+    wchar_t *ws = va_arg(*ap, wchar_t*);
+    width -= wcslen(ws);
+    if (width) {
+      for(int i = 0; i < width; i++)
+        s21_strcat(str, " ");
+    }
+    if (wcstombs(str + s21_strlen(str), ws, wcslen(ws) * sizeof(wchar_t)) == 0)
+      return 1;
+  }
+  else {
+    char* s = va_arg(*ap, char*);
+    s21_size_t len = s21_strlen(str);
+    width -= s21_strlen(s);
+    if (width) {
+      for(int i = 0; i < width; i++)
+        s21_strcat(str, " ");
+    }
+    strcat(str, s);
+  }
+  if (width && s21_strchr(spec.flag, '-'))
+    for(int i = 0; i < width; i++)
+        s21_strcat(str, " ");
+  return 0;
 }
 
 int main() {

@@ -48,13 +48,12 @@ void specifier_parsing(char *str, struct specifier* spec) {
   for (int i = 0; i < 3; i++) {
     char* c = s21_strchr(buff1, length[i]);
     if (c != S21_NULL) {
-      if (length[i] != 'l') {
+      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i]) == S21_NULL && spec.length[0] != 'h')) {
         spec->length[k++] = length[i];
-      } else if (s21_strchr(c, length[i]) != S21_NULL) {
+      } else {
         spec->length[k++] = length[i];
         spec->length[k++] = length[i];
-      } else
-        spec->length[k++] = length[i];
+      } 
     }
   }
   spec->length[k] = '\0';
@@ -94,7 +93,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 
   } else if (spec.type == 'd' || spec.type == 'i') {
-    int num = va_arg(*ap, int);
+    
   } else if (spec.type == 'e' || spec.type == 'E' || spec.type == 'f' || spec.type == 'g' || spec.type == 'G' ) {
     double num = va_arg(*ap, double);
   } else if (spec.type == 'o' || spec.type == 'u' || spec.type == 'x' || spec.type == 'X') {

@@ -66,24 +66,6 @@ void pointer_shift(s21_size_t* length, char* buff, char* buff1, const char* str)
   buff += *length;
 }
 
-void vararg_init(char type, va_list *ap) {
-  if (type == 'c') {
-    va_arg(*ap, char);
-  } else if (type == 'd' || type == 'i') {
-    va_arg(*ap, int);
-  } else if (type == 'e' || type == 'E' || type == 'f' || type == 'g' || type == 'G' ) {
-    va_arg(*ap, double);
-  } else if (type == 'o' || type == 'u' || type == 'x' || type == 'X') {
-    va_arg(*ap, unsigned int);
-  } else if (type == 's') {
-    va_arg(*ap, char *);
-  } else if (type == 'p') {
-    va_arg(*ap, void *);
-  } else if (type == 'n') {
-    va_arg(*ap, int *);
-  } 
-}
-
 void specifier_init(struct specifier* spec) {
   spec->flag[0] = '\0';
   spec->width[0] = '\0';
@@ -112,6 +94,47 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 }
 
+void record_int(char *str, struct specifier spec, va_list *ap) {
+  long long token = 0;
+  int length = 0;
+  char* buff = malloc(1024);
+  if (s21_strchr(spec.length, 'h') != S21_NULL)
+    token = va_arg(*ap, short int);
+  else if (s21_strstr(spec.length, "ll") != S21_NULL)
+    token = va_arg(*ap, long long);
+  else if (s21_strchr(spec.length, 'l') != S21_NULL)
+    token = va_arg(*ap, long);
+  else 
+    token = va_arg(*ap, int);
+  int_to_string(buff, token, spec);
+  if (spec.width[0] == '*')
+    length = va_arg(*ap, int);
+  else 
+    length = atoi(spec.width);
+  if (length > s21_strlen(buff)) {
+  }
+}
+
+void int_to_string(char* str, long long num, struct specifier spec) {
+  char* buff = str;
+  int len = 0;
+  if (num > 0) {
+    if (s21_strchr(spec.flag, '+') != S21_NULL)
+      *(buff++) = '+';
+    else if (s21_strchr(spec.flag, ' ') != S21_NULL)
+      *(buff++) = ' ';
+  }
+  if (num < 0) {
+    num *= -1;
+    *(buff++) = '-';
+  }
+  long long n = num;
+  for (; n != 0; len++, n /= 10) {}
+  for (int i = 0; i < len; i++, num /= 10)
+    buff[len - (i + 1)] = num % 10 + '0';
+  buff[len] = '\0';
+}
+
 int record_char(char *str, struct specifier spec, va_list *ap) {
   s21_size_t width = 0;
   if (s21_strlen(spec.width) != 0) {
@@ -128,7 +151,7 @@ int record_char(char *str, struct specifier spec, va_list *ap) {
       return 1;
   }
   else {
-    char c = va_arg(*ap, char);
+    char c = va_arg(*ap, int);
     s21_size_t len = s21_strlen(str);
     str[len] = c;
     str[len + 1] = '\0';
@@ -173,7 +196,6 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 }
 
 int main() {
-  char test[] = "%+0ls";
-  char str[100];
-  s21_sprintf(str, test, "hey");
+  char str[100] = "";
+  return 0;
 }

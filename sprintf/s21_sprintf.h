@@ -14,6 +14,8 @@ struct specifier {
 
 void s21_sprintf(char *str, const char *format, ...);
 void specifier_parsing(char *str, struct specifier* spec);
+void numbers_parsing(char* str, char* buff);
+void pointer_shift(s21_size_t* length, char* buff, char* buff1, const char* str);
 void vararg_init(char type, va_list *ap);
 void specifier_init(struct specifier* spec);
 int star_check(char* str);

@@ -1,8 +1,9 @@
 #ifndef SRC_SPRINTF_S21_SPRINTF_H_
 #define SRC_SPRINTF_S21_SPRINTF_H_
 
-#include "../standard_functions/s21_string.h"
 #include <stdarg.h>
+#include <wchar.h>
+#include "../standard_functions/s21_string.h"
 
 struct specifier {
   char flag[4];
@@ -16,8 +17,13 @@ void s21_sprintf(char *str, const char *format, ...);
 void specifier_parsing(char *str, struct specifier* spec);
 void numbers_parsing(char* str, char* buff);
 void pointer_shift(s21_size_t* length, char* buff, char* buff1, const char* str);
-void vararg_init(char type, va_list *ap);
 void specifier_init(struct specifier* spec);
-int star_check(char* str);
+void record(char *str, struct specifier spec, va_list *ap);
+void record_int(char *str, struct specifier spec, va_list *ap);
+void numcat(char* str, char* buff, long long token, struct specifier spec, va_list *ap);
+void cat_str(char* str, char* str2, int length_diff, char* filler);
+void int_to_string(char* str, long long num, struct specifier spec);
+int record_char(char *str, struct specifier spec, va_list *ap);
+int record_str(char *str, struct specifier spec, va_list *ap);
 
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

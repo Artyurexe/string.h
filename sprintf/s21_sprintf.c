@@ -8,8 +8,10 @@ void s21_sprintf(char *str, const char *format, ...) {
   for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      i += s21_strcspn(&format[i + 1], types) + 1;
+      specifier_parsing((char*) &format[i + 1], &spec);
       printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
+      record(str, spec, &ap);
+      i += s21_strcspn(&format[i + 1], types) + 1;
     }
   }
 }
@@ -79,7 +81,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 
   } else if (spec.type == 'd' || spec.type == 'i') {
-    
+    record_int(str, spec, ap);
   } else if (spec.type == 'e' || spec.type == 'E' || spec.type == 'f' || spec.type == 'g' || spec.type == 'G' ) {
     double num = va_arg(*ap, double);
   } else if (spec.type == 'o' || spec.type == 'u' || spec.type == 'x' || spec.type == 'X') {
@@ -95,24 +97,47 @@ void record(char *str, struct specifier spec, va_list *ap) {
 }
 
 void record_int(char *str, struct specifier spec, va_list *ap) {
-  long long token = 0;
-  int length = 0;
   char* buff = malloc(1024);
-  if (s21_strchr(spec.length, 'h') != S21_NULL)
-    token = va_arg(*ap, short int);
-  else if (s21_strstr(spec.length, "ll") != S21_NULL)
-    token = va_arg(*ap, long long);
-  else if (s21_strchr(spec.length, 'l') != S21_NULL)
-    token = va_arg(*ap, long);
-  else 
-    token = va_arg(*ap, int);
+  if (s21_strchr(spec.length, 'h')) {
+    int short_token = va_arg(*ap, int);
+    short token = short_token;
+    numcat(str, buff, (long long) token, spec, ap);
+  } else if (s21_strstr(spec.length, "ll")) {
+    long long token = va_arg(*ap, long long);
+    numcat(str, buff, token, spec, ap);
+  } else if (s21_strchr(spec.length, 'l')) {
+    long token = va_arg(*ap, long);
+    numcat(str, buff, (long long) token, spec, ap);
+  } else {
+    int token = va_arg(*ap, int);
+    numcat(str, buff, (long long) token, spec, ap);
+  }
+  free(buff);
+}
+
+void numcat(char* str, char* buff, long long token, struct specifier spec, va_list *ap) {
+  s21_size_t length = 0;
   int_to_string(buff, token, spec);
   if (spec.width[0] == '*')
     length = va_arg(*ap, int);
   else 
     length = atoi(spec.width);
-  if (length > s21_strlen(buff)) {
-  }
+  s21_size_t buff_length = s21_strlen(buff);
+  if (length > buff_length) {
+    if (s21_strchr(spec.flag, '-')) {
+      s21_strcat(str, buff);
+      for (int i = 0; i < length - buff_length; i++, s21_strcat(str, " ")) {}
+    } else if (s21_strchr(spec.flag, '0')) {
+      cat_str(str, buff, length - buff_length, "0");
+    } else
+      cat_str(str, buff, length - buff_length, " ");
+  } else
+    s21_strcat(str, buff);
+}
+
+void cat_str(char* str, char* str2, int length_diff, char* filler) {
+  for (int i = 0; i < length_diff; i++, s21_strcat(str, filler)) {}
+  s21_strcat(str, str2);
 }
 
 void int_to_string(char* str, long long num, struct specifier spec) {
@@ -187,7 +212,7 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
       for(int i = 0; i < width; i++)
         s21_strcat(str, " ");
     }
-    strcat(str, s);
+    s21_strcat(str, s);
   }
   if (width && s21_strchr(spec.flag, '-'))
     for(int i = 0; i < width; i++)
@@ -196,6 +221,8 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 }
 
 int main() {
-  char str[100] = "";
+  char str[100] = "\0";
+  s21_sprintf(str, "%- 10d", -13423);
+  puts(str);
   return 0;
 }

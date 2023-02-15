@@ -18,6 +18,7 @@ void s21_sprintf(char *str, const char *format, ...) {
 void specifier_parsing(char *str, struct specifier* spec) {
   char* buff = str;
   char* buff1 = malloc(1024);
+  char* buff2 = buff1;
   int k = 0;
   const char* flags = "-+ #0";
   const char* numbers = "1234567890*";
@@ -51,7 +52,7 @@ void specifier_parsing(char *str, struct specifier* spec) {
     }
   }
   spec->length[k] = '\0';
-  free(buff1);
+  free(buff2);
 }
 
 void numbers_parsing(char* str, char* buff) {
@@ -59,7 +60,6 @@ void numbers_parsing(char* str, char* buff) {
   if (*buff == '*' && length == 0)
     length = 1;
   s21_strncpy(str, buff, length);
-  printf("%d\n", length);
   buff[length + 1] = '\0';
 }
 
@@ -96,7 +96,6 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 void record_int(char *str, struct specifier spec, va_list *ap) {
   char* buff = malloc(1024);
-  char* buff1 = buff;
   if (s21_strchr(spec.length, 'h')) {
     int short_token = va_arg(*ap, int);
     short token = short_token;
@@ -111,24 +110,23 @@ void record_int(char *str, struct specifier spec, va_list *ap) {
     int token = va_arg(*ap, int);
     numcat(str, buff, (long long) token, spec, ap);
   }
-  free(buff1);
+  free(buff);
 }
 
 void record_u_int(char *str, struct specifier spec, va_list *ap) {
   char* buff = malloc(1024);
-  char* buff1 = buff;
   if (s21_strchr(spec.length, 'h')) {
     unsigned int short_token = va_arg(*ap, unsigned int);
     unsigned short token = short_token;
-    numcat(str, buff, (unsigned long long) token, spec, ap);
+    u_numcat(str, buff, (unsigned long) token, spec, ap);
   } else if (s21_strchr(spec.length, 'l')) {
     unsigned long token = va_arg(*ap, unsigned long);
-    numcat(str, buff, (unsigned long long) token, spec, ap);
+    u_numcat(str, buff, (unsigned long) token, spec, ap);
   } else {
     unsigned int token = va_arg(*ap,unsigned  int);
-    numcat(str, buff, (unsigned long long) token, spec, ap);
+    u_numcat(str, buff, (unsigned long) token, spec, ap);
   }
-  free(buff1);
+  free(buff);
 }
 
 void numcat(char* str, char* buff, long long token, struct specifier spec, va_list *ap) {
@@ -160,12 +158,16 @@ void numcat(char* str, char* buff, long long token, struct specifier spec, va_li
     s21_strcat(str, buff);
 }
 
-void u_numcat(char* str, char* buff, unsigned long long token, struct specifier spec, va_list *ap) {
+void u_numcat(char* str, char* buff, unsigned long token, struct specifier spec, va_list *ap) {
   s21_size_t length = 0;
     if (s21_strchr(spec.flag, '+') != S21_NULL)
       s21_strcat(str, "+");
     else if (s21_strchr(spec.flag, ' ') != S21_NULL)
       s21_strcat(str, " ");
+  if (spec.type == 'o')
+    num_conversion(token, 8, buff, spec);
+  else if (spec.type == 'x' || spec.type == 'X')
+    num_conversion(token, 16, buff, spec);
   u_int_to_string(buff, token);
   if (spec.width[0] == '*')
     length = va_arg(*ap, unsigned int);
@@ -199,27 +201,26 @@ void int_to_string(char* str, long long num) {
   buff[len] = '\0';
 }
 
-void u_int_to_string(char* str, unsigned long long num) {
+void u_int_to_string(char* str, unsigned long num) {
   char* buff = str;
   s21_size_t len = 0;
-  unsigned long long n = num;
+  unsigned long n = num;
   for (; n != 0; len++, n /= 10) {}
   for (s21_size_t i = 0; i < len; i++, num /= 10)
     buff[len - (i + 1)] = num % 10 + '0';
   buff[len] = '\0';
 }
 
-void num_conversion(unsigned long long n, int base, char sign, char *outbuf, struct specifier spec) {
+void num_conversion(unsigned long n, int base, char *outbuf, struct specifier spec) {
   s21_size_t i = 12;
   s21_size_t j = 0;
   do {
-    outbuf[i--] = "0123456789ABCDEF"[n % base];
+    if (spec.type == 'x' || spec.type == 'o')
+      outbuf[i--] = "0123456789abcdef"[n % base];
+    else
+      outbuf[i--] = "0123456789ABCDEF"[n % base];
     n /= base;
   } while(n > 0);
-  if (sign != ' ') {
-    outbuf[0] = sign;
-    ++j;
-  }
   while( ++i < 13) {
     outbuf[j++] = outbuf[i];
   }
@@ -287,7 +288,7 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 
 int main() {
   char str[100] = "\0";
-  s21_sprintf(str, "%-+010.6ld", 1342);
+  s21_sprintf(str, "%lo", 18446744073709551615u);
   puts(str);
   return 0;
 }

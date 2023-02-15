@@ -59,7 +59,6 @@ void numbers_parsing(char* str, char* buff) {
   if (*buff == '*' && length == 0)
     length = 1;
   s21_strncpy(str, buff, length);
-  printf("%d\n", length);
   buff[length + 1] = '\0';
 }
 
@@ -100,10 +99,6 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
   char str1[100] = "0x";
   char str2[100];
   char *hex = dec_to_hex(pointer);
-  // s21_strcat(str1, hex);
-  // free(hex);
-
-  // printf("%s \n", str1);
   s21_size_t width = 0;
   if (s21_strlen(spec.width) != 0) {
     width = atoi(spec.width);
@@ -136,6 +131,9 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
       s21_strcat(str1, "1");
       s21_strcat(str1, hex);
     }
+  } else{
+    s21_strcat(str1, "1");
+    s21_strcat(str1, hex);
   }
   printf("%s\n", str1);
   free(hex);
@@ -351,7 +349,8 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 
 int main() {
   char str[100] = "\0";
-  s21_sprintf(str, "%-+010.6ld", 1342);
-  puts(str);
+  int a = 3;
+  s21_sprintf(str, "%-p", &a);
+  // puts(str);
   return 0;
 }

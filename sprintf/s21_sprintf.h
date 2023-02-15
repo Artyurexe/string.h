@@ -19,5 +19,7 @@ void pointer_shift(s21_size_t* length, char* buff, char* buff1, const char* str)
 void vararg_init(char type, va_list *ap);
 void specifier_init(struct specifier* spec);
 int star_check(char* str);
+void record(char *str, struct specifier spec, va_list *ap);
+void record_pointer(char *str, struct specifier spec, va_list *ap);
 
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

@@ -185,6 +185,47 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
   return 0;
 }
 
+int record_double(char *str, struct specifier spec, va_list *ap) {
+  s21_size_t width = 0;
+  s21_size_t precision = 0;
+  s21_size_t exp = 0;
+  long double num;
+  width = atoi(spec.width);
+  precision = atoi(spec.precision);
+  if (precision == 0 && s21_strlen(spec.precision) == 0)
+    precision = 6;
+  if (precision == 0 && s21_strlen(spec.precision) != 0)
+    precision = 1;
+  
+  if (strchr(spec.length, 'l'))
+    num = va_arg(*ap, double);
+  else if (strchr(spec.length, 'L'))
+    num = va_arg(*ap, long double);
+  else
+    num = va_arg(*ap, float);
+  exp = count_exp(num);
+
+}
+
+s21_size_t count_exp(long double num) {
+  long double cpy = num;
+  cpy = fabs(cpy);
+  s21_size_t exp = 0;
+  if (cpy >= 10) {
+    while ((long long) cpy >=10) {
+      exp++;
+      cpy /= 10;
+    }
+  }
+  else if (cpy < 1) {
+    while ((long long) cpy < 1) {
+      exp--;
+      cpy *= 10;
+    }
+  }
+  return exp;
+}
+
 int main() {
   char test[] = "%+0ls";
   char str[100];

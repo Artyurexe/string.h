@@ -3,7 +3,7 @@
 
 #include "../standard_functions/s21_string.h"
 #include <stdarg.h>
-
+#include <math.h>
 struct specifier {
   char flag[4];
   char width[310];
@@ -12,6 +12,8 @@ struct specifier {
   char type;
 };
 
+s21_size_t count_exp(long double num);
+int record_double(char *str, struct specifier spec, va_list *ap);
 void s21_sprintf(char *str, const char *format, ...);
 void specifier_parsing(char *str, struct specifier* spec);
 void numbers_parsing(char* str, char* buff);

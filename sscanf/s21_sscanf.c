@@ -7,6 +7,7 @@
 
 #define QMAX 100
 int token_format(const char* format);
+
 struct queue {
     char qu[QMAX];
     char rear, frnt;
@@ -32,7 +33,7 @@ void insert(struct queue* q, char *x) {
 }
 char removex(struct queue* q) {
     char x;
-     int h;
+    int h;
     if (isempty(q) == 1) {
         return 0;
     }
@@ -94,13 +95,14 @@ int token_format(const char *format) {
     struct queue* format_string;
     format_string = (struct queue*)malloc(sizeof(struct queue));
     init(format_string);
-    char* temp = malloc(sizeof(char));
-    char* temp_format = malloc(strlen(format) * sizeof(char));
+    // char* temp = malloc(sizeof(char));
+    char* temp_format = malloc((strlen(format) + 1) * sizeof(char));
     strcpy(temp_format, format);
-    strtok_s(temp_format, "%", &temp);
-    insert(format_string, temp);
-    while (strtok_s(NULL, "%", &temp) != NULL) {
-        insert(format_string, temp);
+
+    char *token = strtok(temp_format, "%");
+    while (token != NULL) {
+        insert(format_string, token);
+        token = strtok(NULL, "%");
     }
     print(format_string);
 

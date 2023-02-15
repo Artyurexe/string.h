@@ -9,7 +9,6 @@ void s21_sprintf(char *str, const char *format, ...) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char*) &format[i + 1], &spec);
-      printf("flag:(%s)\nlength:(%s)\nprecision:(%s)\nwidth:(%s)\ntype:(%c)\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
       record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
     }
@@ -24,28 +23,28 @@ void specifier_parsing(char *str, struct specifier* spec) {
   const char* numbers = "1234567890*";
   const char* length = "hlL";
   const char* types = "cdieEfgGosuxXpn%%";
-  s21_size_t spec_length = s21_strcspn(str, types);
-  spec->type = str[spec_length];
-  pointer_shift(&spec_length, &buff, buff1, flags);
+  spec->type = str[s21_strcspn(str, types)];
+  pointer_shift(&buff, buff1, flags);
   for (int i = 0; i < 5; i++) {
     if (s21_strchr(buff1, flags[i]) != S21_NULL && ((flags[i] == ' ' && s21_strchr(buff1, '+') == S21_NULL) || (flags[i] == '0' && s21_strchr(buff1, '-') == S21_NULL) || flags[i] == '-' || flags[i] == '+' || flags[i] == '#'))
       spec->flag[k++] = flags[i];
   }
   spec->flag[k] = '\0';
   k = 0;
-  pointer_shift(&spec_length, &buff, buff1, numbers);
+  pointer_shift(&buff, buff1, numbers);
   numbers_parsing(spec->width, buff1);
-  if (*(buff++) == '.') {
-    pointer_shift(&spec_length, &buff, buff1, numbers);
+  if (*buff == '.') {
+    buff++;
+    pointer_shift(&buff, buff1, numbers);
     numbers_parsing(spec->precision, buff1);
   }
   s21_memcpy(buff1, buff, s21_strspn((const char*) buff, length));
   for (int i = 0; i < 3; i++) {
     char* c = s21_strchr(buff1, length[i]);
     if (c != S21_NULL) {
-      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i]) == S21_NULL && spec->length[0] != 'h')) {
+      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i + 1]) == S21_NULL && spec->length[0] != 'h')) {
         spec->length[k++] = length[i];
-      } else if (length[i] == 'l' && s21_strchr(c, length[i]) != S21_NULL && spec->length[0] != 'h') {
+      } else if (length[i] == 'l' && s21_strchr(c, length[i + 1]) != S21_NULL && spec->length[0] != 'h') {
         spec->length[k++] = length[i];
         spec->length[k++] = length[i];
       } 
@@ -59,15 +58,16 @@ void numbers_parsing(char* str, char* buff) {
   s21_size_t length = s21_strspn((const char*) buff, "1234567890");
   if (*buff == '*' && length == 0)
     length = 1;
-  s21_memcpy(str, buff, length);
+  s21_strncpy(str, buff, length);
+  printf("%d\n", length);
+  buff[length + 1] = '\0';
 }
 
-void pointer_shift(s21_size_t* length, char** buff, char* buff1, const char* str) {
-  printf("%c\n", **buff);
-  *length = s21_strspn((const char*) *buff, str);
-  s21_memcpy(buff1, *buff, *length);
-  *buff += *length;
-  printf("%c\n%d", **buff, *length);
+void pointer_shift(char** buff, char* buff1, const char* str) {
+  s21_size_t length = s21_strspn((const char*) *buff, str);
+  s21_strncpy(buff1, *buff, length);
+  buff1[length] = '\0';
+  *buff += length;
 }
 
 void specifier_init(struct specifier* spec) {
@@ -287,7 +287,7 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 
 int main() {
   char str[100] = "\0";
-  // s21_sprintf(str, "%-+010ld", 1342);
+  s21_sprintf(str, "%-+010.6ld", 1342);
   puts(str);
   return 0;
 }

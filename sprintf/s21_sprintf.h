@@ -16,7 +16,7 @@ struct specifier {
 void s21_sprintf(char *str, const char *format, ...);
 void specifier_parsing(char *str, struct specifier* spec);
 void numbers_parsing(char* str, char* buff);
-void pointer_shift(s21_size_t* length, char** buff, char* buff1, const char* str);
+void pointer_shift(char** buff, char* buff1, const char* str);
 void specifier_init(struct specifier* spec);
 void record(char *str, struct specifier spec, va_list *ap);
 void record_int(char *str, struct specifier spec, va_list *ap);

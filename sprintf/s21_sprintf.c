@@ -86,6 +86,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
     record_int(str, spec, ap);
   } else if (spec.type == 'e' || spec.type == 'E' || spec.type == 'f' || spec.type == 'g' || spec.type == 'G' ) {
   } else if (spec.type == 'o' || spec.type == 'u' || spec.type == 'x' || spec.type == 'X') {
+    record_u_int(str, spec, ap);
   } else if (spec.type == 's') {
   } else if (spec.type == 'p') {
   } else if (spec.type == 'n') {
@@ -95,6 +96,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
 
 void record_int(char *str, struct specifier spec, va_list *ap) {
   char* buff = malloc(1024);
+  char* buff1 = buff;
   if (s21_strchr(spec.length, 'h')) {
     int short_token = va_arg(*ap, int);
     short token = short_token;
@@ -109,7 +111,24 @@ void record_int(char *str, struct specifier spec, va_list *ap) {
     int token = va_arg(*ap, int);
     numcat(str, buff, (long long) token, spec, ap);
   }
-  free(buff);
+  free(buff1);
+}
+
+void record_u_int(char *str, struct specifier spec, va_list *ap) {
+  char* buff = malloc(1024);
+  char* buff1 = buff;
+  if (s21_strchr(spec.length, 'h')) {
+    unsigned int short_token = va_arg(*ap, unsigned int);
+    unsigned short token = short_token;
+    numcat(str, buff, (unsigned long long) token, spec, ap);
+  } else if (s21_strchr(spec.length, 'l')) {
+    unsigned long token = va_arg(*ap, unsigned long);
+    numcat(str, buff, (unsigned long long) token, spec, ap);
+  } else {
+    unsigned int token = va_arg(*ap,unsigned  int);
+    numcat(str, buff, (unsigned long long) token, spec, ap);
+  }
+  free(buff1);
 }
 
 void numcat(char* str, char* buff, long long token, struct specifier spec, va_list *ap) {
@@ -125,7 +144,31 @@ void numcat(char* str, char* buff, long long token, struct specifier spec, va_li
   }
   int_to_string(buff, token);
   if (spec.width[0] == '*')
-    length = va_arg(*ap, int);
+    length = va_arg(*ap, unsigned int);
+  else 
+    length = atoi(spec.width);
+  s21_size_t buff_length = s21_strlen(buff);
+  if (length > buff_length) {
+    if (s21_strchr(spec.flag, '-')) {
+      s21_strcat(str, buff);
+      for (s21_size_t i = 0; i < length - buff_length; i++, s21_strcat(str, " ")) {}
+    } else if (s21_strchr(spec.flag, '0')) {
+      cat_str(str, buff, length - buff_length, "0");
+    } else
+      cat_str(str, buff, length - buff_length, " ");
+  } else
+    s21_strcat(str, buff);
+}
+
+void u_numcat(char* str, char* buff, unsigned long long token, struct specifier spec, va_list *ap) {
+  s21_size_t length = 0;
+    if (s21_strchr(spec.flag, '+') != S21_NULL)
+      s21_strcat(str, "+");
+    else if (s21_strchr(spec.flag, ' ') != S21_NULL)
+      s21_strcat(str, " ");
+  u_int_to_string(buff, token);
+  if (spec.width[0] == '*')
+    length = va_arg(*ap, unsigned int);
   else 
     length = atoi(spec.width);
   s21_size_t buff_length = s21_strlen(buff);
@@ -154,6 +197,33 @@ void int_to_string(char* str, long long num) {
   for (int i = 0; i < len; i++, num /= 10)
     buff[len - (i + 1)] = num % 10 + '0';
   buff[len] = '\0';
+}
+
+void u_int_to_string(char* str, unsigned long long num) {
+  char* buff = str;
+  s21_size_t len = 0;
+  unsigned long long n = num;
+  for (; n != 0; len++, n /= 10) {}
+  for (s21_size_t i = 0; i < len; i++, num /= 10)
+    buff[len - (i + 1)] = num % 10 + '0';
+  buff[len] = '\0';
+}
+
+void num_conversion(unsigned long long n, int base, char sign, char *outbuf, struct specifier spec) {
+  s21_size_t i = 12;
+  s21_size_t j = 0;
+  do {
+    outbuf[i--] = "0123456789ABCDEF"[n % base];
+    n /= base;
+  } while(n > 0);
+  if (sign != ' ') {
+    outbuf[0] = sign;
+    ++j;
+  }
+  while( ++i < 13) {
+    outbuf[j++] = outbuf[i];
+  }
+  outbuf[j] = 0;
 }
 
 int record_char(char *str, struct specifier spec, va_list *ap) {
@@ -217,7 +287,7 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 
 int main() {
   char str[100] = "\0";
-  s21_sprintf(str, "%-+010ld", 1342);
+  // s21_sprintf(str, "%-+010ld", 1342);
   puts(str);
   return 0;
 }

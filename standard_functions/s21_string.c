@@ -1,5 +1,4 @@
 #include "s21_string.h"
-#include <string.h>
 
 void *s21_memchr(const void *str, int c, s21_size_t n){
     const unsigned char *s = (const unsigned char *) str;

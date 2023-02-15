@@ -96,47 +96,33 @@ char* dec_to_hex(int dec){
 
 void record_pointer(char *str, struct specifier spec, va_list *ap){
   int pointer = va_arg(*ap, int);
-  char str1[100] = "0x";
-  char str2[100];
+  char str1[100] = "\0";
   char *hex = dec_to_hex(pointer);
   s21_size_t width = 0;
-  if (s21_strlen(spec.width) != 0) {
-    width = atoi(spec.width);
-    if(width > 11){
-      int dif = width - 11;
-      if (s21_strchr(spec.flag, '0')){
-        for(int i = 0; i < dif; i++){
-          s21_strcat(str1, "0");
-        }
-        s21_strcat(str1, "1");
-        s21_strcat(str1, hex);
-      }
-      if(s21_strchr(spec.flag, '-')){
-        s21_strcat(str1, "1");
-        s21_strcat(str1, hex);
-        for(int i = 0; i < dif; i++){
-          s21_strcat(str1, " ");
-        }
-      }
-      else{
-        for(int i = 0; i < dif; i++){
-          s21_strcat(str2, " ");
-        }
-        s21_strcat(str2, str1);
-        s21_strcpy(str1, str2);
-        s21_strcat(str1, "1");
-        s21_strcat(str1, hex);
-      }
-    } else {
-      s21_strcat(str1, "1");
-      s21_strcat(str1, hex);
+  width = atoi(spec.width);
+  int dif = width - 11;
+  char *str3 = malloc(dif * sizeof(char));
+  if(width > 11){
+    for (int i = 0; i < dif; i++){
+      if(s21_strchr(spec.flag, '0'))
+        str3[i] = '0';
+      else
+         str3[i] = ' ';
     }
-  } else{
-    s21_strcat(str1, "1");
-    s21_strcat(str1, hex);
   }
-  printf("%s\n", str1);
+  if(width > 11 && !s21_strchr(spec.flag, '0') && !s21_strchr(spec.flag, '-'))
+    s21_strcat(str1, str3);
+  s21_strcat(str1, "0x");
+  if(width > 11 && s21_strchr(spec.flag, '0'))
+    s21_strcat(str1, str3);
+  s21_strcat(str1, "1");
+  s21_strcat(str1, hex);
+  if(width > 11 && !s21_strchr(spec.flag, '0') && s21_strchr(spec.flag, '-'))
+    s21_strcat(str1, str3);
+  // printf("%spr\n", str1);
   free(hex);
+  free(str3);
+  s21_strcpy(str,str1);
 }
 
 void record(char *str, struct specifier spec, va_list *ap) {
@@ -350,7 +336,7 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 int main() {
   char str[100] = "\0";
   int a = 3;
-  s21_sprintf(str, "%-p", &a);
-  // puts(str);
+  s21_sprintf(str, "%-20p", &a);
+  puts(str);
   return 0;
 }

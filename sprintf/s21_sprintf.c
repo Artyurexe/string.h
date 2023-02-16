@@ -185,25 +185,36 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
   return 0;
 }
 
-int record_double(char *str, struct specifier spec, va_list *ap) {
+int record_double(char *str, struct specifier *spec, va_list *ap) {
   s21_size_t width = 0;
   s21_size_t precision = 0;
   s21_size_t exp = 0;
   long double num;
-  width = atoi(spec.width);
-  precision = atoi(spec.precision);
-  if (precision == 0 && s21_strlen(spec.precision) == 0)
+  width = atoi(spec->width);
+  precision = atoi(spec->precision);
+  if (precision == 0 && s21_strlen(spec->precision) == 0)
     precision = 6;
-  if (precision == 0 && s21_strlen(spec.precision) != 0)
+  if (precision == 0 && s21_strlen(spec->precision) != 0)
     precision = 1;
   
-  if (strchr(spec.length, 'l'))
+  if (strchr(spec->length, 'l'))
     num = va_arg(*ap, double);
-  else if (strchr(spec.length, 'L'))
+  else if (strchr(spec->length, 'L'))
     num = va_arg(*ap, long double);
-  else
-    num = va_arg(*ap, float);
+  else {
+    float num_temp = va_arg(*ap, float);
+    num = num_temp;
+  }
   exp = count_exp(num);
+  if (spec->type == 'g' || spec->type == 'G') {
+    if (precision > exp && exp >= -4) {
+      spec->type = 'f';
+      precision = precision - exp - 1;
+    }
+    else {
+      spec->type = spec->type == 'G' ? 'E' : 'e';
+    }
+  }
 
 }
 

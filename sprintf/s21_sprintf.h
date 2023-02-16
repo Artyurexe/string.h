@@ -13,7 +13,7 @@ struct specifier {
 };
 
 s21_size_t count_exp(long double num);
-int record_double(char *str, struct specifier spec, va_list *ap);
+int record_double(char *str, struct specifier *spec, va_list *ap);
 void s21_sprintf(char *str, const char *format, ...);
 void specifier_parsing(char *str, struct specifier* spec);
 void numbers_parsing(char* str, char* buff);

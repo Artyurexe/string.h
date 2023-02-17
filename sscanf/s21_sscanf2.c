@@ -6,15 +6,20 @@ void s21_sprintf(char *str, const char *format, ...) {
   va_start(ap, format);
   struct specifier spec;
 
-  char *format_str = malloc(sizeof(char) * (strlen(format) + 1));
-  strcpy(format_str, format);
+  char *string = malloc((strlen(str) + 1) * sizeof(char));
+  strcpy(string, str);
+
+  char *string_token = strtok(string, " \n\t\r");
   for (size_t i = 0; i < strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      // printf("%s\n", format_str);
+      specifier_parsing((char*) &format[i + 1], &spec);
+      printf("%s\n", string_token);
+      printf("%c\n", spec.type);
+      
       i += strcspn(&format[i + 1], types) + 1;
-      // specifier_parsing(format_str, &spec);
-      printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
+      string_token = strtok(NULL, " \n\t\r");
+      // printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
     }
   }
 }

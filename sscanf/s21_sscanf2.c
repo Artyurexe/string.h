@@ -9,6 +9,8 @@ void s21_sprintf(char *str, const char *format, ...) {
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
 
+  //здесь должна просиходить проверка на корректность форматной строки
+  //если находится ошибка, следующий код не должен выполняться
   char *string_token = strtok(string, " \n\t\r");
   for (size_t i = 0; i < strlen(format); i++) {
     specifier_init(&spec);
@@ -16,12 +18,15 @@ void s21_sprintf(char *str, const char *format, ...) {
       specifier_parsing((char*) &format[i + 1], &spec);
       printf("%s\n", string_token);
       printf("%c\n", spec.type);
-      
+
+      match_str_and_format(string_token, spec);
       i += strcspn(&format[i + 1], types) + 1;
       string_token = strtok(NULL, " \n\t\r");
       // printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
     }
   }
+
+  free(string);
 }
 
 void specifier_parsing(char *str, struct specifier* spec) {
@@ -102,8 +107,52 @@ void specifier_init(struct specifier* spec) {
   spec->type = 0;
 }
 
+void match_str_and_format(char *str, struct specifier spec) {
+  switch (spec.type)
+  {
+  case 'd':
+    /* code */
+    break;
+  case 'c':
+    break;
+  case 'i':
+    /* code */
+    break;
+  case 'e':
+    break;
+  case 'E':
+    /* code */
+    break;
+  case 'f':
+    break;
+  case 'g':
+    /* code */
+    break;
+  case 'G':
+    break;
+  case 'o':
+    /* code */
+    break;
+  case 's':
+    break;
+  case 'u':
+    /* code */
+    break;
+  case 'x':
+    break;
+  case 'X':
+    /* code */
+    break;
+  case 'p':
+    break;
+  case 'n':
+    /* code */
+    break;
+  }
+}
+
 int main() {
   // char test[] = "%s";
   char str[100];
-  s21_sprintf("hey 1", "%s%f", str);
+  s21_sprintf("hey 1", "%s%d", str);
 }

@@ -24,5 +24,5 @@ void pointer_shift(size_t* length, char* buff, char* buff1, const char* str);
 void vararg_init(char type, va_list *ap);
 void specifier_init(struct specifier* spec);
 void match_str_and_format(char *str, struct specifier spec);
-
+int check_falid_format(const char *format, char *string);
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

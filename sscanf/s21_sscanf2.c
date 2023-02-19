@@ -1,6 +1,6 @@
 #include "s21_sscanf2.h"
 
-void s21_sprintf(char *str, const char *format, ...) {
+void s21_sscanf(char *str, const char *format, ...) {
   const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
   va_start(ap, format);
@@ -16,10 +16,7 @@ void s21_sprintf(char *str, const char *format, ...) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char*) &format[i + 1], &spec);
-      printf("%s\n", string_token);
-      printf("%c\n", spec.type);
-
-      match_str_and_format(string_token, spec);
+      match_str_and_format(string_token, spec, &ap);
       i += strcspn(&format[i + 1], types) + 1;
       string_token = strtok(NULL, " \n\t\r");
       // printf("%s %s %s %s %c\n", spec.flag, spec.length, spec.precision, spec.width, spec.type);
@@ -107,16 +104,20 @@ void specifier_init(struct specifier* spec) {
   spec->type = 0;
 }
 
-void match_str_and_format(char *str, struct specifier spec) {
+void match_str_and_format(char *str, struct specifier spec, va_list *ap) {
   switch (spec.type)
   {
   case 'd':
-    /* code */
+    int *d = va_arg(*ap, int*);
+    *d = atoi(str);
     break;
   case 'c':
+    char *c = va_arg(*ap, char *);
+    *c = str[0];
     break;
   case 'i':
-    /* code */
+    /* 	An integer. Hexadecimal if the input string begins with "0x" or "0X", 
+    octal if the string begins with "0", otherwise decimal. */
     break;
   case 'e':
     break;
@@ -124,6 +125,10 @@ void match_str_and_format(char *str, struct specifier spec) {
     /* code */
     break;
   case 'f':
+    float *f = va_arg(*ap, float*);
+    *f = atof(str);
+    printf("atof: %f\n", atof("1234.1234"));
+    //sueta
     break;
   case 'g':
     /* code */
@@ -134,9 +139,14 @@ void match_str_and_format(char *str, struct specifier spec) {
     /* code */
     break;
   case 's':
+    char *new_str = va_arg(*ap, char *);
+    strcpy(new_str, str);
+    // printf("%s\n", va_arg(ap, char *));
     break;
   case 'u':
-    /* code */
+    unsigned int *u = va_arg(*ap, unsigned int*);
+    *u = atoi(str);
+    //undefined behaviour when the number is negative?
     break;
   case 'x':
     break;
@@ -152,7 +162,18 @@ void match_str_and_format(char *str, struct specifier spec) {
 }
 
 int main() {
-  // char test[] = "%s";
   char str[100];
-  s21_sprintf("hey 1", "%s%d", str);
+  int d;
+  char c;
+  float f;
+  unsigned int u;
+  s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
+  s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
+
+  // sscanf("-10 hey", "%u%s", &u, str);
+  printf("u: %u\n", u);
+  printf("f: %f\n", f);
+  printf("str: %s\n", str);
+  printf("c: %c\n", c);
+  printf("d: %d\n", d);
 }

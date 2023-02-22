@@ -1,0 +1,6 @@
+a.out
+.vscode/launch.json
+.vscode/tasks.json
+sprintf/main.c
+sprintf/re.sh
+standard_functions/s21_string.a

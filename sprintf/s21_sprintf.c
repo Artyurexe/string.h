@@ -213,7 +213,41 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
     }
     else {
       spec->type = spec->type == 'G' ? 'E' : 'e';
+      precision--;
     }
+  }
+  char temp[100] = "";
+  if (spec->type == 'f') {
+    if (num < 0)
+      s21_strcat(temp, "-");
+    num = roundl(num * pow(10, precision))/pow(10, precision);
+    long long num_int = num;
+    for (int i = 0; i <= exp; i++) {
+      int ind = s21_strlen(temp);
+      temp[ind] = (num_int / (pow(10, exp - i))) + '0';
+      temp[ind + 1] = '\0';
+    }
+    if (exp < 0)
+      s21_strcat(temp,"0");
+    if (precision)
+      s21_strcat(temp,".");
+    for (int i = 0; i < precision; i++) {
+      num *= 10;
+      num_int = num;
+      char digit = num_int%10;
+      int ind = s21_strlen(temp);
+      temp[ind] = digit + '0';
+      temp[ind + 1] = '\0';
+    }
+    if (s21_strlen(temp) < width) {
+      s21_size_t cnt = width - s21_strlen(temp);
+      char spaces[100] = "";
+      for (int i = 0; i < cnt; i++)
+        s21_strcat(spaces, " ");
+      s21_strcat(spaces, temp);
+      s21_strcpy(temp, spaces);
+    }
+    s21_strcat(str, temp);
   }
 
 }
@@ -223,13 +257,13 @@ s21_size_t count_exp(long double num) {
   cpy = fabs(cpy);
   s21_size_t exp = 0;
   if (cpy >= 10) {
-    while ((long long) cpy >=10) {
+    while (cpy >=10) {
       exp++;
       cpy /= 10;
     }
   }
   else if (cpy < 1) {
-    while ((long long) cpy < 1) {
+    while (cpy < 1) {
       exp--;
       cpy *= 10;
     }
@@ -238,7 +272,7 @@ s21_size_t count_exp(long double num) {
 }
 
 int main() {
-  char test[] = "%+0ls";
+  char test[] = "%2.4f";
   char str[100];
-  s21_sprintf(str, test, "hey");
+  s21_sprintf(str, test, ");
 }

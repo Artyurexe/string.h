@@ -50,7 +50,7 @@ void *s21_trim(const char *src, const char *trim_chars) {
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
   if (start_index > s21_strlen(src))
     return NULL;
-  char* buff = calloc(s21_strlen(str), sizeof(char));
+  char* buff = calloc(s21_strlen(str) + s21_strlen(src), sizeof(char));
   s21_size_t k = 0;
   for (s21_size_t i = 0; i < s21_strlen(src) + s21_strlen(str); i++) {
     if (i < start_index) {

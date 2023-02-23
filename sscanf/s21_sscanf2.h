@@ -9,12 +9,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define flags_char "CcsS"
+#define flags_int "diouxn"
+#define flags_float "EeFfGgAa"
+#define width_float "L"
+#define width_int_char "h"
+#define width_shared "l"
+#define width_num "0123456789"
+
 struct specifier {
   char flag[4];
   char width[310];
   char precision[310];
   char length[3];
   char type;
+};
+
+
+enum type_flag {
+  SHARED,
+  CHAR_INT,
+  CHAR_FLAG,
+  INT_FLAG,
+  FLOAT_FLAG,
 };
 
 void s21_sprintf(char *str, const char *format, ...);
@@ -24,5 +41,5 @@ void pointer_shift(size_t* length, char* buff, char* buff1, const char* str);
 void vararg_init(char type, va_list *ap);
 void specifier_init(struct specifier* spec);
 void match_str_and_format(char *str, struct specifier spec);
-int check_falid_format(const char *format, char *string);
+int check_falid_format(const char *format);
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

@@ -1,7 +1,7 @@
 #include "s21_sscanf2.h"
 
 
-int check_falid_format(const char *format, char *string) {
+int check_falid_format(const char *format) {
   int flag = 1;
   if ((strchr(format, ',')) != NULL) {
     flag = 0;
@@ -24,11 +24,9 @@ int check_falid_format(const char *format, char *string) {
     }
     if (*temp_format != '%' &&
         (flags_type == -1 && width_type == -1 && shared_width == -1)) {
-      if (*temp_format != *string) {
-        flag = 0;
+      while(*temp_format!='%'){
+        temp_format++;
       }
-      temp_format++;
-      string++;
     } else {
       if (*temp_format == '%') {
         shared_width = -1;
@@ -46,21 +44,43 @@ int check_falid_format(const char *format, char *string) {
         }
       }
 
-      if (strchr(width_shared, *temp_format) != NULL && count_shared <= 2) {
+      if (strchr(width_shared, *temp_format) != NULL){
         shared_width = SHARED;
         count_shared++;
         temp_format++;
+        while(strchr(width_shared, *temp_format) != NULL){
+            count_shared++;
+            temp_format++;
+        }
+        
       }
-      if (count_width <= 2) {
+      if (count_shared > 2){
+        return 0;
+      } 
+      if (count_shared + count_width > 2){
+        return 0;
+      }
+      if (count_width < 2) {
         if (strchr(width_int_char, *temp_format) != NULL) {
           width_type = CHAR_INT;
           temp_format++;
           count_width++;
+          while(strchr(width_int_char, *temp_format) != NULL){
+            count_width++;
+            temp_format++;
+          }
         } else if (strchr(width_float, *temp_format) != NULL) {
           width_type = FLOAT_FLAG;
           temp_format++;
           count_width++;
+          while(strchr(width_float, *temp_format) != NULL){
+            count_width++;
+            temp_format++;
+          }
         }
+      }
+      if (count_width > 2){
+        return 0;
       }
       if (flags_type == -1 && count_flags < 1) {
         if (strchr(flags_char, *temp_format) != NULL) {
@@ -76,6 +96,13 @@ int check_falid_format(const char *format, char *string) {
           count_flags++;
           temp_format++;
         }
+        
+      }
+      if (count_flags == 1){
+        if (*temp_format!= '%' || *temp_format != '\0'){
+            temp_format++;
+            continue;
+        }
       }
       if (flags_type == CHAR_FLAG &&
           (width_type != -1 && width_type != CHAR_INT)) {
@@ -89,23 +116,20 @@ int check_falid_format(const char *format, char *string) {
           (width_type != -1 && width_type != FLOAT_FLAG)) {
         flag = 0;
       }
-      if (count_shared > 2) {
-        flag = 0;
+      if (count_width!=0 && count_shared != 0 && flags_type == -1){
+        return 0;
       }
-      if (count_width > 2) {
-        flag = 0;
-      }
-      if (flags_type != -1) {
-        if (*temp_format == ' ') {
-          temp_format++;
-        }
-        if (*temp_format != *string) {
-          flag = 0;
-        }
-        temp_format++;
-        string++;
+      if (count_flags == 1){
+        continue;
       }
     }
   }
   return flag;
+}
+
+
+int main(){
+    char format[] = "    %hhld aaaf";
+    printf("%d", check_falid_format(format));
+    return 0;
 }

@@ -37,6 +37,13 @@ int check_falid_format(const char *format) {
         count_shared = 0;
         temp_format++;
       }
+        if (*temp_format == '\n' || *temp_format == ' ' || *temp_format == '\t') {
+      temp_format++;
+      while (*temp_format == '\n' || *temp_format == ' ' ||
+             *temp_format == '\t') {
+        temp_format++;
+      }
+    }
       if (strchr(width_num, *temp_format) != NULL) {
         temp_format++;
         while (strchr(width_num, *temp_format) != NULL) {
@@ -119,9 +126,6 @@ int check_falid_format(const char *format) {
       if (count_width!=0 && count_shared != 0 && flags_type == -1){
         return 0;
       }
-      if (count_flags == 1){
-        continue;
-      }
     }
   }
   return flag;
@@ -129,7 +133,7 @@ int check_falid_format(const char *format) {
 
 
 int main(){
-    char format[] = "    %hhld aaaf";
+    char format[] = "   %   daaaf";
     printf("%d", check_falid_format(format));
     return 0;
 }

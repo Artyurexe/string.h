@@ -53,7 +53,7 @@ char *s21_strcat(char *dest, const char *src){
   s21_size_t dest_l = s21_strlen(dest);
   for(s21_size_t i = 0; src[i] != '\0'; i++)
     dest[dest_l + i] = src[i];
-  dest[dest_l + s21_strlen(src) + 1] = '\0';  
+  dest[dest_l + s21_strlen(src)] = '\0'; 
   return dest;
 }
 
@@ -61,7 +61,7 @@ char *s21_strncat(char *dest, const char *src, s21_size_t n){
   s21_size_t dest_l = s21_strlen(dest);
   for(s21_size_t i = 0; src[i] != '\0' && i < n; i++)
     dest[dest_l + i] = src[i];
-  dest[dest_l + s21_strlen(dest) + 1] = '\0';  
+  dest[dest_l + s21_strlen(dest) + 1] = '\0';  ///
   return dest;
 }
 

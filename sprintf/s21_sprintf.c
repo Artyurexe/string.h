@@ -79,7 +79,6 @@ void specifier_init(struct specifier* spec) {
 char* dec_to_hex(int dec){
   char *hec= malloc(9*sizeof(char));
   int i = 7;
-
   while(i >= 0){
     int x = dec%16;
     dec /= 16;
@@ -119,7 +118,6 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
   s21_strcat(str1, hex);
   if(width > 11 && !s21_strchr(spec.flag, '0') && s21_strchr(spec.flag, '-'))
     s21_strcat(str1, str3);
-  // printf("%spr\n", str1);
   free(hex);
   free(str3);
   s21_strcpy(str,str1);
@@ -138,8 +136,9 @@ void record(char *str, struct specifier spec, va_list *ap) {
   } else if (spec.type == 'p') {
     record_pointer(str, spec, ap);
   } else if (spec.type == 'n') {
+    int *counter_of_symbols =  va_arg(*ap, int *);
+    *counter_of_symbols = s21_strlen(str);
   }
-
 }
 
 void record_int(char *str, struct specifier spec, va_list *ap) {
@@ -335,8 +334,10 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
 
 int main() {
   char str[100] = "\0";
-  int a = 3;
-  s21_sprintf(str, "%-20p", &a);
+  int a = 0;
+  s21_sprintf(str, "Hello world  %n", &a);
+  // printf("%d\n", *a);
   puts(str);
+  printf("%d\n", a);
   return 0;
 }

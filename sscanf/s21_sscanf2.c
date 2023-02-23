@@ -9,21 +9,22 @@ void s21_sscanf(char *str, const char *format, ...) {
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
 
-  //здесь должна просиходить проверка на корректность форматной строки
-  //если находится ошибка, следующий код не должен выполняться
-  char *string_token = strtok(string, " \n\t\r");
-  for (size_t i = 0; i < strlen(format); i++) {
-    specifier_init(&spec);
-    if (format[i] == '%') {
-      specifier_parsing((char *)&format[i + 1], &spec);
-      if (str != NULL)
-        //not working completely
-        read_buf_size += strlen(string_token) + 1;
-      match_str_and_format(string_token, &spec, &ap, read_buf_size);
-      i += strcspn(&format[i + 1], types) + 1;
-      string_token = strtok(NULL, " \n\t\r");
+  if (check_falid_format(format)) {
+    char *string_token = strtok(string, " \n\t\r");
+    for (size_t i = 0; i < strlen(format); i++) {
+      specifier_init(&spec);
+      if (format[i] == '%') {
+        specifier_parsing((char *)&format[i + 1], &spec);
+        if (str != NULL)
+          //not working completely
+          read_buf_size += strlen(string_token) + 1;
+        match_str_and_format(string_token, &spec, &ap, read_buf_size);
+        i += strcspn(&format[i + 1], types) + 1;
+        string_token = strtok(NULL, " \n\t\r");
+      }
     }
   }
+  
   free(string);
 }
 

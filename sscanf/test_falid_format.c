@@ -1,6 +1,5 @@
 #include "s21_sscanf2.h"
 
-
 int check_falid_format(const char *format) {
   int flag = 1;
   if ((strchr(format, ',')) != NULL) {
@@ -132,8 +131,8 @@ int check_falid_format(const char *format) {
 }
 
 
-int main(){
-    char format[] = "   %   daaaf";
-    printf("%d", check_falid_format(format));
-    return 0;
-}
+// int main(){
+//     char format[] = "   %   daaaf";
+//     printf("%d", check_falid_format(format));
+//     return 0;
+// }

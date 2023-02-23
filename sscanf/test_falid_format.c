@@ -85,6 +85,9 @@ int check_falid_format(const char *format) {
             temp_format++;
           }
         }
+      if (count_shared!=0 && count_width != 0){
+            return 0;
+        }
       }
       if (count_width > 2){
         return 0;
@@ -133,7 +136,7 @@ int check_falid_format(const char *format) {
 
 
 int main(){
-    char format[] = "   %   daaaf";
+    char format[] = "%d";
     printf("%d", check_falid_format(format));
     return 0;
 }

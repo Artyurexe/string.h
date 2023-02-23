@@ -8,24 +8,37 @@ void s21_sscanf(char *str, const char *format, ...) {
   int read_buf_size = 0;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
+  int j;
 
   if (check_falid_format(format)) {
+    while (string[read_buf_size] == ' ') {
+      read_buf_size++;
+    }
     char *string_token = strtok(string, " \n\t\r");
     for (size_t i = 0; i < strlen(format); i++) {
       specifier_init(&spec);
       if (format[i] == '%') {
         specifier_parsing((char *)&format[i + 1], &spec);
-        if (str != NULL)
-          //not working completely
-          read_buf_size += strlen(string_token) + 1;
+        if (string_token != NULL) {
+          j = 0;
+          // printf("string: %s\n", string_token);
+          // while (string[j] && (string[j] != ' ')) {
+          //   j++;
+          // }
+          // while (string[j] && string[j] == ' ') {
+          //   read_buf_size++;
+          //   j++;
+          // }
+          read_buf_size += strlen(string_token);
+        }
         match_str_and_format(string_token, &spec, &ap, read_buf_size);
         i += strcspn(&format[i + 1], types) + 1;
         string_token = strtok(NULL, " \n\t\r");
       }
     }
   }
-  
-  free(string);
+  if (string)
+    free(string);
 }
 
 void specifier_parsing(char *str, struct specifier *spec) {
@@ -196,13 +209,13 @@ int main() {
   int o;
   int n;
 
+  int n2;
+  sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
+  s21_sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n);
+
   s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
   s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
   
-
-  int n2;
-  sscanf("0x1a2 0xA12 0xa123 12  1", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
-  s21_sscanf("0x1a2 0xA12 0xa123 12  1", "%i%x%X%o%n", &i, &x, &X, &o, &n);
 
   printf("u: %u\n", u);
   printf("f: %f\n", f);

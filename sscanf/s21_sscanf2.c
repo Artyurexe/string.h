@@ -5,7 +5,7 @@ void s21_sscanf(char *str, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
   struct specifier spec;
-
+  int read_buf_size = 0;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
 
@@ -16,12 +16,14 @@ void s21_sscanf(char *str, const char *format, ...) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char *)&format[i + 1], &spec);
-      match_str_and_format(string_token, spec, &ap);
+      if (str != NULL)
+        //not working completely
+        read_buf_size += strlen(string_token) + 1;
+      match_str_and_format(string_token, &spec, &ap, read_buf_size);
       i += strcspn(&format[i + 1], types) + 1;
       string_token = strtok(NULL, " \n\t\r");
     }
   }
-
   free(string);
 }
 
@@ -108,17 +110,17 @@ void specifier_init(struct specifier *spec) {
   spec->type = 0;
 }
 
-void match_str_and_format(char *str, struct specifier spec, va_list *ap) {
-  switch (spec.type) {
-    case 'd':
+void match_str_and_format(char *str, struct specifier *spec, va_list *ap, int read_buf_size) {
+  switch (spec->type) {
+    case 'd': ;
       int *d = va_arg(*ap, int *);
       *d = atoi(str);
       break;
-    case 'c':
+    case 'c': ;
       char *c = va_arg(*ap, char *);
       *c = str[0];
       break;
-    case 'i':
+    case 'i': ;
       /* 	An integer. Hexadecimal if the input string begins with "0x" or
       "0X", octal if the string begins with "0", otherwise decimal. */
       int *i = va_arg(*ap, int *);
@@ -135,47 +137,48 @@ void match_str_and_format(char *str, struct specifier spec, va_list *ap) {
         }
       }
       break;
-    case 'e':
+    case 'e': ;
       break;
-    case 'E':
+    case 'E': ;
       /* code */
       break;
-    case 'f':
+    case 'f': ;
       float *f = va_arg(*ap, float *);
       *f = atof(str);
       printf("atof: %f\n", atof("1234.1234"));
       // sueta
       break;
-    case 'g':
+    case 'g': ;
       /* code */
       break;
-    case 'G':
+    case 'G': ;
       break;
-    case 'o':
+    case 'o': ;
       int *o = va_arg(*ap, int *);
       *o = strtol(str, (char **)NULL, 8);
       break;
-    case 's':
+    case 's': ;
       char *new_str = va_arg(*ap, char *);
       strcpy(new_str, str);
       break;
-    case 'u':
+    case 'u': ;
       unsigned int *u = va_arg(*ap, unsigned int *);
       *u = atoi(str);
       // undefined behaviour when the number is negative?
       break;
-    case 'x':
+    case 'x': ;
       int *x = va_arg(*ap, int *);
       *x = strtol(str, (char **)NULL, 16);
       break;
-    case 'X':
+    case 'X': ;
       int *X = va_arg(*ap, int *);
       *X = strtol(str, (char **)NULL, 16);
       break;
-    case 'p':
+    case 'p': ;
       break;
-    case 'n':
-      /* code */
+    case 'n': ;
+      int *n = va_arg(*ap, int *);
+      *n = read_buf_size - 1;
       break;
   }
 }
@@ -190,11 +193,16 @@ int main() {
   int x;
   int X;
   int o;
+  int n;
+
   s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
   s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
-  s21_sscanf("0x1a2 0xA12 0xa123 12", "%i%x%X%o", &i, &x, &X, &o);
+  
 
-  sscanf("-10 hey 0x1A2 0xA12 12", "%u%s%i%x%o", &u, str, &i, &x, &o);
+  int n2;
+  sscanf("0x1a2 0xA12 0xa123 12  1", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
+  s21_sscanf("0x1a2 0xA12 0xa123 12  1", "%i%x%X%o%n", &i, &x, &X, &o, &n);
+
   printf("u: %u\n", u);
   printf("f: %f\n", f);
   printf("str: %s\n", str);
@@ -204,4 +212,7 @@ int main() {
   printf("x: %x\n", x);
   printf("X: %X\n", X);
   printf("o: %o\n", o);
+
+  printf("n: %d\n", n);
+  printf("n2: %i\n", n2);
 }

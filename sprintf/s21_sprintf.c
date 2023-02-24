@@ -83,11 +83,11 @@ void specifier_init(struct specifier* spec) {
   spec->length[0] = '\0';
   spec->type = 0;
 }
-char* dec_to_hex(int dec){
+char* dec_to_hex(long long dec){
   char *hec= malloc(9*sizeof(char));
   int i = 7;
   while(i >= 0){
-    int x = dec%16;
+    long long x = dec%16;
     dec /= 16;
     if(x < 10)
       x = x + '0';
@@ -101,7 +101,7 @@ char* dec_to_hex(int dec){
 }
 
 void record_pointer(char *str, struct specifier spec, va_list *ap){
-  int pointer = va_arg(*ap, int);
+  long long pointer = va_arg(*ap, long long);
   char str1[100] = "\0";
   char *hex = dec_to_hex(pointer);
   s21_size_t width = 0;
@@ -545,8 +545,8 @@ int main() {
   char test[] = "%lf %d %p :ajjsfd";
   char str[100];
   double num = 123.123000;
-  void *p;
-  s21_sprintf(str, test, num, 12, p);
+  printf("%p\n", &num);
+  s21_sprintf(str, test, num, 12, &num);
   puts(str);
   return 0;
 }

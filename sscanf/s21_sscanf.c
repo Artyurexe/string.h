@@ -8,7 +8,7 @@ void s21_sscanf(char *str, const char *format, ...) {
   int read_buf_size = 0;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
-  int j;
+  //int j;
 
   if (check_falid_format(format)) {
     while (string[read_buf_size] == ' ') {
@@ -20,7 +20,7 @@ void s21_sscanf(char *str, const char *format, ...) {
       if (format[i] == '%') {
         specifier_parsing((char *)&format[i + 1], &spec);
         if (string_token != NULL) {
-          j = 0;
+          //j = 0;
           // printf("string: %s\n", string_token);
           // while (string[j] && (string[j] != ' ')) {
           //   j++;
@@ -197,36 +197,36 @@ void match_str_and_format(char *str, struct specifier *spec, va_list *ap, int re
   }
 }
 
-int main() {
-  char str[100];
-  int d;
-  char c;
-  float f;
-  unsigned int u;
-  int i;
-  int x;
-  int X;
-  int o;
-  int n;
+// int main() {
+//   char str[100];
+//   int d;
+//   char c;
+//   float f;
+//   unsigned int u;
+//   int i;
+//   int x;
+//   int X;
+//   int o;
+//   int n;
 
-  int n2;
-  sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
-  s21_sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n);
+//   int n2;
+//   sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
+//   s21_sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n);
 
-  s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
-  s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
+//   s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
+//   s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
   
 
-  printf("u: %u\n", u);
-  printf("f: %f\n", f);
-  printf("str: %s\n", str);
-  printf("c: %c\n", c);
-  printf("d: %d\n", d);
-  printf("i: %i\n", i);
-  printf("x: %x\n", x);
-  printf("X: %X\n", X);
-  printf("o: %o\n", o);
+//   printf("u: %u\n", u);
+//   printf("f: %f\n", f);
+//   printf("str: %s\n", str);
+//   printf("c: %c\n", c);
+//   printf("d: %d\n", d);
+//   printf("i: %i\n", i);
+//   printf("x: %x\n", x);
+//   printf("X: %X\n", X);
+//   printf("o: %o\n", o);
 
-  printf("n: %d\n", n);
-  printf("n2: %i\n", n2);
-}
+//   printf("n: %d\n", n);
+//   printf("n2: %i\n", n2);
+// }

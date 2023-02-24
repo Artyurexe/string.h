@@ -1,4 +1,4 @@
-#include "s21_sscanf2.h"
+#include "s21_sscanf.h"
 
 int check_falid_format(const char *format) {
   int flag = 1;

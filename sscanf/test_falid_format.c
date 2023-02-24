@@ -13,6 +13,8 @@ int check_falid_format(const char *format) {
   int shared_width = -1;
   char *temp_format = malloc(strlen(format) * sizeof(char));
   strcpy(temp_format, format);
+  if (temp_format[0] == '\0')
+    return 0;
   while (*temp_format != '\0') {
     if (*temp_format == '\n' || *temp_format == ' ' || *temp_format == '\t') {
       temp_format++;
@@ -132,7 +134,7 @@ int check_falid_format(const char *format) {
 
 
 // int main(){
-//     char format[] = "   %   daaaf";
+//     char format[] = "\0";
 //     printf("%d", check_falid_format(format));
 //     return 0;
 // }

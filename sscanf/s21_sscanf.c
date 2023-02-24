@@ -1,6 +1,6 @@
 #include "s21_sscanf.h"
 
-int16_t s21_sscanf(char *str, const char *format, ...) {
+int s21_sscanf(char *str, const char *format, ...) {
   const char *types = "cdieEfgGosuxXpn%%";
   va_list ap;
   va_start(ap, format);
@@ -8,8 +8,10 @@ int16_t s21_sscanf(char *str, const char *format, ...) {
   int read_buf_size = 0;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
-  int count_successes = 0;
-  if (check_falid_format(format)) {
+  int count_successes = -1;
+
+  if (str[0] != '\0' && format[0] != '\0' && check_falid_format(format)) {
+    count_successes = 0;
     while (string[read_buf_size] == ' ') {
       read_buf_size++;
     }

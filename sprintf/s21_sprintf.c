@@ -9,7 +9,7 @@ void s21_sprintf(char *str, const char *format, ...) {
   for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      specifier_parsing((char*) &format[i + 1], &spec);
+      specifier_parsing((char *) &(format[i + 1]), &spec);
       record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
     }
@@ -78,6 +78,52 @@ void specifier_init(struct specifier* spec) {
   spec->length[0] = '\0';
   spec->type = 0;
 }
+char* dec_to_hex(int dec){
+  char *hec= malloc(9*sizeof(char));
+  int i = 7;
+  while(i >= 0){
+    int x = dec%16;
+    dec /= 16;
+    if(x < 10)
+      x = x + '0';
+    else 
+     x = x-10 + 'a';
+    hec[i] = x;
+    i-- ;
+  }
+  hec[8] = '\0';
+  return hec;
+}
+
+void record_pointer(char *str, struct specifier spec, va_list *ap){
+  int pointer = va_arg(*ap, int);
+  char str1[100] = "\0";
+  char *hex = dec_to_hex(pointer);
+  s21_size_t width = 0;
+  width = atoi(spec.width);
+  int dif = width - 11;
+  char *str3 = malloc(dif * sizeof(char));
+  if(width > 11){
+    for (int i = 0; i < dif; i++){
+      if(s21_strchr(spec.flag, '0'))
+        str3[i] = '0';
+      else
+         str3[i] = ' ';
+    }
+  }
+  if(width > 11 && !s21_strchr(spec.flag, '0') && !s21_strchr(spec.flag, '-'))
+    s21_strcat(str1, str3);
+  s21_strcat(str1, "0x");
+  if(width > 11 && s21_strchr(spec.flag, '0'))
+    s21_strcat(str1, str3);
+  s21_strcat(str1, "1");
+  s21_strcat(str1, hex);
+  if(width > 11 && !s21_strchr(spec.flag, '0') && s21_strchr(spec.flag, '-'))
+    s21_strcat(str1, str3);
+  free(hex);
+  free(str3);
+  s21_strcpy(str,str1);
+}
 
 void record(char *str, struct specifier spec, va_list *ap) {
   if (spec.type == 'c') {
@@ -90,9 +136,11 @@ void record(char *str, struct specifier spec, va_list *ap) {
     record_u_int(str, spec, ap);
   } else if (spec.type == 's') {
   } else if (spec.type == 'p') {
+    record_pointer(str, spec, ap);
   } else if (spec.type == 'n') {
+    int *counter_of_symbols =  va_arg(*ap, int *);
+    *counter_of_symbols = s21_strlen(str);
   }
-
 }
 
 void record_int(char *str, struct specifier spec, va_list *ap) {
@@ -493,5 +541,6 @@ int main() {
   float num = 123.123;
   s21_sprintf(str, test, num);
   puts(str);
+  printf("%d\n", a);
   return 0;
 }

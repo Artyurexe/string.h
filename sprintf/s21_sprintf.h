@@ -35,5 +35,7 @@ void u_int_to_string(char* str, unsigned long num);
 void num_conversion(unsigned long n, int base, char *outbuf, struct specifier spec);
 int record_char(char *str, struct specifier spec, va_list *ap);
 int record_str(char *str, struct specifier spec, va_list *ap);
+void record(char *str, struct specifier spec, va_list *ap);
+void record_pointer(char *str, struct specifier spec, va_list *ap);
 
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

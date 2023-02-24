@@ -361,4 +361,5 @@ int main() {
   float num = 123.123;
   s21_sprintf(str, test, num);
   puts(str);
+  return 0;
 }

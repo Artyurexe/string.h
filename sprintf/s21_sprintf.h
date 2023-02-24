@@ -13,6 +13,8 @@ struct specifier {
   char length[3];
   char type;
 };
+char* dec_to_hex(int dec);
+void pointer_shift(char** buff, char* buff1, const char* str);
 void record_f(char *temp, long double num, s21_size_t precision, char type, long long exp, char* flag);
 void record_e(char *temp, long double num, s21_size_t precision, char type, char other_type, long long exp, char* flag);
 long long count_exp(long double num);

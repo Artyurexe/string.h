@@ -127,7 +127,7 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
     s21_strcat(str1, str3);
   free(hex);
   free(str3);
-  s21_strcpy(str,str1);
+  s21_strcat(str,str1);
 }
 
 void record(char *str, struct specifier spec, va_list *ap) {
@@ -542,10 +542,11 @@ long long count_exp(long double num) {
 }
 
 int main() {
-  char test[] = "%.0f";
+  char test[] = "%lf %d %p :ajjsfd";
   char str[100];
-  float num = 123.123;
-  s21_sprintf(str, test, num);
+  double num = 123.123000;
+  void *p;
+  s21_sprintf(str, test, num, 12, p);
   puts(str);
   return 0;
 }

@@ -1,6 +1,6 @@
 #include "s21_sscanf.h"
 
-void s21_sscanf(char *str, const char *format, ...) {
+int16_t s21_sscanf(char *str, const char *format, ...) {
   const char *types = "cdieEfgGosuxXpn%%";
   va_list ap;
   va_start(ap, format);
@@ -8,8 +8,7 @@ void s21_sscanf(char *str, const char *format, ...) {
   int read_buf_size = 0;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
-  //int j;
-
+  int count_successes = 0;
   if (check_falid_format(format)) {
     while (string[read_buf_size] == ' ') {
       read_buf_size++;
@@ -20,25 +19,18 @@ void s21_sscanf(char *str, const char *format, ...) {
       if (format[i] == '%') {
         specifier_parsing((char *)&format[i + 1], &spec);
         if (string_token != NULL) {
-          //j = 0;
-          // printf("string: %s\n", string_token);
-          // while (string[j] && (string[j] != ' ')) {
-          //   j++;
-          // }
-          // while (string[j] && string[j] == ' ') {
-          //   read_buf_size++;
-          //   j++;
-          // }
           read_buf_size += strlen(string_token);
+          match_str_and_format(string_token, &spec, &ap, read_buf_size);
+          count_successes++;
+          i += strcspn(&format[i + 1], types) + 1;
+          string_token = strtok(NULL, " \n\t\r");
         }
-        match_str_and_format(string_token, &spec, &ap, read_buf_size);
-        i += strcspn(&format[i + 1], types) + 1;
-        string_token = strtok(NULL, " \n\t\r");
       }
     }
   }
   if (string)
     free(string);
+  return count_successes;
 }
 
 void specifier_parsing(char *str, struct specifier *spec) {

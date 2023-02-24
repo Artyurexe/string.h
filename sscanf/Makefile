@@ -21,7 +21,7 @@ test:
 	$(CC) *.o ${NAME} ${TEST_FLAGS} -o test
 
 test_linux:
-	make ${NAME}
+	make rebuild
 	$(CC) -c ${TEST_SRC}	
 	$(CC) *.o ${NAME} ${TEST_FLAGS_LINUX} -o test_linux
 

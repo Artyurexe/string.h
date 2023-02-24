@@ -13,6 +13,11 @@ void s21_sprintf(char *str, const char *format, ...) {
       record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
     }
+    else {
+      s21_size_t index = s21_strlen(str);
+      str[index] = format[i];
+      str[index + 1] = '\0';
+    }
   }
 }
 
@@ -127,7 +132,7 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
 
 void record(char *str, struct specifier spec, va_list *ap) {
   if (spec.type == 'c') {
-
+    record_char(str, spec, ap);
   } else if (spec.type == 'd' || spec.type == 'i') {
     record_int(str, spec, ap);
   } else if (spec.type == 'e' || spec.type == 'E' || spec.type == 'f' || spec.type == 'g' || spec.type == 'G' ) {
@@ -135,6 +140,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
   } else if (spec.type == 'o' || spec.type == 'u' || spec.type == 'x' || spec.type == 'X') {
     record_u_int(str, spec, ap);
   } else if (spec.type == 's') {
+    record_str(str, spec, ap);
   } else if (spec.type == 'p') {
     record_pointer(str, spec, ap);
   } else if (spec.type == 'n') {
@@ -541,6 +547,5 @@ int main() {
   float num = 123.123;
   s21_sprintf(str, test, num);
   puts(str);
-  printf("%d\n", a);
   return 0;
 }

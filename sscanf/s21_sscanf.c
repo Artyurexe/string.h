@@ -5,24 +5,20 @@ int s21_sscanf(char *str, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
   struct specifier spec;
-  int read_buf_size = 0;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
-  int count_successes = -1;
+  int count_successes = 0;
+  if (str[0] == '\0' && format[0] != '\0')
+    count_successes = -1;
 
-  if (str[0] != '\0' && format[0] != '\0' && check_falid_format(format)) {
-    count_successes = 0;
-    while (string[read_buf_size] == ' ') {
-      read_buf_size++;
-    }
+  if (str[0] != '\0'&& check_falid_format(format)) {
     char *string_token = strtok(string, " \n\t\r");
     for (size_t i = 0; i < strlen(format); i++) {
       specifier_init(&spec);
       if (format[i] == '%') {
         specifier_parsing((char *)&format[i + 1], &spec);
         if (string_token != NULL) {
-          read_buf_size += strlen(string_token);
-          match_str_and_format(string_token, &spec, &ap, read_buf_size);
+          match_str_and_format(str, &spec, &ap);
           count_successes++;
           i += strcspn(&format[i + 1], types) + 1;
           string_token = strtok(NULL, " \n\t\r");
@@ -118,7 +114,7 @@ void specifier_init(struct specifier *spec) {
   spec->type = 0;
 }
 
-void match_str_and_format(char *str, struct specifier *spec, va_list *ap, int read_buf_size) {
+void match_str_and_format(char *str, struct specifier *spec, va_list *ap) {
   switch (spec->type) {
     case 'd': ;
       int *d = va_arg(*ap, int *);
@@ -186,7 +182,7 @@ void match_str_and_format(char *str, struct specifier *spec, va_list *ap, int re
       break;
     case 'n': ;
       int *n = va_arg(*ap, int *);
-      *n = read_buf_size - 1;
+      *n = 0;
       break;
   }
 }

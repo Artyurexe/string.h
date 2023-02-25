@@ -8,22 +8,27 @@ int s21_sscanf(const char *str, const char *format, ...) {
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
   int count_successes = 0;
-  if (str[0] == '\0' && format[0] != '\0')
+  if (string[0] == '\0' && format[0] != '\0')
     count_successes = -1;
+  int j = 0;
+  char c = '\0';
 
-  if (str[0] != '\0'&& check_falid_format(format)) {
-    char *string_token = strtok(string, " \n\t\r");
+  if (string[0] != '\0'&& check_falid_format(format)) {
     for (size_t i = 0; i < strlen(format); i++) {
       specifier_init(&spec);
-      if (format[i] == '%') {
-        specifier_parsing((char *)&format[i + 1], &spec);
-        if (string_token != NULL) {
-          match_str_and_format(string_token, &spec, &ap);
-          count_successes++;
-          i += strcspn(&format[i + 1], types) + 1;
-          string_token = strtok(NULL, " \n\t\r");
-        }
+      if (format[i] != '%' && (format[i] == string[j])) {
       }
+      else if (format[i] == '%') {
+        specifier_parsing((char *)&format[i + 1], &spec);
+        i += strcspn(&format[i + 1], types) + 1;
+        if (format[i]) {
+          c = format[i + 1];
+        }
+        match_str_and_format(string, &spec, &ap, &j, c);
+        count_successes++;
+        j--;
+      }
+      j++;
     }
   }
   if (string)
@@ -114,11 +119,38 @@ void specifier_init(struct specifier *spec) {
   spec->type = 0;
 }
 
-void match_str_and_format(char *str, struct specifier *spec, va_list *ap) {
+void read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
+{
+  int i = 0;
+  while (str[*j + i] != '\0' && str[*j + i] != c) {
+    i++;
+  }
+  char *copy = malloc(i + 1);
+  strncpy(copy, str + *j, i);
+  if (strcmp(spec->length, "l") == 0) {
+    long int *d = va_arg(*ap, long int *);
+    *d = atol(copy);
+  }
+  else if (strcmp(spec->length, "ll") == 0){
+    long long *d = va_arg(*ap, long long *);
+    *d = atoll(copy);
+  }
+  else if (strcmp(spec->length,"h") == 0) {
+    short *d = va_arg(*ap, short *);
+    *d = atoi(copy);
+  }
+  else {
+    int *d = va_arg(*ap, int *);
+    *d = atoi(copy);
+  }
+  free(copy);
+  *j += i;
+}
+
+void match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j, char c) {
   switch (spec->type) {
     case 'd': ;
-      int *d = va_arg(*ap, int *);
-      *d = atoi(str);
+      read_d(str, ap, spec, j, c);
       break;
     case 'c': ;
       char *c = va_arg(*ap, char *);
@@ -188,35 +220,41 @@ void match_str_and_format(char *str, struct specifier *spec, va_list *ap) {
 }
 
 // int main() {
-//   char str[100];
-//   int d;
-//   char c;
-//   float f;
-//   unsigned int u;
-//   int i;
-//   int x;
-//   int X;
-//   int o;
-//   int n;
+//   // char str[100];
+//   int d1;
+//   int d2;
+//   // char c;
+//   // float f;
+//   // unsigned int u;
+//   // int i;
+//   // int x;
+//   // int X;
+//   // int o;
+//   // int n;
 
-//   int n2;
-//   sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
-//   s21_sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n);
+//   // int n2;
+//   // sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n2);
+//   // s21_sscanf("   0x1a2  0xA12 0xa123 12", "%i%x%X%o%n", &i, &x, &X, &o, &n);
 
-//   s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
-//   s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
+//   // s21_sscanf("1 hey -10", "%d%s", &d, str, &u);
+//   // s21_sscanf("hey 1234.1234", "%c%f", &c, &f);
   
 
-//   printf("u: %u\n", u);
-//   printf("f: %f\n", f);
-//   printf("str: %s\n", str);
-//   printf("c: %c\n", c);
-//   printf("d: %d\n", d);
-//   printf("i: %i\n", i);
-//   printf("x: %x\n", x);
-//   printf("X: %X\n", X);
-//   printf("o: %o\n", o);
+//   s21_sscanf("hd123...345", "hd%d...%d", &d1, &d2);
+//   printf("d1: %d\n d2: %d\n", d1, d2);
+//   sscanf("hd123...345", "hd%d...%d", &d1, &d2);
+//   printf("d1: %d\n d2: %d\n", d1, d2);
 
-//   printf("n: %d\n", n);
-//   printf("n2: %i\n", n2);
+//   // printf("u: %u\n", u);
+//   // printf("f: %f\n", f);
+//   // printf("str: %s\n", str);
+//   // printf("c: %c\n", c);
+//   // printf("d: %d\n", d);
+//   // printf("i: %i\n", i);
+//   // printf("x: %x\n", x);
+//   // printf("X: %X\n", X);
+//   // printf("o: %o\n", o);
+
+//   // printf("n: %d\n", n);
+//   // printf("n2: %i\n", n2);
 // }

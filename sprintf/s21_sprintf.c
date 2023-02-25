@@ -43,7 +43,10 @@ void specifier_parsing(char *str, struct specifier* spec) {
   if (*buff == '.') {
     buff++;
     pointer_shift(&buff, buff1, numbers);
-    numbers_parsing(spec->precision, buff1);
+    if (*buff1 == '\0')
+      s21_strcpy(spec->precision, "0");
+    else
+      numbers_parsing(spec->precision, buff1);
   }
   s21_memcpy(buff1, buff, s21_strspn((const char*) buff, length));
   for (int i = 0; i < 3; i++) {
@@ -185,7 +188,7 @@ void numcat(char* str, long long token, struct specifier spec, va_list *ap) {
   char* buff = malloc(1024);
   *buff = 0;
   *str1 = 0;
-  s21_size_t length = 0, precision = 0;
+  int length = -1, precision = -1;
   if (token >= 0) {
     if (s21_strchr(spec.flag, '+') != S21_NULL)
       s21_strcat(str1, "+");
@@ -198,8 +201,10 @@ void numcat(char* str, long long token, struct specifier spec, va_list *ap) {
   int_to_string(buff, token);
   length_init(spec.width, &length, ap);
   length_init(spec.precision, &precision, ap);
-  s21_size_t buff_length = s21_strlen(buff);
-  if (precision > buff_length)
+  int buff_length = s21_strlen(buff);
+  if (precision == 0 && token == 0)
+    s21_strcat(str1, "");
+  else if (precision > buff_length)
     fill_str(str1, buff, precision - buff_length, "0");
   else
     s21_strcat(str1, buff);
@@ -207,8 +212,8 @@ void numcat(char* str, long long token, struct specifier spec, va_list *ap) {
   if (length > buff_length) {
     if (s21_strchr(spec.flag, '-')) {
       s21_strcat(str, str1);
-      for (s21_size_t i = 0; i < length - buff_length; i++, s21_strcat(str, " ")) {}
-    } else if (s21_strchr(spec.flag, '0') && !precision) {
+      for (int i = 0; i < length - buff_length; i++, s21_strcat(str, " ")) {}
+    } else if (s21_strchr(spec.flag, '0') && precision < 0) {
       fill_str(str, str1, length - buff_length, "0");
     } else
       fill_str(str, str1, length - buff_length, " ");
@@ -223,7 +228,7 @@ void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap
   char* buff = malloc(1024);
   *buff = 0;
   *str1 = 0;
-  s21_size_t length = 0, precision = 0;
+  int length = -1, precision = -1;
   if (spec.type == 'o')
     num_conversion(token, 8, buff, spec);
   else if (spec.type == 'x' || spec.type == 'X')
@@ -232,14 +237,16 @@ void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap
     u_int_to_string(buff, token);
   length_init(spec.width, &length, ap);
   length_init(spec.precision, &precision, ap);
-  s21_size_t buff_length = s21_strlen(buff);
+  int buff_length = s21_strlen(buff);
   if (s21_strchr(spec.flag, '#') != S21_NULL) {
     if (spec.type == 'x')
       s21_strcat(str1, "0x");
     else if (spec.type == 'X')
       s21_strcat(str1, "0X");
   }
-  if (precision > buff_length)
+  if (precision == 0 && token == 0)
+    s21_strcat(str1, "");
+  else if (precision > buff_length)
     fill_str(str1, buff, precision - buff_length, "0");
   else {
     if (spec.type == 'o' && s21_strchr(spec.flag, '#') != S21_NULL)
@@ -250,8 +257,8 @@ void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap
   if (length > buff_length) {
     if (s21_strchr(spec.flag, '-')) {
       s21_strcat(str, str1);
-      for (s21_size_t i = 0; i < length - buff_length; i++, s21_strcat(str, " ")) {}
-    } else if (s21_strchr(spec.flag, '0') && !precision) {
+      for (int i = 0; i < length - buff_length; i++, s21_strcat(str, " ")) {}
+    } else if (s21_strchr(spec.flag, '0') && precision < 0) {
       fill_str(str, str1, length - buff_length, "0");
     } else
       fill_str(str, str1, length - buff_length, " ");
@@ -261,12 +268,13 @@ void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap
   free(buff);
 }
 
-void length_init(char* str, s21_size_t* num, va_list* ap) {
+void length_init(char* str, int* num, va_list* ap) {
 if (*str == '*')
     *num = va_arg(*ap, unsigned int);
   else {
     s21_strtok(str, "*");
-    *num = atoi(str);
+    if (*str != 0)
+      *num = atoi(str);
   }
 }
 
@@ -426,13 +434,13 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
       s21_strcat(filler, " ");
     if (!s21_strchr(spec->flag, '-')) {
       char spaces[100] = "";
-      for (int i = 0; i < cnt; i++)
+      for (s21_size_t i = 0; i < cnt; i++)
         s21_strcat(spaces, filler);
       s21_strcat(spaces, temp);
       s21_strcpy(temp, spaces);
     }
     else {
-      for (int i = 0; i < cnt; i++)
+      for (s21_size_t i = 0; i < cnt; i++)
         s21_strcat(temp, " ");
     }
   }
@@ -459,7 +467,7 @@ void record_f(char *temp, long double num, s21_size_t precision, char type, long
   if (precision)
     s21_strcat(temp, ".");
 
-  for (int i = 0; i < precision; i++) {
+  for (s21_size_t i = 0; i < precision; i++) {
     num *= 10;
     int digit = fmod(num, 10);
     int ind = s21_strlen(temp);
@@ -488,7 +496,7 @@ void record_e(char *temp, long double num, s21_size_t precision, char type, char
     if (precision)
       s21_strcat(temp, ".");
     
-    for (int i = 0; i < precision; i++) {
+    for (s21_size_t i = 0; i < precision; i++) {
       num *= 10;
       int digit = fmod(num, 10);
       int ind = s21_strlen(temp);
@@ -542,11 +550,13 @@ long long count_exp(long double num) {
 }
 
 int main() {
-  char test[] = "%lf %d %p :ajjsfd";
-  char str[100];
-  double num = 123.123000;
-  printf("%p\n", &num);
-  s21_sprintf(str, test, num, 12, &num);
+  char str[100] = "\0";
+  char str1[100] = "\0";
+  char str2[100] = "%08.u";
+  unsigned long p = 0u;
+  s21_sprintf(str, str2, p);
+  sprintf(str1, str2, p);
   puts(str);
+  puts(str1);
   return 0;
 }

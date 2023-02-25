@@ -30,7 +30,7 @@ void record_int(char *str, struct specifier spec, va_list *ap);
 void record_u_int(char *str, struct specifier spec, va_list *ap);
 void numcat(char* str, long long token, struct specifier spec, va_list *ap);
 void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap);
-void length_init(char* str, s21_size_t* num, va_list* ap);
+void length_init(char* str, int* num, va_list* ap);
 void fill_str(char* str, char* str1, s21_size_t length_diff, char* filler);
 void int_to_string(char* str, long long num);
 void u_int_to_string(char* str, unsigned long num);

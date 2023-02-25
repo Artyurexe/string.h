@@ -1,6 +1,6 @@
 #include "s21_sprintf.h"
 
-void s21_sprintf(char *str, const char *format, ...) {
+int s21_sprintf(char *str, const char *format, ...) {
   str[0] = '\0';
   const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
@@ -19,6 +19,7 @@ void s21_sprintf(char *str, const char *format, ...) {
       str[index + 1] = '\0';
     }
   }
+  return s21_strlen(str);
 }
 
 void specifier_parsing(char *str, struct specifier* spec) {
@@ -273,7 +274,7 @@ if (*str == '*')
     *num = va_arg(*ap, unsigned int);
   else {
     s21_strtok(str, "*");
-    if (*str != 0)
+    if (*str != '\0')
       *num = atoi(str);
   }
 }
@@ -287,10 +288,14 @@ void int_to_string(char* str, long long num) {
   char* buff = str;
   s21_size_t len = 0;
   long long n = num;
-  for (; n != 0; len++, n /= 10) {}
-  for (s21_size_t i = 0; i < len; i++, num /= 10)
-    buff[len - (i + 1)] = num % 10 + '0';
-  buff[len] = '\0';
+  if (n == 0)
+    s21_strcpy(buff, "0");
+  else {
+    for (; n != 0; len++, n /= 10) {}
+    for (s21_size_t i = 0; i < len; i++, num /= 10)
+      buff[len - (i + 1)] = num % 10 + '0';
+    buff[len] = '\0';
+  }
 }
 
 void u_int_to_string(char* str, unsigned long num) {
@@ -548,15 +553,14 @@ long long count_exp(long double num) {
 
   return exp;
 }
-
-int main() {
-  char str[100] = "\0";
-  char str1[100] = "\0";
-  char str2[100] = "%08.u";
-  unsigned long p = 0u;
-  s21_sprintf(str, str2, p);
-  sprintf(str1, str2, p);
-  puts(str);
-  puts(str1);
-  return 0;
-}
+// int main() {
+//   char str1[100], str2[100];
+//   char format[] = "Decimal %hd, %d, %ld of different sizes.";
+//   short var1 = 0;
+//   int var2 = 0;
+//   long int var3 = 0;
+//   s21_sprintf(str1, format, var1, var2, var3);
+//   sprintf(str2, format, var1, var2, var3);
+//   puts(str1);
+//   puts(str2);
+// }

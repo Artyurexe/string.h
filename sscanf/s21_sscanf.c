@@ -1,6 +1,6 @@
 #include "s21_sscanf.h"
 
-int s21_sscanf(char *str, const char *format, ...) {
+int s21_sscanf(const char *str, const char *format, ...) {
   const char *types = "cdieEfgGosuxXpn%%";
   va_list ap;
   va_start(ap, format);
@@ -18,7 +18,7 @@ int s21_sscanf(char *str, const char *format, ...) {
       if (format[i] == '%') {
         specifier_parsing((char *)&format[i + 1], &spec);
         if (string_token != NULL) {
-          match_str_and_format(str, &spec, &ap);
+          match_str_and_format(string_token, &spec, &ap);
           count_successes++;
           i += strcspn(&format[i + 1], types) + 1;
           string_token = strtok(NULL, " \n\t\r");
@@ -149,7 +149,7 @@ void match_str_and_format(char *str, struct specifier *spec, va_list *ap) {
     case 'f': ;
       float *f = va_arg(*ap, float *);
       *f = atof(str);
-      printf("atof: %f\n", atof("1234.1234"));
+      //printf("atof: %f\n", atof("1234.1234"));
       // sueta
       break;
     case 'g': ;

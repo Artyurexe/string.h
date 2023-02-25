@@ -34,7 +34,7 @@ enum type_flag {
   FLOAT_FLAG,
 };
 
-int s21_sscanf(char *str, const char *format, ...);
+int s21_sscanf(const char *str, const char *format, ...);
 void specifier_parsing(char *str, struct specifier* spec);
 void numbers_parsing(char* str, char* buff);
 void pointer_shift(size_t* length, char* buff, char* buff1, const char* str);

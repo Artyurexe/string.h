@@ -46,4 +46,8 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_s(char *str, va_list *ap, struct specifier *spec, int *j);
 int read_c(char *str, va_list *ap, struct specifier *spec, int *j);
 int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 #endif  // SRC_sscanf_s21_sscanf_H_

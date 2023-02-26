@@ -220,6 +220,95 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   }
   return success; 
 }
+
+
+int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+  int i = 0;
+  int success = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (spec->width[0] != '0') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    int *o = va_arg(*ap, int *);
+    *o = strtol(str, (char **)NULL, 8);
+    if (strtol(str, (char **)NULL, 8)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  return success; 
+}
+
+
+int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c) 
+{
+  int i = 0;
+  int success = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (spec->width[0] != '0') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    int *x = va_arg(*ap, int *);
+    *x = strtol(copy, (char **)NULL, 16);
+    //if X?????how to make upper case
+    if (strtol(copy, (char **)NULL, 16)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  return success; 
+}
+
+int read_f(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+  int i = 0;
+  int success = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (spec->width[0] != '0') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    float *f = va_arg(*ap, float *);
+    *f = atof(copy);
+    if (strtol(copy, (char **)NULL, 16)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  return success; 
+}
+
+int read_i(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+  int i = 0;
+  int success = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (spec->width[0] != '0') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    int *i = va_arg(*ap, int *);
+    if (copy[0] != '0') {
+      *i = atoi(copy);
+    } else {
+      if (copy[1] == 'x') {
+        *i = strtol(copy, (char **)NULL, 16);
+      } else {
+        *i = strtol(copy, (char **)NULL, 8);
+      }
+    }
+    if (atoi(copy) ||  strtol(copy, (char **)NULL, 16) ||  strtol(copy, (char **)NULL, 8)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  return success; 
+}
+
 int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j, char c) {
   int success = 0;
   switch (spec->type) {
@@ -230,41 +319,21 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
       success = read_c(str, ap, spec, j);
       break;
     case 'i': ;
-      /* 	An integer. Hexadecimal if the input string begins with "0x" or
-      "0X", octal if the string begins with "0", otherwise decimal. */
-      int *i = va_arg(*ap, int *);
-      if (str[0] != '0') {
-        *i = atoi(str);
-        break;
-      } else {
-        if (str[1] == 'x') {
-          *i = strtol(str, (char **)NULL, 16);
-          break;
-        } else {
-          *i = strtol(str, (char **)NULL, 8);
-          break;
-        }
-      }
+      success = read_i(str, ap, spec, j, c);
       break;
     case 'e': ;
       break;
     case 'E': ;
-      /* code */
       break;
     case 'f': ;
-      float *f = va_arg(*ap, float *);
-      *f = atof(str);
-      //printf("atof: %f\n", atof("1234.1234"));
-      // sueta
+      success = read_f(str, ap, spec, j, c);
       break;
     case 'g': ;
-      /* code */
       break;
     case 'G': ;
       break;
     case 'o': ;
-      int *o = va_arg(*ap, int *);
-      *o = strtol(str, (char **)NULL, 8);
+      success = read_o(str, ap, spec, j, c);
       break;
     case 's': ;
       success = read_s(str, ap, spec, j);
@@ -273,18 +342,16 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
       success = read_u(str, ap, spec, j, c);
       break;
     case 'x': ;
-      int *x = va_arg(*ap, int *);
-      *x = strtol(str, (char **)NULL, 16);
+      success = read_xX(str, ap, spec, j, c);
       break;
     case 'X': ;
-      int *X = va_arg(*ap, int *);
-      *X = strtol(str, (char **)NULL, 16);
+      success = read_xX(str, ap, spec, j, c);
       break;
     case 'p': ;
       break;
     case 'n': ;
       int *n = va_arg(*ap, int *);
-      *n = 0;
+      *n = *j;
       break;
   }
   return success;

@@ -1049,7 +1049,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_test_lu_6) {
   char fstr[] = "%lu%lu%lu%lu";
-  char str[] = "12345 0xFF 6 7";
+  char str[] = "12345 -1 0xFF 6 7";
   unsigned long int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0;
   unsigned long int d1 = 0, d2 = 0;
   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);

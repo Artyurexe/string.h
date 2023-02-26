@@ -42,5 +42,7 @@ void vararg_init(char type, va_list* ap);
 void specifier_init(struct specifier* spec);
 int match_str_and_format(char* str, struct specifier *spec, va_list* ap, int *j, char c);
 int check_falid_format(const char *format);
+int s21_isspace(char c);
 int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_s(char *str, va_list *ap, struct specifier *spec, int *j);
 #endif  // SRC_sscanf_s21_sscanf_H_

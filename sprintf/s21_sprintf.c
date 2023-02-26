@@ -10,8 +10,8 @@ int s21_sprintf(char *str, const char *format, ...) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char *) &(format[i + 1]), &spec);
-      record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
+      specifier_init(&spec);
     }
     else {
       s21_size_t index = s21_strlen(str);
@@ -53,9 +53,9 @@ void specifier_parsing(char *str, struct specifier* spec) {
   for (int i = 0; i < 3; i++) {
     char* c = s21_strchr(buff1, length[i]);
     if (c != S21_NULL) {
-      if (length[i] == 'L' || (length[i] == 'h' && c < s21_strchr(buff1, 'l')) || (length[i] == 'l' && s21_strchr(c, length[i + 1]) == S21_NULL && spec->length[0] != 'h')) {
+      if (length[i] == 'L' || (length[i] == 'h' && (c < s21_strchr(buff1, 'l') || s21_strchr(buff1, 'l') == S21_NULL)) || (length[i] == 'l' && s21_strchr(c + 1, length[i]) == S21_NULL && spec->length[0] != 'h')) {
         spec->length[k++] = length[i];
-      } else if (length[i] == 'l' && s21_strchr(c, length[i + 1]) != S21_NULL && spec->length[0] != 'h') {
+      } else if (length[i] == 'l' && s21_strchr(c + 1, length[i]) != S21_NULL && spec->length[0] != 'h') {
         spec->length[k++] = length[i];
         spec->length[k++] = length[i];
       } 
@@ -553,14 +553,3 @@ long long count_exp(long double num) {
 
   return exp;
 }
-// int main() {
-//   char str1[100], str2[100];
-//   char format[] = "Decimal %hd, %d, %ld of different sizes.";
-//   short var1 = 0;
-//   int var2 = 0;
-//   long int var3 = 0;
-//   s21_sprintf(str1, format, var1, var2, var3);
-//   sprintf(str2, format, var1, var2, var3);
-//   puts(str1);
-//   puts(str2);
-// }

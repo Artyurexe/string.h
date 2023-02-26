@@ -10,8 +10,8 @@ int s21_sprintf(char *str, const char *format, ...) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char *) &(format[i + 1]), &spec);
+      record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
-      specifier_init(&spec);
     }
     else {
       s21_size_t index = s21_strlen(str);

@@ -22,11 +22,11 @@ int s21_sscanf(const char *str, const char *format, ...) {
         break;
       }
       else if (format[i] == '%' && string[j]) {
-        while (s21_isspace(string[j])) {
-          j++;
-        }
         specifier_parsing((char *)&format[i + 1], &spec);
         i += strcspn(&format[i + 1], types) + 1;
+        while (s21_isspace(string[j]) && spec.type != 'c') {
+          j++;
+        }
         if (format[i]) {
           c = format[i + 1];
         }
@@ -129,31 +129,33 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
 {
   int success = 0;
   int i = 0;
-  while (str[*j + i] != '\0' && str[*j + i] != c && str[*j + i] != '%') {
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
-  char *copy = malloc(i + 1);
-  strncpy(copy, str + *j, i);
-  copy[i] = '\0';
-    if (strcmp(spec->length, "l") == 0) {
-      long int *d = va_arg(*ap, long int *);
-      *d = atol(copy);
-    }
-    else if (strcmp(spec->length, "ll") == 0){
-      long long *d = va_arg(*ap, long long *);
-      *d = atoll(copy);
-    }
-    else if (strcmp(spec->length,"h") == 0) {
-      short *d = va_arg(*ap, short *);
-      *d = atoi(copy);
-    }
-    else {
-      int *d = va_arg(*ap, int *);
-      *d = atoi(copy);
-    }
-    if (atol(copy) || atof(copy) || atoll(copy) || atoi(copy) || (copy[0] == '0'))
-      success = 1;
-  free(copy);
+  if (spec->width[0] != '*') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+      if (strcmp(spec->length, "l") == 0) {
+        long int *d = va_arg(*ap, long int *);
+        *d = atol(copy);
+      }
+      else if (strcmp(spec->length, "ll") == 0){
+        long long *d = va_arg(*ap, long long *);
+        *d = atoll(copy);
+      }
+      else if (strcmp(spec->length,"h") == 0) {
+        short *d = va_arg(*ap, short *);
+        *d = atoi(copy);
+      }
+      else {
+        int *d = va_arg(*ap, int *);
+        *d = atoi(copy);
+      }
+      if (atol(copy) || atof(copy) || atoll(copy) || atoi(copy) || (copy[0] == '0'))
+        success = 1;
+      free(copy);
+  }
   *j += i;
   return success;
 }
@@ -187,6 +189,37 @@ int read_s(char *str, va_list *ap, struct specifier *spec, int *j)
   return success;
 }
 
+int read_c(char *str, va_list *ap, struct specifier *spec, int *j)
+{
+  int success = 0;
+  if (spec->width[0] != '*') {
+    char *c = va_arg(*ap, char *);
+    *c = str[*j];
+    if (c)
+      success = 1;
+  }
+  (*j)++;
+  return success;
+}
+
+int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+  int success = 0;
+  int i  = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (spec->width[0] != '0') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    unsigned int *u = va_arg(*ap, unsigned int *);
+    *u = strtoul(copy, '\0', 10);
+    if (strtoul(copy, '\0', 10)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  return success; 
+}
 int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j, char c) {
   int success = 0;
   switch (spec->type) {
@@ -194,8 +227,7 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
       success = read_d(str, ap, spec, j, c);
       break;
     case 'c': ;
-      char *c = va_arg(*ap, char *);
-      *c = str[0];
+      success = read_c(str, ap, spec, j);
       break;
     case 'i': ;
       /* 	An integer. Hexadecimal if the input string begins with "0x" or
@@ -238,9 +270,7 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
       success = read_s(str, ap, spec, j);
       break;
     case 'u': ;
-      unsigned int *u = va_arg(*ap, unsigned int *);
-      *u = atoi(str);
-      // undefined behaviour when the number is negative?
+      success = read_u(str, ap, spec, j, c);
       break;
     case 'x': ;
       int *x = va_arg(*ap, int *);
@@ -261,28 +291,15 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 }
 
 // int main() {
-//   char str1[30];
-//   char str2[30];
-//   char str3[30];
-//   char str4[40];
-//   char str5[30];
-//   char str6[30];
-//   char str7[30];
-//   char str8[40];
-//   char format[] = "%*s%*s%*s%*s";
-//   char str[] = "gcc -Wall -Wextra -Werror -std=c11 -fsanitize=address";
-//   s21_sscanf(str, format, str1, str2, str3, str4);
-//   printf("str1: %s\n str2: %s\n  str3: %s\n  str4:  %s\n", str1, str2, str3, str4);
-//   sscanf(str, format, str5, str6, str7, str8);
-//   printf("str1: %s\n str2: %s\n  str3: %s\n  str4:  %s\n", str5, str6, str7, str8);
+  
+//   char fstr[] = "%d %d";
+//   char str[] = "  12321  -111";
+//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
+//   int res1 = s21_sscanf(str, fstr, &a1, &b1);
+//   int res2 = sscanf(str, fstr, &a2, &b2);
 
-//   // char fstr[] = "%d.%d %*d%d";
-//   // char str[] = "  12321.999  -111   \n 77777";
-//   // int d1, d2, d3, d4;
-//   // s21_sscanf(str, fstr, &d1, &d2, &d3, &d4);
-//   // printf("s21: %d\n", s21_sscanf(str, fstr, &d1, &d2, &d3, &d4));
-//   // printf("d1 %d  d2 %d  d3 %d  d4 %d\n", d1, d2, d3, d4);
-//   // sscanf(str, fstr, &d1, &d2, &d3, &d4);
-//   // printf("ss: %d\n", sscanf(str, fstr, &d1, &d2, &d3, &d4));
-//   // printf("d1 %d  d2 %d  d3 %d  d4 %d\n", d1, d2, d3, d4);
+//     printf("s21:  %d  %d  \n", a1, b1);
+//     printf("ss:   %d  %d  \n", a2, b2);
+//     printf("s21_res:  %d\n", res1);
+//     printf("ss_res:   %d\n", res2);
 // }

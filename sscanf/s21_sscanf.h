@@ -25,7 +25,6 @@ struct specifier {
 
 };
 
-
 enum type_flag {
   SHARED,
   CHAR_INT,
@@ -45,4 +44,6 @@ int check_falid_format(const char *format);
 int s21_isspace(char c);
 int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_s(char *str, va_list *ap, struct specifier *spec, int *j);
+int read_c(char *str, va_list *ap, struct specifier *spec, int *j);
+int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 #endif  // SRC_sscanf_s21_sscanf_H_

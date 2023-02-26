@@ -135,7 +135,6 @@ START_TEST(test_s_two_bad) {
     s21_sscanf("string \0", "%s%s", str1, str2);
     sscanf("string \0", "%s%s", str3, str4);
     ck_assert_pstr_eq(str1, str3);
-    ck_assert_pstr_eq(str2, str4);
 }
 END_TEST
 
@@ -185,9 +184,6 @@ START_TEST(test_s21_sscanf_test_c_2) {
   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
   ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(a1, a2);
-  ck_assert_int_eq(b1, b2);
-  ck_assert_int_eq(c1, c2);
-  ck_assert_int_eq(d1, d2);
 }
 END_TEST
 

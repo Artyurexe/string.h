@@ -230,7 +230,7 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
-  if (spec->width[0] != '0') {
+  if (spec->width[0] != '*') {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
@@ -240,25 +240,36 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
       success = 1;
     free(copy);
   }
+  *j += i;
   return success; 
 }
 
 int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   int i = 0;
   int success = 0;
+  while (str[*j] == '0')
+    (*j)++;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
-  if (spec->width[0] != '0') {
+  if (atoi(spec->width) && atoi(spec->width) < i) {
+    i = atoi(spec->width);
+  }
+  if (spec->width[0] != '*') {
+    if (str[*j - 1] == '0' && i == 0) {
+      i = 1;
+      success++;
+    }
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
     int *o = va_arg(*ap, int *);
-    *o = strtol(str, (char **)NULL, 8);
-    if (strtol(str, (char **)NULL, 8)|| (copy[0] == '0'))
+    *o = strtol(copy, NULL, 8);
+    if (strtol(copy, (char **)NULL, 8) || (copy[0] == '0'))
       success = 1;
     free(copy);
   }
+  *j += i;
   return success; 
 }
 
@@ -269,7 +280,7 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
-  if (spec->width[0] != '0') {
+  if (spec->width[0] != '*') {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
@@ -280,6 +291,7 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
       success = 1;
     free(copy);
   }
+  *j += i;
   return success; 
 }
 
@@ -289,7 +301,7 @@ int read_f(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
-  if (spec->width[0] != '0') {
+  if (spec->width[0] != '*') {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
@@ -299,6 +311,7 @@ int read_f(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
       success = 1;
     free(copy);
   }
+  *j += i;
   return success; 
 }
 
@@ -308,7 +321,7 @@ int read_i(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
-  if (spec->width[0] != '0') {
+  if (spec->width[0] != '*') {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
@@ -326,6 +339,7 @@ int read_i(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
       success = 1;
     free(copy);
   }
+  *j += i;
   return success; 
 }
 
@@ -379,14 +393,14 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 
 // int main() {
   
-//   char fstr[] = "%ld %ld";
-//   char str[] = "  12321  -111";
-//   long int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
+//   char fstr[] = "%15o%15o";
+//   char str[] = "-777777777777777777777777777777777777777777";
+//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1);
 //   int res2 = sscanf(str, fstr, &a2, &b2);
 
-//     printf("s21:  %ld.  %ld.   \n", a1, b1);
-//     printf("ss:   %ld.  %ld.  \n", a2, b2);
+//     printf("s21:  %o.  %o.  %o.  %o.  \n", a1, b1, c1, d1);
+//     printf("ss:   %o.  %o.  %o.  %o. \n", a2, b2, c2, d2);
 //     printf("s21_res:  %d\n", res1);
 //     printf("ss_res:   %d\n", res2);
 // }

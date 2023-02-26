@@ -50,4 +50,6 @@ int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int s21_isdigit(char c);
+int s21_empty_str(char *str);
 #endif  // SRC_sscanf_s21_sscanf_H_

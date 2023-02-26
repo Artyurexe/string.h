@@ -359,7 +359,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_test_d_6) {
   char fstr[] = "%d%d%d%d";
-  char str[] = "12345 0xF 6 7";
+  char str[] = "12345 0 0xF 6 7";
   int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);

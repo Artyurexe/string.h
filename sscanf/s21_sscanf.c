@@ -8,7 +8,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
   int count_successes = 0;
-  if (string[0] == '\0' && format[0] != '\0')
+  if ((string[0] == '\0' || s21_empty_str(string)) && format[0] != '\0')
     count_successes = -1;
   int j = 0;
   char c = '\0';
@@ -16,13 +16,19 @@ int s21_sscanf(const char *str, const char *format, ...) {
   if (string[0] != '\0') {
     for (size_t i = 0; i < strlen(format) && j < strlen(string); i++) {
       specifier_init(&spec);
+      while ((spec.type != 's' && spec.type != 'c') && s21_isspace(format[i])) {
+        i++;
+      }
       if (format[i] != '%' && (format[i] == string[j])) {
       }
       else if (format[i] != '%' && (format[i] != string[j]) && !s21_isspace(string[j])) {
         break;
       }
+      else if (format[i] == '%' && format[i + 1] == '%') {
+      }
       else if (format[i] == '%' && string[j]) {
         specifier_parsing((char *)&format[i + 1], &spec);
+        // printf("L: %s\n", spec.length);
         i += strcspn(&format[i + 1], types) + 1;
         while (s21_isspace(string[j]) && spec.type != 'c') {
           j++;
@@ -40,7 +46,6 @@ int s21_sscanf(const char *str, const char *format, ...) {
     free(string);
   return count_successes;
 }
-
 
 void specifier_parsing(char *str, struct specifier *spec) {
   char *buff = str;
@@ -129,14 +134,16 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
 {
   int success = 0;
   int i = 0;
-  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%' && s21_isdigit(str[*j +i])) {
     i++;
   }
   if (spec->width[0] != '*') {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
+      // printf("len:  %s\n", spec->length);
       if (strcmp(spec->length, "l") == 0) {
+        
         long int *d = va_arg(*ap, long int *);
         *d = atol(copy);
       }
@@ -152,7 +159,7 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
         int *d = va_arg(*ap, int *);
         *d = atoi(copy);
       }
-      if (atol(copy) || atof(copy) || atoll(copy) || atoi(copy) || (copy[0] == '0'))
+      if (atol(copy) || atoll(copy) || atoi(copy) || (strcmp(copy, "0") == 0 && atoi(copy) == 0))
         success = 1;
       free(copy);
   }
@@ -162,6 +169,21 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
 
 int s21_isspace(char c) {
   return (c == ' ' || c == '\n' || c == '\t' || c == '\r');
+}
+
+int s21_isdigit(char c) {
+  return (c >= '0' && c <= '9' || c == '-' || c == '+');
+}
+
+int s21_empty_str(char *str) {
+  int found_not_space = 1;
+  int i = 0;
+  while (str[i]) {
+    if (!s21_isspace(str[i]))
+      found_not_space = 0;
+    i++;
+  }
+  return found_not_space;
 }
 
 int read_s(char *str, va_list *ap, struct specifier *spec, int *j)
@@ -221,7 +243,6 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success; 
 }
 
-
 int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   int i = 0;
   int success = 0;
@@ -240,7 +261,6 @@ int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   }
   return success; 
 }
-
 
 int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c) 
 {
@@ -351,7 +371,7 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
       break;
     case 'n': ;
       int *n = va_arg(*ap, int *);
-      *n = *j;
+      *n = *j + 1;
       break;
   }
   return success;
@@ -359,14 +379,14 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 
 // int main() {
   
-//   char fstr[] = "%d %d";
+//   char fstr[] = "%ld %ld";
 //   char str[] = "  12321  -111";
-//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
+//   long int a1 = 0, a2 = 0, b1 = 0, b2 = 0;
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1);
 //   int res2 = sscanf(str, fstr, &a2, &b2);
 
-//     printf("s21:  %d  %d  \n", a1, b1);
-//     printf("ss:   %d  %d  \n", a2, b2);
+//     printf("s21:  %ld.  %ld.   \n", a1, b1);
+//     printf("ss:   %ld.  %ld.  \n", a2, b2);
 //     printf("s21_res:  %d\n", res1);
 //     printf("ss_res:   %d\n", res2);
 // }

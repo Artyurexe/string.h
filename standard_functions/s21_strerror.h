@@ -1,0 +1,5 @@
+#ifndef SRC_STRING_S21_STRERROR_H_
+#define SRC_STRING_S21_STRERROR_H_
+
+
+#endif

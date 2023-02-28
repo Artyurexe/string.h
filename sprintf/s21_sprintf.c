@@ -10,6 +10,8 @@ int s21_sprintf(char *str, const char *format, ...) {
     specifier_init(&spec);
     if (format[i] == '%') {
       specifier_parsing((char *) &(format[i + 1]), &spec);
+      //printf ("flag:(%s)\nwidth:(%s)\nprecision:(%s)\nlength:(%s)\ntype:(%c)\n", spec.flag, spec.width, spec.precision, spec.length, spec.type);
+      record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
       specifier_init(&spec);
     }
@@ -553,3 +555,14 @@ long long count_exp(long double num) {
 
   return exp;
 }
+// int main() {
+//   char str1[100], str2[100];
+//   char format[] = "Decimal %hd, %d, %ld of different sizes.";
+//   short var1 = (short)INT32_MAX;
+//   int var2 = INT32_MAX;
+//   long int var3 = INT64_MAX;
+//   s21_sprintf(str1, format, var1, var2, var3);
+//   sprintf(str2, format, var1, var2, var3);
+//   puts(str1);
+//   puts(str2);
+// }

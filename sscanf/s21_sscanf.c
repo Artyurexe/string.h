@@ -44,6 +44,9 @@ int s21_sscanf(const char *str, const char *format, ...) {
           success  = match_str_and_format(string, &spec, &ap, &j, c);
           if (success) {
             count_successes++;
+            if (spec.width[0] == '*') {
+              count_successes--;
+            }
           } else if (!success && (spec.type == 'i' || spec.type == 'd' || spec.type == 'u' || spec.type == 'o' || spec.type == 'x' || spec.type == 'X')) {
             break;
           }
@@ -133,10 +136,11 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
   if (atoi(spec->width) != 0 && atoi(spec->width) < i) {
     i = atoi(spec->width);
   }
+  //printf("i:%d\n", atoi(spec->width));
+  char *copy = malloc(i + 1);
+  strncpy(copy, str + *j, i);
+  copy[i] = '\0';
   if (spec->width[0] != '*') {
-    char *copy = malloc(i + 1);
-    strncpy(copy, str + *j, i);
-    copy[i] = '\0';
     if (strcmp(spec->length, "l") == 0) {
       
       long int *d = va_arg(*ap, long int *);
@@ -155,9 +159,12 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
       *d = atoi(copy);
     }
       if (atol(copy) || atoll(copy) || atoi(copy) || (strcmp(copy, "0") == 0 && atoi(copy) == 0))
-        success = 1;
-      free(copy);
+        success = 1;  
+  } 
+  else if (copy) {
+    success = 1;
   }
+  free(copy);
   *j += i;
   return success;
 }
@@ -442,15 +449,15 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 }
 
 // int main() {
-//   char fstr[] = "  %c %c %c %c";
-//   char str[] = "a  a     b c d";
-//   int a1 = 0, a2 = 5, b1 = 0, b2 = 5, c1 = 0, c2 = 5, d1 = 0, d2 = 5;
+//   long long a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
+//   const char str[] = "-1337 +1 -1 -1";
+//   const char fstr[] = "%15lld %1lld %1lld %5lld";
 
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
 //   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
 
-//     printf("s21:  %d.  %d.  %d.  %d. \n", a1, b1, c1, d1);
-//     printf("ss:   %d.  %d.  %d.  %d. \n", a2, b2, c2, d2);
+//     printf("s21:  %lld.  %lld.  %lld.  %lld. \n", a1, b1, c1, d1);
+//     printf("ss:   %lld.  %lld.  %lld.  %lld. \n", a2, b2, c2, d2);
 //     printf("s21_res:  %d\n", res1);
 //     printf("ss_res:   %d\n", res2);
 // }

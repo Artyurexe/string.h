@@ -9,7 +9,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
-      specifier_parsing((char *) &(format[i + 1]), &spec);
+      specifier_parsing((char *) &(format[i + 1]), &spec, &ap);
       //printf ("flag:(%s)\nwidth:(%s)\nprecision:(%s)\nlength:(%s)\ntype:(%c)\n", spec.flag, spec.width, spec.precision, spec.length, spec.type);
       record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
@@ -24,7 +24,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   return s21_strlen(str);
 }
 
-void specifier_parsing(char *str, struct specifier* spec) {
+void specifier_parsing(char *str, struct specifier* spec, va_list *ap) {
   char* buff = str;
   char* buff1 = malloc(1024);
   char* buff2 = buff1;
@@ -42,14 +42,14 @@ void specifier_parsing(char *str, struct specifier* spec) {
   spec->flag[k] = '\0';
   k = 0;
   pointer_shift(&buff, buff1, numbers);
-  numbers_parsing(spec->width, buff1);
+  numbers_parsing(spec->width, buff1, ap);
   if (*buff == '.') {
     buff++;
     pointer_shift(&buff, buff1, numbers);
     if (*buff1 == '\0')
       s21_strcpy(spec->precision, "0");
     else
-      numbers_parsing(spec->precision, buff1);
+      numbers_parsing(spec->precision, buff1, ap);
   }
   s21_memcpy(buff1, buff, s21_strspn((const char*) buff, length));
   for (int i = 0; i < 3; i++) {
@@ -67,12 +67,14 @@ void specifier_parsing(char *str, struct specifier* spec) {
   free(buff2);
 }
 
-void numbers_parsing(char* str, char* buff) {
+void numbers_parsing(char* str, char* buff, va_list *ap) {
   s21_size_t length = s21_strspn((const char*) buff, "1234567890");
   if (*buff == '*' && length == 0)
-    length = 1;
-  s21_strncpy(str, buff, length);
-  buff[length + 1] = '\0';
+    int_to_string(str, (long long) va_arg(*ap, int));
+  else {
+    s21_strncpy(str, buff, length);
+    buff[length + 1] = '\0';
+  }
 }
 
 void pointer_shift(char** buff, char* buff1, const char* str) {
@@ -159,16 +161,16 @@ void record_int(char *str, struct specifier spec, va_list *ap) {
   if (s21_strchr(spec.length, 'h')) {
     int short_token = va_arg(*ap, int);
     short token = short_token;
-    numcat(str, (long long) token, spec, ap);
+    numcat(str, (long long) token, spec);
   } else if (s21_strstr(spec.length, "ll")) {
     long long token = va_arg(*ap, long long);
-    numcat(str, token, spec, ap);
+    numcat(str, token, spec);
   } else if (s21_strchr(spec.length, 'l')) {
     long token = va_arg(*ap, long);
-    numcat(str, (long long) token, spec, ap);
+    numcat(str, (long long) token, spec);
   } else {
     int token = va_arg(*ap, int);
-    numcat(str, (long long) token, spec, ap);
+    numcat(str, (long long) token, spec);
   }
 }
 
@@ -176,32 +178,32 @@ void record_u_int(char *str, struct specifier spec, va_list *ap) {
   if (s21_strchr(spec.length, 'h')) {
     unsigned int short_token = va_arg(*ap, unsigned int);
     unsigned short token = short_token;
-    u_numcat(str, (unsigned long) token, spec, ap);
+    u_numcat(str, (unsigned long) token, spec);
   } else if (s21_strchr(spec.length, 'l')) {
     unsigned long token = va_arg(*ap, unsigned long);
-    u_numcat(str, (unsigned long) token, spec, ap);
+    u_numcat(str, (unsigned long) token, spec);
   } else {
     unsigned int token = va_arg(*ap,unsigned  int);
-    u_numcat(str, (unsigned long) token, spec, ap);
+    u_numcat(str, (unsigned long) token, spec);
   }
 }
 
-void numcat(char* str, long long token, struct specifier spec, va_list *ap) {
+void numcat(char* str, long long token, struct specifier spec) {
   char* str1 = malloc(1024);
   char* buff = malloc(1024);
   *buff = 0;
   *str1 = 0;
   int length = -1, precision = -1;
+  length_init(spec.width, &length);
+  length_init(spec.precision, &precision);
   if (token >= 0) {
     if (s21_strchr(spec.flag, '+') != S21_NULL)
-      s21_strcat(str1, "+");
+      sign_input(str, str1, precision, &length, "+");
     else if (s21_strchr(spec.flag, ' ') != S21_NULL)
-      s21_strcat(str1, " ");
+      sign_input(str, str1, precision, &length, " ");
   } else
-    s21_strcat(str1, "-");
+    sign_input(str, str1, precision, &length, "-");
   int_to_string(buff, token);
-  length_init(spec.width, &length, ap);
-  length_init(spec.precision, &precision, ap);
   int buff_length = s21_strlen(buff);
   if (precision == 0 && token == 0)
     s21_strcat(str1, "");
@@ -224,20 +226,20 @@ void numcat(char* str, long long token, struct specifier spec, va_list *ap) {
   free(buff);
 }
 
-void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap) {
+void u_numcat(char* str, unsigned long token, struct specifier spec) {
   char* str1 = malloc(1024);
   char* buff = malloc(1024);
   *buff = 0;
   *str1 = 0;
   int length = -1, precision = -1;
+  length_init(spec.width, &length);
+  length_init(spec.precision, &precision);
   if (spec.type == 'o')
     num_conversion(token, 8, buff, spec);
   else if (spec.type == 'x' || spec.type == 'X')
     num_conversion(token, 16, buff, spec);
   else
     u_int_to_string(buff, token);
-  length_init(spec.width, &length, ap);
-  length_init(spec.precision, &precision, ap);
   int buff_length = s21_strlen(buff);
   if (s21_strchr(spec.flag, '#') != S21_NULL) {
     if (spec.type == 'x')
@@ -269,14 +271,17 @@ void u_numcat(char* str, unsigned long token, struct specifier spec, va_list *ap
   free(buff);
 }
 
-void length_init(char* str, int* num, va_list* ap) {
-if (*str == '*')
-    *num = va_arg(*ap, unsigned int);
-  else {
-    s21_strtok(str, "*");
-    if (*str != '\0')
-      *num = atoi(str);
-  }
+void length_init(char* str, int* num) {
+  if (*str != '\0')
+    *num = atoi(str);
+}
+
+void sign_input(char* str, char* str1, int precision, int* length, char* fill) {
+  if (precision < 0) {
+    s21_strcat(str, fill);
+    *length -= 1;
+  } else
+    s21_strcat(str1, fill);
 }
 
 void fill_str(char* str, char* str1, s21_size_t length_diff, char* filler) {
@@ -556,14 +561,13 @@ long long count_exp(long double num) {
 
   return exp;
 }
+
 // int main() {
 //   char str1[100], str2[100];
-//   char format[] = "Decimal %hd, %d, %lld of different sizes.";
-//   short var1 = (short)INT32_MIN;
-//   int var2 = INT32_MIN;
-//   long int var3 = INT64_MIN;
-//   s21_sprintf(str1, format, var1, var2, var3);
-//   sprintf(str2, format, var1, var2, var3);
+//   char* format = "Min field width %*d";
+//   short var = 42;
+//   s21_sprintf(str1, format, 20, var);
+//   sprintf(str2, format, 20, var);
 //   puts(str1);
 //   puts(str2);
 // }

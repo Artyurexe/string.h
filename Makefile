@@ -48,4 +48,4 @@ rebuild : clean all
 spr: rebuild
 	$(CC) ${CFLAGS} sprintf/s21_sprintf.c standard_functions/s21_string.c
 	./a.out
-	rm a.out
+	rm a.out *.a

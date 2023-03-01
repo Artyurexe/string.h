@@ -3,9 +3,9 @@ CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
 SRCS=	s21_sscanf.c test_falid_format.c
 TEST_SRC=	s21_sscanf_test.c 
-TEST_FLAGS_LINUX= -lcheck -lm -lsubunit -lpthread
+TEST_FLAGS_LINUX=  -lcheck -lm -lsubunit
 TEST_FLAGS= -lcheck -lm -lpthread
-GCOV_FLAGS = -ftest-coverage -fprofile-arcs
+GCOV_FLAGS = ftest-coverage -fprofile-arcs
 
 all: ${NAME}
 

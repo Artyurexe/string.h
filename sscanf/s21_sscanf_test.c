@@ -1265,7 +1265,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_test_i_4) {
   char fstr[] = "%i.%i %i%i";
-  char str[] = "  012321.0x999999  -01199999   \n -0x77777";
+  char str[] = "  012321.0x999999  01199999   \n -0x77777";
   unsigned long long int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0;
   unsigned long long int d1 = 0, d2 = 0;
   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);

@@ -52,4 +52,7 @@ int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int s21_isdigit(char c);
 int s21_empty_str(char *str);
+// int s21_isunsigned(char c);
+int s21_ishex(char c);
+int s21_isoctal(char c);
 #endif  // SRC_sscanf_s21_sscanf_H_

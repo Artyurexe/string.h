@@ -14,11 +14,11 @@ s21_string.a:
 	ranlib s21_string.a
 	rm *.o
 
-test: s21_string.a
+test: rebuild
 	$(CC) ${CFLAGS} -c ${TEST_SRC}	
 	$(CC) ${CFLAGS} *.o s21_string.a ${TEST_FLAGS} -o test
 	./test
-	rm *.o test
+	rm *.o *.a test
 
 test_linux: rebuild
 	$(CC) -c ${TEST_SRC}	

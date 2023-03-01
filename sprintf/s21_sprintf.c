@@ -12,7 +12,6 @@ int s21_sprintf(char *str, const char *format, ...) {
     if (format[i] == '%') {
       counter++;
       specifier_parsing((char *) &(format[i + 1]), &spec);
-      printf("struct wigth%s\n",spec.width);
       i += s21_strcspn(&format[i + 1], types) + 1;
       record(str, spec, &ap);
     }
@@ -22,7 +21,6 @@ int s21_sprintf(char *str, const char *format, ...) {
       str[index + 1] = '\0';
     }
   }
-  printf("counter:%d", counter);
   free(spec.width);
   return s21_strlen(str);
 }
@@ -47,7 +45,6 @@ void specifier_parsing(char *str, struct specifier* spec) {
   k = 0;
   spec->width = malloc(sizeof(char)* 310);
   pointer_shift(&buff, buff1, numbers);
-  printf("размер буффера: %d",s21_strlen(buff1));
   numbers_parsing(spec->width, buff1);
   if (*buff == '.') {
     buff++;
@@ -106,14 +103,10 @@ char* dec_to_hex(long long dec){
         }
     }
     buf[16] = '\0';
-    // printf("\nbuffer: %s", buf);
     int l_move = s21_strspn(buf, "0");
-    // printf("\nlength: %d", 16 - l_move);
     char *hec = malloc((16 - l_move)* sizeof(char));
-    // printf("\nstrlen: %d", s21_strlen(hec));
     for(int i = 0; i <  16 - l_move; i++){
       hec[i] = buf[i+l_move];
-      // printf("%c", hec[i]);
     }
     hec[16 - l_move] = '\0';
   free(buf);
@@ -123,12 +116,9 @@ char* dec_to_hex(long long dec){
 void record_pointer(char *str, struct specifier spec, va_list *ap){
   long long pointer = va_arg(*ap, long long);
   char str1[100] = "\0";
-  // printf("\nДо перевода:%lld", pointer);
   char *hex = dec_to_hex(pointer);
-  // printf("\nПеревод:%s\n", hex);
   s21_size_t width = 0;
   width = atoi(spec.width);
-  printf("width: %d\n", width);
   int dif = width - 11;
   char *str3 = malloc(dif * sizeof(char));
   if(width > 11){
@@ -150,15 +140,7 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
   free(hex);
   free(str3);
   s21_strcat(str,str1);
-  // printf("%s\n\n", str);
 }
-
-
-// void record_pointer(char *str, struct specifier spec, va_list *ap){
-//   long long pointer = va_arg(*ap, long long);
-//   char str1[100] = "\0";
-//   char *hex = num_conversion(pointer, int base, char *outbuf, struct specifier spec)
-// }
 
 void record(char *str, struct specifier spec, va_list *ap) {
   if (spec.type == 'c') {
@@ -539,12 +521,10 @@ void record_e(char *temp, long double num, s21_size_t precision, char type, char
     if (type == 'g' || type == 'G')
       while(temp[s21_strlen(temp) - 1] == '0')
         temp[s21_strlen(temp) - 1] = '\0';
-    
     if (type == 'G' || other_type == 'E')
       s21_strcat(temp, "E");
     else
       s21_strcat(temp, "e");
-    
     if (exp >= 0)
       s21_strcat(temp, "+");
     else
@@ -577,15 +557,5 @@ long long count_exp(long double num) {
       cpy *= 10;
     }
   }
-
   return exp;
 }
-
-// int main(){
-//   char str[100] = "\0";
-//   char format[100] = "int:%017p char:%04p double:%-08p";
-//   char ch  = 'p';
-//   int val =  INT32_MAX;
-//   double val2 = -0;
-//   s21_sprintf(str, format, &val, &ch, &val2);
-// }

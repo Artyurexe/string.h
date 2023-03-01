@@ -63,7 +63,6 @@ START_TEST(width_pointer_on_strchar) {
   char format[] = "char:%16p string:%7p";
   s21_sprintf(str1, format, &ch, str),
   sprintf(str2, format, &ch, str);
-  printf("\nПервая:%s\nВторая:%s\n\n", str1, str2);
   ck_assert_str_eq(str1, str2);
 }
 END_TEST
@@ -206,8 +205,56 @@ START_TEST(mix_pointer_on_mix_3){
   char *format = "int:%017p char:%04p double:%-08p";
   s21_sprintf(str1, format, &val, &ch, &val2);
   sprintf(str2, format,&val, &ch, &val2);
-  printf("Первая:%s ii Вторая:%s ii\n", str1, str2);
   ck_assert_str_eq(str1, str2);
+}
+END_TEST
+
+START_TEST(spec_n_1){
+  char str1[BUFF_SIZE];
+  char str2[BUFF_SIZE];
+  int val =  INT32_MAX;
+  int n  = 0;
+  int n1 = 0;
+  char *format = "int:%17p %n";
+  s21_sprintf(str1, format, &val, &n);
+  sprintf(str2, format,&val, &n1);
+  ck_assert_str_eq(str1, str2);
+  ck_assert_int_eq(n, n1);
+}
+END_TEST
+
+START_TEST(spec_n_2){
+  char str1[BUFF_SIZE];
+  char str2[BUFF_SIZE];
+  int val =  INT32_MAX;
+  int n  = 0;
+  int n1 = 0;
+  int n2  = 0;
+  int n3 = 0;
+  char ch = 'r';
+  char *format = "int:%-20p %n char:%3p%n";
+  s21_sprintf(str1, format, &val, &n, &ch, &n2);
+  sprintf(str2, format,&val, &n1, &ch, &n3);
+  ck_assert_str_eq(str1, str2);
+  ck_assert_int_eq(n, n1);
+  ck_assert_int_eq(n2, n3);
+}
+END_TEST
+
+START_TEST(spec_n_with_tab){
+  char str1[BUFF_SIZE];
+  char str2[BUFF_SIZE];
+  int val =  INT32_MAX;
+  int n  = 0;
+  int n1 = 0;
+  int n2  = 0;
+  int n3 = 0;
+  char *format = "int:%-20p %n \t%n";
+  s21_sprintf(str1, format, &val, &n, &n2);
+  sprintf(str2, format,&val, &n1, &n3);
+  ck_assert_str_eq(str1, str2);
+  ck_assert_int_eq(n, n1);
+  ck_assert_int_eq(n2, n3);
 }
 END_TEST
 
@@ -231,6 +278,9 @@ Suite *s21_suite_sprintf(void) {
   tcase_add_test(tc, mix_pointer_on_mix_1);
   tcase_add_test(tc, mix_pointer_on_mix_2);
   tcase_add_test(tc, mix_pointer_on_mix_3);
+  tcase_add_test(tc, spec_n_1);
+  tcase_add_test(tc, spec_n_2);
+  tcase_add_test(tc, spec_n_with_tab);
 
   suite_add_tcase(s, tc);
 
@@ -256,6 +306,9 @@ int main() {
   tcase_add_test(tc, mix_pointer_on_mix_1);
   tcase_add_test(tc, mix_pointer_on_mix_2);
   tcase_add_test(tc, mix_pointer_on_mix_3);
+  tcase_add_test(tc, spec_n_1);
+  tcase_add_test(tc, spec_n_2);
+  tcase_add_test(tc, spec_n_with_tab);
 
   srunner_run_all(sr, CK_ENV);
   srunner_ntests_failed(sr);

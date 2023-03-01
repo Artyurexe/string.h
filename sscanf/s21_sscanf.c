@@ -159,6 +159,14 @@ int s21_isdigit(char c) {
   return (c >= '0' && c <= '9' || c == '-' || c == '+');
 }
 
+int s21_ishex(char c) {
+  return (c >= '0' && c <= '9' || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || c == 'x' || c == 'X');
+}
+
+int s21_isoctal(char c)  {
+  return (c >= '0' && c <= '7' || c == '-' || c == '+');
+}
+
 int s21_empty_str(char *str) {
   int found_not_space = 1;
   int i = 0;
@@ -244,7 +252,7 @@ int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   int success = 0;
   while (str[*j] == '0')
     (*j)++;
-  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%' && s21_isoctal(str[*j + i])) {
     i++;
   }
   if (atoi(spec->width) && atoi(spec->width) < i) {
@@ -258,7 +266,7 @@ int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
-
+    //printf("COPY O : %s\n", copy);
     if (strcmp(spec->length, "l") == 0) {
       
       long int *d = va_arg(*ap, long int *);
@@ -288,7 +296,7 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
 {
   int i = 0;
   int success = 0;
-  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%' && s21_ishex(str[*j + i])) {
     i++;
   }
   if (atoi(spec->width) && atoi(spec->width) < i) {
@@ -361,7 +369,8 @@ int read_i(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
       if (copy[1] == 'x') {
         *i = strtol(copy, (char **)NULL, 16);
       } else {
-        *i = strtol(copy, (char **)NULL, 8);
+        success = read_o(copy, ap, spec, j, c);
+        //*i = strtol(copy, (char **)NULL, 8);
       }
     }
     if (atoi(copy) ||  strtol(copy, (char **)NULL, 16) ||  strtol(copy, (char **)NULL, 8)|| (copy[0] == '0'))
@@ -421,16 +430,16 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 }
 
 // int main() {
-  
-//   char fstr[] = "%i.%i %i%x";
-//   char str[] = "  012321.0x999999  -01199999   \n 0x77777";
+
+//   char fstr[] = "%i.%i %i%i";
+//   char str[] = "  012321.0x999999  01199999   \n -0x77777";
 //   unsigned long long int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0;
 //   unsigned long long int d1 = 0, d2 = 0;
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
 //   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
 
-//     printf("s21:  %llu.  %llu.  %llu.  %llx.  \n", a1, b1, c1, d1);
-//     printf("ss:   %llu.  %llu.  %llu.  %llx. \n", a2, b2, c2, d2);
+//     printf("s21:  %llo.  %llx.  %llo.  %lld.  \n", a1, b1, c1, d1);
+//     printf("ss:   %llo.  %llx.  %llo.  %lld. \n", a2, b2, c2, d2);
 //     printf("s21_res:  %d\n", res1);
 //     printf("ss_res:   %d\n", res2);
 // }

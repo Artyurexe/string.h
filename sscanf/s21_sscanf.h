@@ -1,7 +1,7 @@
 #ifndef SRC_sscanf_S21_SSCANF_H_
 #define SRC_sscanf_S21_SSCANF_H_
 
-// #include "s21_string.h"
+//include "s21_string.h"
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>

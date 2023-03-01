@@ -14,7 +14,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
   char c = '\0';
 
   if (string[0] != '\0') {
-    for (size_t i = 0; i < strlen(format) && j < strlen(string); i++) {
+    for (size_t i = 0; i < strlen(format) && (size_t)j < strlen(string); i++) {
       specifier_init(&spec);
       while ((spec.type != 's' && spec.type != 'c') && s21_isspace(format[i])) {
         i++;
@@ -156,7 +156,7 @@ int s21_isspace(char c) {
 }
 
 int s21_isdigit(char c) {
-  return (c >= '0' && c <= '9' || c == '-' || c == '+');
+  return ((c >= '0' && c <= '9') || c == '-' || c == '+');
 }
 
 int s21_empty_str(char *str) {

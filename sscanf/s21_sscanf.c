@@ -9,7 +9,6 @@ int s21_sscanf(const char *str, const char *format, ...) {
   strcpy(string, str);
   int success = 0;
   int count_successes = 0;
-  //int no_fail = 1;
   if ((string[0] == '\0' || s21_empty_str(string)) && format[0] != '\0')
     count_successes = -1;
   int j = 0;
@@ -18,7 +17,12 @@ int s21_sscanf(const char *str, const char *format, ...) {
   if (string[0] != '\0') {
     for (size_t i = 0; i < strlen(format) && j < strlen(string); i++) {
       specifier_init(&spec);
-      while ((spec.type != 's' && spec.type != 'c') && s21_isspace(format[i])) {
+      if (s21_isspace(format[i])) {
+        while (s21_isspace(string[j]) && string[i]) {
+          j++;
+        }
+      }
+      while (s21_isspace(format[i])) {
         i++;
       }
       if (format[i] != '%' && (format[i] == string[j])) {
@@ -438,17 +442,15 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 }
 
 // int main() {
-//   long long a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
-//   const char str[] = "11337 ++3 -5 ------4";
-//   const char fstr[] = "%lld %lld %lld %lld";
+//   char fstr[] = "  %c %c %c %c";
+//   char str[] = "a  a     b c d";
+//   int a1 = 0, a2 = 5, b1 = 0, b2 = 5, c1 = 0, c2 = 5, d1 = 0, d2 = 5;
 
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
 //   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
 
-//   int e1 = 0, e2 = 0;
-
-//     printf("s21:  %lld.  %lld.  %lld.  %lld.  %d \n", a1, b1, c1, d1, e1);
-//     printf("ss:   %lld.  %lld.  %lld.  %lld.  %d\n", a2, b2, c2, d2, e2);
+//     printf("s21:  %d.  %d.  %d.  %d. \n", a1, b1, c1, d1);
+//     printf("ss:   %d.  %d.  %d.  %d. \n", a2, b2, c2, d2);
 //     printf("s21_res:  %d\n", res1);
 //     printf("ss_res:   %d\n", res2);
 // }

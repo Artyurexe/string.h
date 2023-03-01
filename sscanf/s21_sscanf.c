@@ -107,7 +107,7 @@ void numbers_parsing(char* str, char* buff) {
   size_t length = strspn((const char*) buff, "1234567890");
   if (*buff == '*' && length == 0)
     length = 1;
-  strncpy(str, buff, length);
+  strcpy(str, buff);
   buff[length + 1] = '\0';
 }
 
@@ -136,7 +136,6 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
   if (atoi(spec->width) != 0 && atoi(spec->width) < i) {
     i = atoi(spec->width);
   }
-  //printf("i:%d\n", atoi(spec->width));
   char *copy = malloc(i + 1);
   strncpy(copy, str + *j, i);
   copy[i] = '\0';

@@ -44,3 +44,8 @@ clean:
 	rm -rf *.o *.a test test_linux *.gcno *.gcda *.info report
 
 rebuild : clean all
+
+spr: rebuild
+	$(CC) ${CFLAGS} sprintf/s21_sprintf.c standard_functions/s21_string.c
+	./a.out
+	rm a.out

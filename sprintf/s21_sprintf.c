@@ -197,10 +197,8 @@ void numcat(char* str, long long token, struct specifier spec, va_list *ap) {
       s21_strcat(str1, "+");
     else if (s21_strchr(spec.flag, ' ') != S21_NULL)
       s21_strcat(str1, " ");
-  } else {
-    token *= -1;
+  } else
     s21_strcat(str1, "-");
-  }
   int_to_string(buff, token);
   length_init(spec.width, &length, ap);
   length_init(spec.precision, &precision, ap);
@@ -294,7 +292,10 @@ void int_to_string(char* str, long long num) {
     s21_strcpy(buff, "0");
   else {
     for (; n != 0; len++, n /= 10) {}
-    for (s21_size_t i = 0; i < len; i++, num /= 10)
+    buff[len - 1] = llabs(num % 10) + '0';
+    num /= 10;
+    num = llabs(num);
+    for (s21_size_t i = 1; i < len; i++, num /= 10)
       buff[len - (i + 1)] = num % 10 + '0';
     buff[len] = '\0';
   }
@@ -557,10 +558,10 @@ long long count_exp(long double num) {
 }
 // int main() {
 //   char str1[100], str2[100];
-//   char format[] = "Decimal %hd, %d, %ld of different sizes.";
-//   short var1 = (short)INT32_MAX;
-//   int var2 = INT32_MAX;
-//   long int var3 = INT64_MAX;
+//   char format[] = "Decimal %hd, %d, %lld of different sizes.";
+//   short var1 = (short)INT32_MIN;
+//   int var2 = INT32_MIN;
+//   long int var3 = INT64_MIN;
 //   s21_sprintf(str1, format, var1, var2, var3);
 //   sprintf(str2, format, var1, var2, var3);
 //   puts(str1);

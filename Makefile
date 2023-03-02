@@ -15,7 +15,7 @@ s21_string.a:
 	rm *.o
 
 test: rebuild
-	$(CC) ${CFLAGS} -c ${TEST_SRC}	
+	$(CC) ${CFLAGS} -c ${TEST_SRC}
 	$(CC) ${CFLAGS} *.o s21_string.a ${TEST_FLAGS} -o test
 	./test
 	rm *.o *.a test

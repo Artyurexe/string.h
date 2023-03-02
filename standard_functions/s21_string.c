@@ -1,5 +1,8 @@
 #include "s21_string.h"
 #include <string.h>
+#include "s21_strerror.h"
+
+char msg_str[32];
 
 void *s21_memchr(const void *str, int c, s21_size_t n){
     const unsigned char *s = (const unsigned char *) str;
@@ -207,4 +210,19 @@ s21_size_t s21_strspn(const char *str1, const char *str2) {
   for (i = 0; str1[i] && s21_strchr(str2, str1[i]); i++) {
   }
   return i;
+}
+
+char *s21_strerror(int errnum) {
+  char *flag;
+  if (!ERRLAST) {
+    flag = "Unsupported OS";
+  } else if (errnum > 0 && errstr[errnum - 1] && errnum - 1 < ERRLAST) {
+    flag = errstr[errnum - 1];
+  } else if (!errnum) {
+    flag = "Undefined error: 0";
+  } else {
+    // s21_sprintf(msg_str, "Unknown error: %d", errnum);
+    flag = msg_str;
+  }
+  return flag;
 }

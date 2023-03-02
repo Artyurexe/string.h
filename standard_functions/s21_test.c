@@ -640,6 +640,10 @@ START_TEST(s21_strtok_tests_4) {
 }
 END_TEST
 
+START_TEST(s21_error){
+    ck_assert_str_eq(s21_strerror(_i), strerror(_i));
+}
+
 int main() {
   Suite *s1 = suite_create("Tests_for_string");
 
@@ -662,6 +666,7 @@ int main() {
   TCase *tc_strpbrk = tcase_create("Tests_for_strbrk ");
   TCase *tc_strspn = tcase_create("Tests_for_strspn ");
   TCase *tc_strtok = tcase_create("Tests_for_strtok ");
+  TCase *tc_strerror = tcase_create("Tests_for_strerror ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -686,6 +691,7 @@ int main() {
   suite_add_tcase(s1, tc_strpbrk);
   suite_add_tcase(s1, tc_strspn);
   suite_add_tcase(s1, tc_strtok);
+  suite_add_tcase(s1, tc_strerror);
 
 
   // memchr
@@ -793,6 +799,10 @@ int main() {
   tcase_add_test(tc_strstr, s21_strtok_tests_2);
   tcase_add_test(tc_strstr, s21_strtok_tests_3);
   tcase_add_test(tc_strstr, s21_strtok_tests_4);
+
+  //strerror
+  tcase_add_loop_test(tc_strerror, s21_error, -1, 108);
+
 
   srunner_run_all(sr, CK_ENV);
   int a = srunner_ntests_failed(sr);

@@ -13,6 +13,8 @@ void *s21_memchr(const void *str, int c, s21_size_t n){
 }
 
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
+  if (n == 0)
+    return 0;
   const char *s1 = (const char *) str1;
   const char *s2 = (const char *) str2;
    s21_size_t i = 0;

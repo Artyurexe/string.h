@@ -560,6 +560,85 @@ START_TEST(test_for_strspn_str1_is_empty_line) {
 }
 END_TEST
 
+START_TEST(s21_strtok_tests_1) {
+  char str_str[30] = " test1/test2/test3/test4\0";
+  char s21_str[30] = " test1/test2/test3/test4\0";
+  char sep[10] = "/";
+
+  char *i_str_str;
+  char *i_s21_str;
+
+  i_str_str = strtok(str_str, sep);
+  i_s21_str = s21_strtok(s21_str, sep);
+
+  while (i_str_str != NULL || i_s21_str != NULL) {
+    ck_assert_str_eq(i_s21_str, i_str_str);
+
+    i_str_str = strtok(NULL, sep);
+    i_s21_str = s21_strtok(NULL, sep);
+  }
+}
+END_TEST
+
+START_TEST(s21_strtok_tests_2) {
+  char str_str[30] = " test1 test2   test3";
+  char s21_str[30] = " test1 test2   test3";
+  char sep[10] = " ";
+
+  char *i_str_str;
+  char *i_s21_str;
+
+  i_str_str = strtok(str_str, sep);
+  i_s21_str = s21_strtok(s21_str, sep);
+
+  while (i_str_str != NULL || i_s21_str != NULL) {
+    ck_assert_str_eq(i_s21_str, i_str_str);
+
+    i_str_str = strtok(NULL, sep);
+    i_s21_str = s21_strtok(NULL, sep);
+  }
+}
+END_TEST
+
+START_TEST(s21_strtok_tests_3) {
+  char str_str[30] = " test1 test2   test3";
+  char s21_str[30] = " test1 test2   test3";
+  char sep[10] = "est";
+
+  char *i_str_str;
+  char *i_s21_str;
+
+  i_str_str = strtok(str_str, sep);
+  i_s21_str = s21_strtok(s21_str, sep);
+
+  while (i_str_str != NULL || i_s21_str != NULL) {
+    ck_assert_str_eq(i_s21_str, i_str_str);
+
+    i_str_str = strtok(NULL, sep);
+    i_s21_str = s21_strtok(NULL, sep);
+  }
+}
+END_TEST
+
+START_TEST(s21_strtok_tests_4) {
+  char str_str[30] = " test1 test2   test3";
+  char s21_str[30] = " test1 test2   test3";
+  char sep[10] = "aa";
+
+  char *i_str_str;
+  char *i_s21_str;
+
+  i_str_str = strtok(str_str, sep);
+  i_s21_str = s21_strtok(s21_str, sep);
+
+  while (i_str_str != NULL || i_s21_str != NULL) {
+    ck_assert_str_eq(i_s21_str, i_str_str);
+
+    i_str_str = strtok(NULL, sep);
+    i_s21_str = s21_strtok(NULL, sep);
+  }
+}
+END_TEST
 
 int main() {
   Suite *s1 = suite_create("Tests_for_string");
@@ -582,6 +661,7 @@ int main() {
   TCase *tc_strlen = tcase_create("Tests_for_strlen ");
   TCase *tc_strpbrk = tcase_create("Tests_for_strbrk ");
   TCase *tc_strspn = tcase_create("Tests_for_strspn ");
+  TCase *tc_strtok = tcase_create("Tests_for_strtok ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -605,6 +685,7 @@ int main() {
   suite_add_tcase(s1, tc_strlen);
   suite_add_tcase(s1, tc_strpbrk);
   suite_add_tcase(s1, tc_strspn);
+  suite_add_tcase(s1, tc_strtok);
 
 
   // memchr
@@ -706,6 +787,12 @@ int main() {
   tcase_add_test(tc_strstr, test_for_strstr);
   tcase_add_test(tc_strstr, test_for_strstr_will_not_find);
   tcase_add_test(tc_strstr, test_for_strstr_null_terminator);
+
+  //strtok
+  tcase_add_test(tc_strstr, s21_strtok_tests_1);
+  tcase_add_test(tc_strstr, s21_strtok_tests_2);
+  tcase_add_test(tc_strstr, s21_strtok_tests_3);
+  tcase_add_test(tc_strstr, s21_strtok_tests_4);
 
   srunner_run_all(sr, CK_ENV);
   int a = srunner_ntests_failed(sr);

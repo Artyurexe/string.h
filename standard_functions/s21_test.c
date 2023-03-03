@@ -79,6 +79,13 @@ START_TEST(test_for_memcmp_for_different_register) {
 }
 END_TEST
 
+START_TEST(s21_memcmp_tests) {
+  char *str1 = "atoms\0\0\0\0";
+  char *str2 = "atoms\0abc";
+  ck_assert_int_eq(s21_memcmp(str1, str2, 7), memcmp(str1, str2, 7));
+}
+END_TEST
+
 
 
 //memcpy
@@ -320,6 +327,19 @@ START_TEST(test_for_strchr_with_no_char) {
   }
 END_TEST
 
+START_TEST(test_for_strchr_null_terminator_1) {
+  char *str = "ABCDEFGHIJKLMNOPQ";
+  char c = '\0';
+  ck_assert_pstr_eq(s21_strchr(str, c), strchr(str, c));
+}
+END_TEST
+
+START_TEST(test_for_strchr_null_terminator_2) {
+  char *str = "ABC\0JKLMNOPQ";
+  char c = '\0';
+  ck_assert_pstr_eq(s21_strchr(str, c), strchr(str, c));
+}
+END_TEST
 
 ///strcmp
 START_TEST(test_for_strcmp_same_strings) {
@@ -478,6 +498,14 @@ START_TEST(test_for_strpbrk_empry_str1_and_str2_include_null_literal) {
   char str[30] = "\0";
   char str1[30] = "23e\04";
   ck_assert_pstr_eq (s21_strpbrk(str, str1), strpbrk(str, str1));
+}
+END_TEST
+
+START_TEST(test_s21_strpbrk_test3) {
+  char *str1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  char *str2 = "12345Z67890";
+  ck_assert_pstr_eq(s21_strpbrk(str1, str2), strpbrk(str1, str2));
+  ck_assert_pstr_eq(s21_strpbrk(str2, str1), strpbrk(str2, str1));
 }
 END_TEST
 
@@ -705,6 +733,7 @@ int main() {
   tcase_add_test(tc_memcmp, test_for_memcmp_output_zero);
   tcase_add_test(tc_memcmp, test_for_memcmp_for_different_register);
   tcase_add_test(tc_memcmp, test_for_memcmp_more_memory);
+  tcase_add_test(tc_memcmp, s21_memcmp_tests);
 
   // memcpy
   tcase_add_test(tc_memcpy, test_for_memcpy);
@@ -740,6 +769,8 @@ int main() {
   tcase_add_test(tc_strchr, test_for_strchr);
   tcase_add_test(tc_strchr, test_for_strchr_empty_str);
   tcase_add_test(tc_strchr, test_for_strchr_with_no_char);
+  tcase_add_test(tc_strchr, test_for_strchr_null_terminator_1);
+  tcase_add_test(tc_strchr, test_for_strchr_null_terminator_2);
 
   //strcmp
   tcase_add_test(tc_strcmp, test_for_strcmp_same_strings);
@@ -777,6 +808,7 @@ int main() {
   tcase_add_test(tc_strpbrk, test_for_strpbrk_str2_null_literal);
   tcase_add_test(tc_strpbrk, test_for_strpbrk_empry_str1);
   tcase_add_test(tc_strpbrk, test_for_strpbrk_empry_str1_and_str2_include_null_literal);
+  tcase_add_test(tc_strpbrk, test_s21_strpbrk_test3);
 
   //strspn
   tcase_add_test(tc_strspn, test_for_strspn);
@@ -784,7 +816,7 @@ int main() {
   tcase_add_test(tc_strspn, test_for_strspn_str2_is_empty_line);
   tcase_add_test(tc_strspn, test_for_strspn_str1_is_empty_line);
 
-  //strchr
+  //strrchr
   tcase_add_test(tc_strrchr, test_for_strrchr);
   tcase_add_test(tc_strrchr, test_for_strrchr_will_not_find);
   tcase_add_test(tc_strrchr, test_for_strrchr_null_terminator);

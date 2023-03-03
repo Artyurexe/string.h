@@ -22,9 +22,9 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
   const char *s1 = (const char *) str1;
   const char *s2 = (const char *) str2;
    s21_size_t i = 0;
-   while (i < n - 1 && s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
+   while (i < n - 1  && s1[i] == s2[i])
     i++;
-   return s1[i] - s2[i];
+  return s1[i] - s2[i];
 }
 
 void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
@@ -74,10 +74,14 @@ char *s21_strncat(char *dest, const char *src, s21_size_t n){
 char *s21_strchr(const char *str, int c) {
   char * res = S21_NULL;
   s21_size_t i = 0;
-  while (str[i] != '\0' && res == S21_NULL) {
-    if (str[i] == c)
-      res =  (char*) &str[i];
-    i++;
+  if (c == '\0')
+    res = "\0";
+  else{
+    while (str[i] != '\0' && res == S21_NULL) {
+      if (str[i] == c)
+        res =  (char*) &str[i];
+      i++;
+    }
   }
   return res;
 }

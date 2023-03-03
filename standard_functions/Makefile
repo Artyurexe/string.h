@@ -9,11 +9,10 @@ s21_string.a:
 	ranlib s21_string.a
 	rm *.o
 
-test:
-	make s21_string.a
-	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_test.c s21_string.a  -o test
-	./test
-	rm test
+test: rebuild
+	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_test.c s21_string.a  -o tests
+	./tests
+	rm tests
 
 test_linux:
 	make s21_string.a
@@ -23,3 +22,5 @@ test_linux:
 
 clean:
 	rm -rf s21_string.a test
+
+rebuild: clean all

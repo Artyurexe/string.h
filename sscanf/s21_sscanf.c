@@ -341,6 +341,38 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
   *j += i;
   return success; 
 }
+int read_e(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+  int i = 0;
+  int success = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (atoi(spec->width) && atoi(spec->width) < i) {
+    
+    i = atoi(spec->width);
+  }
+  if (spec->width[0] != '*') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    printf("%s\n", copy);
+     if (spec->length[0] == 'l') {
+       double *f = va_arg(*ap, double *);
+      char *endptr = NULL;
+      *f = strtod(copy, &endptr);
+      
+    } else {
+       float *f = va_arg(*ap, float *);
+       *f = atoi(copy);
+       printf("%f\n", *f);
+    }
+    if (strtol(copy, (char **)NULL, 16)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  *j += i;
+  return success; 
+}
 
 int read_f(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
   int i = 0;

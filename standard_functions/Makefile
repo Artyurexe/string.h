@@ -9,11 +9,18 @@ s21_string.a:
 	ranlib s21_string.a
 	rm *.o
 
-test:
+test: rebuild
+	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_test.c s21_string.a  -o tests
+	./tests
+	rm tests
+
+test_linux:
 	make s21_string.a
-	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_test.c s21_string.a  -o test
+	$(CC) $(CFLAGS) s21_test.c s21_string.a  -o test -lcheck_pic -pthread -lrt -lm -lsubunit
 	./test
-	rm test
+	rm test	
 
 clean:
-	rm -rf s21_string.a
+	rm -rf s21_string.a test
+
+rebuild: clean all

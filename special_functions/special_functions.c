@@ -23,8 +23,6 @@ void *s21_to_lower(const char *str) {
   return buff;
 }
 
-
-
 void rtrim(char * string, const char* trim) {
     int i;
     for(i = s21_strlen(string) - 1; i >= 0 && s21_strchr(trim, string[i]) != NULL; i--) {  

@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include <wchar.h>
+#include <string.h>
 #include "../standard_functions/s21_string.h"
 #include <float.h>
 #define S21_isnan(x) ((x) != x)

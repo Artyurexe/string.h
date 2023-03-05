@@ -6,12 +6,19 @@ s21_size_t s21_sprintf(char *str, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
   struct specifier spec;
+  int counter = 0;
   for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
+      if(format[i+1] == '%'){
+        str[s21_strlen(str)] = format[i];
+        i++;
+      }
+      else{
       specifier_parsing((char *) &(format[i + 1]), &spec, &ap);
       record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
+      }
     }
     else {
       s21_size_t index = s21_strlen(str);
@@ -24,8 +31,8 @@ s21_size_t s21_sprintf(char *str, const char *format, ...) {
 
 void specifier_parsing(char *str, struct specifier* spec, va_list *ap) {
   char* buff = str;
-  char* buff1 = malloc(1024);
-  char* buff2 = buff1;
+  char temp[1024];
+  char* buff1 = temp;
   int k = 0;
   const char* flags = "-+ #0";
   const char* numbers = "1234567890*";
@@ -65,7 +72,6 @@ void specifier_parsing(char *str, struct specifier* spec, va_list *ap) {
     }
   }
   spec->length[k] = '\0';
-  free(buff2);
 }
 
 long long s21_atoi(char *str) {
@@ -101,51 +107,50 @@ void specifier_init(struct specifier* spec) {
   spec->length[0] = '\0';
   spec->type = 0;
 }
-char* dec_to_hex(long long dec){
-  char *hec= malloc(9*sizeof(char));
-  int i = 7;
-  while(i >= 0){
-    long long x = dec % 16;
-    dec /= 16;
-    if(x < 10)
-      x = x + '0';
-    else 
-     x = x-10 + 'a';
-    hec[i] = x;
-    i-- ;
-  }
-  hec[8] = '\0';
-  return hec;
+void dec_to_hex(char* buf,long long dec){
+    for (int i = 0; i < 16; i++) {
+        buf[i] = (dec >> (4 * (15 - i))) & 0xF;
+        if (buf[i] < 10) {
+            buf[i] += '0';
+        } else {
+            buf[i] += 'a' - 10;
+        }
+    }
+    buf[16] = '\0';
+    int l_move = s21_strspn(buf, "0");
+    for(int i = 0; i <  16 - l_move; i++){
+      buf[i] = buf[i+l_move];
+    }
+    buf[16 - l_move] = '\0';
 }
 
-void record_pointer(char *str, struct specifier spec, va_list *ap){
+void record_pointer(char *str, struct specifier spec, va_list *ap) {
   long long pointer = va_arg(*ap, long long);
   char str1[100] = "\0";
-  char *hex = dec_to_hex(pointer);
+  char hex[17];
+  dec_to_hex(hex, pointer);
   s21_size_t width = 0;
   width = s21_atoi(spec.width);
-  int dif = width - 11;
-  char *str3 = malloc(dif * sizeof(char));
-  if(width > 11){
+  char temp[100];
+  int dif = width - s21_strlen(hex) - 2;
+  if(width > s21_strlen(hex) + 2){
     for (int i = 0; i < dif; i++){
       if(s21_strchr(spec.flag, '0'))
-        str3[i] = '0';
+        temp[i] = '0';
       else
-         str3[i] = ' ';
+        temp[i] = ' ';
     }
+    temp[dif]='\0';
   }
-  if(width > 11 && !s21_strchr(spec.flag, '0') && !s21_strchr(spec.flag, '-'))
-    s21_strcat(str1, str3);
+  if(width > s21_strlen(hex) + 2 && !s21_strchr(spec.flag, '0') && !s21_strchr(spec.flag, '-'))
+    s21_strcat(str1, temp);
   s21_strcat(str1, "0x");
-  if(width > 11 && s21_strchr(spec.flag, '0'))
-    s21_strcat(str1, str3);
-  s21_strcat(str1, "1");
+  if(width > s21_strlen(hex) + 2 && s21_strchr(spec.flag, '0'))
+    s21_strcat(str1, temp);
   s21_strcat(str1, hex);
-  if(width > 11 && !s21_strchr(spec.flag, '0') && s21_strchr(spec.flag, '-'))
-    s21_strcat(str1, str3);
-  free(hex);
-  free(str3);
-  s21_strcat(str,str1);
+  if(width > s21_strlen(hex) + 2 && !s21_strchr(spec.flag, '0') && s21_strchr(spec.flag, '-'))
+    s21_strcat(str1, temp);
+  s21_strcat(str, str1);
 }
 
 void record(char *str, struct specifier spec, va_list *ap) {
@@ -165,6 +170,7 @@ void record(char *str, struct specifier spec, va_list *ap) {
     int *counter_of_symbols =  va_arg(*ap, int *);
     *counter_of_symbols = s21_strlen(str);
   }
+  specifier_init(&spec);
 }
 
 void record_int(char *str, struct specifier spec, va_list *ap) {
@@ -199,8 +205,9 @@ void record_u_int(char *str, struct specifier spec, va_list *ap) {
 }
 
 void numcat(char* str, long long token, struct specifier spec) {
-  char* str1 = malloc(1024);
-  char* buff = malloc(1024);
+  char temp1[1024], temp2[1024];
+  char* str1 = temp1;
+  char* buff = temp2;
   *buff = 0;
   *str1 = 0;
   int length = -1, precision = -1;
@@ -234,13 +241,12 @@ void numcat(char* str, long long token, struct specifier spec) {
       fill_str(str, str1, length - buff_length, " ");
   } else
     s21_strcat(str, str1);
-  free(str1);
-  free(buff);
 }
 
 void u_numcat(char* str, unsigned long token, struct specifier spec) {
-  char* str1 = malloc(1024);
-  char* buff = malloc(1024);
+  char temp1[1024], temp2[1024];
+  char* str1 = temp1;
+  char* buff = temp2;
   *buff = 0;
   *str1 = 0;
   int length = -1, precision = -1;
@@ -281,8 +287,7 @@ void u_numcat(char* str, unsigned long token, struct specifier spec) {
       fill_str(str, str1, length - buff_length, " ");
   } else
     s21_strcat(str, str1);
-  free(str1);
-  free(buff);
+  
 }
 
 void sign_input(char* str, char* str1, int precision, int* length, char* fill, struct specifier spec) {
@@ -624,7 +629,6 @@ void record_e(char *temp, long double num, s21_size_t precision, char type, char
       s21_strcat(temp, "E");
     else
       s21_strcat(temp, "e");
-    
     if (exp >= 0)
       s21_strcat(temp, "+");
     else
@@ -662,17 +666,14 @@ long long count_exp(long double num) {
   
   return exp;
 }
-
 // int main() {
 //   char str1[100];
 //   char str2[100];
-//   char *format = "%.18e";
-//   double var1 = DBL_MAX / 3;
-//   long double var2 = 4;
-//   format = "%e% -40G";
-//   int cnt1 = s21_sprintf(str1, format, var1, var1);
-//   int cnt2 = sprintf(str2, format, var1, var1);
-//   printf("{%s}\n", str1);
-//   printf("{%s}\n", str2);
-//   return 0;
+//   int val = 0;
+//   double val2 =  123.120000;
+//   char format[] = "int:%7p double:%17p";
+//   s21_sprintf(str1, format, &val, &val2),
+//   sprintf(str2, format,&val, &val2);
+//   puts(str1);
+//   puts(str2);
 // }

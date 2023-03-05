@@ -506,7 +506,7 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
 void record_nan_inf(char* str, long double num, struct specifier *spec, s21_size_t width) {
   char temp[100] = "";
   if (S21_isnan(num)) {
-    if (strchr("GE", spec->type))
+    if (s21_strchr("GE", spec->type))
       s21_strcat(temp, "NAN");
     else
       s21_strcat(temp, "nan");

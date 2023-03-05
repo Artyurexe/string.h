@@ -9,9 +9,15 @@ s21_size_t s21_sprintf(char *str, const char *format, ...) {
   for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
+      if(format[i+1] == '%'){
+        str[s21_strlen(str)] = format[i];
+        i++;
+      }
+      else{
       specifier_parsing((char *) &(format[i + 1]), &spec, &ap);
       record(str, spec, &ap);
       i += s21_strcspn(&format[i + 1], types) + 1;
+      }
     }
     else {
       s21_size_t index = s21_strlen(str);

@@ -1,5 +1,4 @@
 #include "s21_string.h"
-#include <string.h>
 #include "s21_strerror.h"
 
 char msg_str[32];
@@ -129,7 +128,7 @@ s21_size_t s21_strlen(const char *str){
 
 char *s21_strpbrk(const char *str1, const char *str2) {
   char * res = S21_NULL;
-  if(!s21_strcspn(str1, str2) && *str1 != '\0')
+  if(s21_strcspn(str1, str2) != s21_strlen(str1) && *str1 != '\0')
     res = (char *) str1 + s21_strcspn(str1, str2);
   return res;
 }
@@ -225,7 +224,7 @@ char *s21_strerror(int errnum) {
   } else if (!errnum) {
     flag = "Undefined error: 0";
   } else {
-    // s21_sprintf(msg_str, "Unknown error: %d", errnum);
+    s21_sprintf(msg_str, "Unknown error: %d", errnum);
     flag = msg_str;
   }
   return flag;

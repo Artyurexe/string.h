@@ -4,7 +4,7 @@ CFLAGS = -Wall -Werror -Wextra -std=c11
 all: s21_string.a
 
 s21_string.a:
-	$(CC) -c s21_string.c -o s21_string.o
+	$(CC) -c s21_string.c ../sprintf/s21_sprintf.c
 	ar rcs s21_string.a *.o
 	ranlib s21_string.a
 	rm *.o

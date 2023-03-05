@@ -4,8 +4,11 @@
 #include <stdarg.h>
 #include <math.h>
 #include <wchar.h>
+#include <string.h>
 #include "../standard_functions/s21_string.h"
-
+#include <float.h>
+#define S21_isnan(x) ((x) != x)
+#define S21_isinf(x) (!S21_isnan(x) && S21_isnan(x - x))
 struct specifier {
   char flag[4];
   char width[310];
@@ -14,6 +17,7 @@ struct specifier {
   char type;
 };
 
+long long s21_atoi(char *str);
 char* dec_to_hex(long long dec);
 void pointer_shift(char** buff, char* buff1, const char* str);
 void record_f(char *temp, long double num, s21_size_t precision, char type, long long exp, char* flag);
@@ -39,5 +43,6 @@ int record_char(char *str, struct specifier spec, va_list *ap);
 int record_str(char *str, struct specifier spec, va_list *ap);
 void record(char *str, struct specifier spec, va_list *ap);
 void record_pointer(char *str, struct specifier spec, va_list *ap);
+void record_nan_inf(char* str, long double num, struct specifier *spec, s21_size_t width);
 
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

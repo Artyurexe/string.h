@@ -1,6 +1,6 @@
 #include "s21_sprintf.h"
 
-int s21_sprintf(char *str, const char *format, ...) {
+s21_size_t s21_sprintf(char *str, const char *format, ...) {
   str[0] = '\0';
   const char* types = "cdieEfgGosuxXpn%%";
   va_list ap;
@@ -68,6 +68,15 @@ void specifier_parsing(char *str, struct specifier* spec, va_list *ap) {
   free(buff2);
 }
 
+long long s21_atoi(char *str) {
+  long long res = 0;
+  while ((*str > 47) && (*str < 58)) {
+    res = res * 10 + (int)*str - 48;
+    str += 1;
+  }
+  return res;
+}
+
 void numbers_parsing(char* str, char* buff, struct specifier* spec, va_list *ap) {
   if (*buff == '*') {
     int star = va_arg(*ap, int);
@@ -114,7 +123,7 @@ void record_pointer(char *str, struct specifier spec, va_list *ap){
   char str1[100] = "\0";
   char *hex = dec_to_hex(pointer);
   s21_size_t width = 0;
-  width = atoi(spec.width);
+  width = s21_atoi(spec.width);
   int dif = width - 11;
   char *str3 = malloc(dif * sizeof(char));
   if(width > 11){
@@ -196,9 +205,9 @@ void numcat(char* str, long long token, struct specifier spec) {
   *str1 = 0;
   int length = -1, precision = -1;
   if (*spec.width != '\0')
-    length = atoi(spec.width);
+    length = s21_atoi(spec.width);
   if (*spec.precision != '\0' && s21_strchr(spec.flag, '*') == S21_NULL)
-    precision = atoi(spec.precision);
+    precision = s21_atoi(spec.precision);
   if (token >= 0) {
     if (s21_strchr(spec.flag, '+') != S21_NULL)
       sign_input(str, str1, precision, &length, "+", spec);
@@ -236,9 +245,9 @@ void u_numcat(char* str, unsigned long token, struct specifier spec) {
   *str1 = 0;
   int length = -1, precision = -1;
   if (*spec.width != '\0')
-    length = atoi(spec.width);
+    length = s21_atoi(spec.width);
   if (*spec.precision != '\0'  && s21_strchr(spec.flag, '*') == S21_NULL) {
-    precision = atoi(spec.precision);
+    precision = s21_atoi(spec.precision);
   }
   if (spec.type == 'o')
     num_conversion(token, 8, buff, spec);
@@ -305,6 +314,26 @@ void int_to_string(char* str, long long num) {
     buff[len] = '\0';
   }
 }
+void invert_str(char *origin, char *inverted) {
+  if (origin && inverted) {
+    int length = 0;
+    length = s21_strlen(origin);
+    for (int i = 0; i < length; i++) {
+      inverted[i] = origin[length - 1 - i];
+    }
+    inverted[length] = '\0';
+  }
+}
+void int_to_string_precision(char* str, long long num, s21_size_t precision) {
+  char wrong[precision+1];
+  s21_size_t i =0;
+  while (i < precision) {
+    wrong[i++] = num%10 + '0';
+    num /= 10;
+  }
+  wrong[i] = '\0';
+  invert_str(wrong, str);
+}
 
 void u_int_to_string(char* str, unsigned long num) {
   char* buff = str;
@@ -342,7 +371,7 @@ void num_conversion(unsigned long n, int base, char *outbuf, struct specifier sp
 int record_char(char *str, struct specifier spec, va_list *ap) {
   s21_size_t width = 0;
   if (s21_strlen(spec.width) != 0) {
-    width = atoi(spec.width);
+    width = s21_atoi(spec.width);
     if (!width)
       return 1;
     if (s21_strchr(spec.flag, '-') == S21_NULL)
@@ -369,7 +398,7 @@ int record_char(char *str, struct specifier spec, va_list *ap) {
 int record_str(char *str, struct specifier spec, va_list *ap) {
   s21_size_t width = 0;
   if (s21_strlen(spec.width) != 0) {
-    width = atoi(spec.width);
+    width = s21_atoi(spec.width);
     if (!width)
       return 1;
   }
@@ -403,24 +432,21 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
   s21_size_t precision = 0;
   long long exp = 0;
   long double num;
-  width = atoi(spec->width);
-  precision = atoi(spec->precision);
-  if (precision == 0 && s21_strlen(spec->precision) == 0)
+  width = s21_atoi(spec->width);
+  precision = s21_atoi(spec->precision);
+  if (s21_strlen(spec->precision) == 0 || s21_strchr(spec->flag, '*'))
     precision = 6;
-  if (precision == 0 && s21_strlen(spec->precision) != 0 && s21_strchr("Gg", spec->type))
+  if (precision == 0 && s21_strlen(spec->precision) != 0 && s21_strchr("gG", spec->type))
     precision = 1;
-  else if (precision == 0 && s21_strlen(spec->precision) != 0)
-    precision = 0;
-
   
-  if (s21_strchr(spec->length, 'l'))
-    num = va_arg(*ap, double);
-  else if (s21_strchr(spec->length, 'L'))
+  if (s21_strchr(spec->length, 'L'))
     num = va_arg(*ap, long double);
-  else {
-    float num_temp = va_arg(*ap, double);
-    num = num_temp;
-
+  else 
+    num = va_arg(*ap, double);
+  
+  if (S21_isnan(num) || S21_isinf(num)) {
+    record_nan_inf(str, num, spec, width);
+    return 1;
   }
   exp = count_exp(num);
   char type = spec->type;
@@ -434,9 +460,9 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
       precision--;
     }
   }
-  
   char temp[100];
   temp[0] = '\0';
+  int flag = 1;
   if (type == 'f') {
     record_f(temp, num, precision, spec->type, exp, spec->flag);
   }
@@ -446,6 +472,7 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
   if (s21_strchr(spec->flag, '#') && !s21_strchr(temp, '.'))
     s21_strcat(temp, ".");
   if (s21_strlen(temp) < width) {
+    flag = 0;
     s21_size_t cnt = width - s21_strlen(temp);
     char filler[2] = "";
     if (s21_strchr(spec->flag, '0'))
@@ -460,12 +487,63 @@ int record_double(char *str, struct specifier *spec, va_list *ap) {
       s21_strcpy(temp, spaces);
     }
     else {
+      if (s21_strchr(spec->flag, ' ') && s21_strchr("eE", type)) {
+        flag = 1;
+        cnt--;
+      }
       for (s21_size_t i = 0; i < cnt; i++)
         s21_strcat(temp, " ");
     }
   }
+  if (s21_strchr(spec->flag, ' ') && flag) {
+    s21_strcat(str, " ");
+  }
+  
   s21_strcat(str, temp);
   return 0;
+}
+
+void record_nan_inf(char* str, long double num, struct specifier *spec, s21_size_t width) {
+  char temp[100] = "";
+  if (S21_isnan(num)) {
+    if (strchr("GE", spec->type))
+      s21_strcat(temp, "NAN");
+    else
+      s21_strcat(temp, "nan");
+  }
+  if (S21_isinf(num)) {
+    if (num < 0)
+      s21_strcat(temp, "-");
+    else if (s21_strchr(spec->flag, '+'))
+      s21_strcat(temp, "+");
+    if (s21_strchr("GE", spec->type))
+      s21_strcat(temp, "INF");
+    else
+      s21_strcat(temp, "inf");
+  }
+
+  if (s21_strlen(temp) < width) {
+    s21_size_t cnt = width - s21_strlen(str);
+    char filler[2] = "";
+    s21_strcat(filler, " ");
+    if (!s21_strchr(spec->flag, '-')) {
+      char spaces[100] = "";
+      for (s21_size_t i = 0; i < cnt; i++)
+        s21_strcat(spaces, filler);
+      s21_strcat(spaces, temp);
+      s21_strcpy(temp, spaces);
+    }
+    else {
+      for (s21_size_t i = 0; i < cnt; i++)
+        s21_strcat(temp, " ");
+    }
+  }
+  else if (s21_strchr(spec->flag, ' ')) {
+      char spaces[100] = " ";
+      s21_strcat(spaces, temp);
+      s21_strcpy(temp, spaces);
+  }
+  s21_strcat(str, temp);
 }
 
 void record_f(char *temp, long double num, s21_size_t precision, char type, long long exp, char* flag) {
@@ -473,61 +551,75 @@ void record_f(char *temp, long double num, s21_size_t precision, char type, long
     s21_strcat(temp, "-");
     num = fabsl(num);
   }
-  if (num >=0 && s21_strchr(flag, '+'))
+  else if (num >=0 && s21_strchr(flag, '+'))
     s21_strcat(temp, "+");
-  num = roundl(num * pow(10, precision))/pow(10, precision);
-  long long num_int = fabsl(num);
+  num = roundl(num * powl(10.L, precision))/powl(10.L, precision);
+  exp = count_exp(num);
+  long long num_int = num;
   for (int i = 0; i <= exp; i++) {
     int ind = s21_strlen(temp);
-    temp[ind] = (num_int / (long long)(pow(10, exp - i))) % 10 + '0';
+    temp[ind] = (num_int / (long long)(powl(10.L, exp - i))) % 10 + '0';
     temp[ind + 1] = '\0';
   }
   if (exp < 0)
     s21_strcat(temp, "0");
   if (precision)
     s21_strcat(temp, ".");
-
-  for (s21_size_t i = 0; i < precision; i++) {
-    num *= 10;
-    int digit = fmod(num, 10);
-    int ind = s21_strlen(temp);
-    temp[ind] = digit + '0';
-    temp[ind + 1] = '\0';
-  }
+  num = num - (long long) num;
+  num *= powl(10.L, precision);
+  num_int = num;
+  char buff[precision + 1];
+  int_to_string_precision(buff, num_int, precision);
+  s21_strcat(temp, buff);
+  // for (s21_size_t i = 0; i < precision; i++) {
+  //   num *= 10.L;
+  //   int digit = fmodl(num, 10.L);
+  //   int ind = s21_strlen(temp);
+  //   temp[ind] = digit + '0';
+  //   temp[ind + 1] = '\0';
+  // }
   // exclude zeros
-  if (type == 'g' || type == 'G')
-    while(temp[s21_strlen(temp) - 1] == '0')
+  if ((type == 'g' || type == 'G') && s21_strchr(temp, '.'))
+    while(temp[s21_strlen(temp) - 1] == '0' || temp[s21_strlen(temp) - 1] == '.') {
+      if (temp[s21_strlen(temp) - 1] == '.') {
+        temp[s21_strlen(temp) - 1] = '\0';
+        break;
+      }
       temp[s21_strlen(temp) - 1] = '\0';
+    }
 }
 
 void record_e(char *temp, long double num, s21_size_t precision, char type, char other_type, long long exp, char* flag) {
-  num = num / pow(10, exp);
+    num = num / powl(10.L, exp);
     if (num < 0) {
       s21_strcat(temp, "-");
       num = fabsl(num);
     }
     if (num >=0 && s21_strchr(flag, '+'))
       s21_strcat(temp, "+");
-    num = roundl(num * pow(10, precision))/pow(10, precision);
-    int num_int = num;
+    num = roundl(num * powl(10.L, precision))/powl(10.L, precision);
+    long long num_int = num;
     int ind = s21_strlen(temp);
     temp[ind] = num_int + '0';
     temp[ind + 1] = '\0';
-    if (precision)
+    if (precision || s21_strchr(flag, '#'))
       s21_strcat(temp, ".");
-    
-    for (s21_size_t i = 0; i < precision; i++) {
-      num *= 10;
-      int digit = fmod(num, 10);
-      int ind = s21_strlen(temp);
-      temp[ind] = digit + '0';
-      temp[ind + 1] = '\0';
-    }
+    num = num - (long long) num;
+    num_int = roundl(num * powl(10, precision));
+    num = (long double)num_int / powl(10, precision);
+    char buff[precision + 1];
+    int_to_string_precision(buff, num_int, precision);
+    s21_strcat(temp, buff);
     // exclude zeros
-    if (type == 'g' || type == 'G')
-      while(temp[s21_strlen(temp) - 1] == '0')
+    if ((type == 'g' || type == 'G') && s21_strchr(temp, '.'))
+      while(temp[s21_strlen(temp) - 1] == '0' || temp[s21_strlen(temp) - 1] == '.') {
+        if (temp[s21_strlen(temp) - 1] == '.') {
+          temp[s21_strlen(temp) - 1] = '\0';
+          break;
+        }
         temp[s21_strlen(temp) - 1] = '\0';
-    
+      }
+      
     if (type == 'G' || other_type == 'E')
       s21_strcat(temp, "E");
     else
@@ -540,9 +632,15 @@ void record_e(char *temp, long double num, s21_size_t precision, char type, char
     if (llabs(exp) < 10)
       s21_strcat(temp, "0");
     else {
-      int ind = s21_strlen(temp);
-      temp[ind] = llabs(exp)/10 + '0';
-      temp[ind + 1] = '\0';
+      exp = llabs(exp);
+      s21_size_t exp_of_exp = count_exp(exp);
+      for (s21_size_t i = 0; i < exp_of_exp; i++) {
+        int ind = s21_strlen(temp);
+        char digit =  (exp/((long long)pow(10, exp_of_exp - i))) + '0';
+        exp = exp % (long long)pow(10, exp_of_exp - i);
+        temp[ind] = digit;
+        temp[ind+1] = '\0';
+      }
     }
     ind = s21_strlen(temp);
     temp[ind] = llabs(exp)%10 + '0';
@@ -553,17 +651,28 @@ long long count_exp(long double num) {
   long double cpy = num;
   cpy = fabsl(cpy);
   long long exp = 0;
-  if (cpy >= 10) {
-    while (cpy >=10) {
-      exp++;
-      cpy /= 10;
-    }
+  while (cpy >=10.L && cpy <= LDBL_MAX) {
+    exp++;
+    cpy /= 10;
   }
-  else if (cpy < 1) {
-    while (cpy < 1) {
-      exp--;
-      cpy *= 10;
-    }
+  while (cpy < 1L && cpy >= LDBL_TRUE_MIN) {
+    exp--;
+    cpy *= 10;
   }
+  
   return exp;
 }
+
+// int main() {
+//   char str1[100];
+//   char str2[100];
+//   char *format = "%.18e";
+//   double var1 = DBL_MAX / 3;
+//   long double var2 = 4;
+//   format = "%e% -40G";
+//   int cnt1 = s21_sprintf(str1, format, var1, var1);
+//   int cnt2 = sprintf(str2, format, var1, var1);
+//   printf("{%s}\n", str1);
+//   printf("{%s}\n", str2);
+//   return 0;
+// }

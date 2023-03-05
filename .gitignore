@@ -1,0 +1,6 @@
+*.out
+*.a
+*.dSYM
+*/s21_sprintf
+*/s21_sscanf
+.vscode/

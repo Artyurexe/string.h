@@ -1,6 +1,6 @@
 #define BUFF_SIZE 100
 #include <check.h>
-#include "s21_sprintf.h"
+#include "../standard_functions/s21_string.h"
 #include <limits.h>
 
 START_TEST(d_len) {

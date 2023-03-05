@@ -129,7 +129,7 @@ s21_size_t s21_strlen(const char *str){
 
 char *s21_strpbrk(const char *str1, const char *str2) {
   char * res = S21_NULL;
-  if(!s21_strcspn(str1, str2) && *str1 != '\0')
+  if(s21_strcspn(str1, str2) != s21_strlen(str1) && *str1 != '\0')
     res = (char *) str1 + s21_strcspn(str1, str2);
   return res;
 }

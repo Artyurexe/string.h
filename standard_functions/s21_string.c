@@ -225,7 +225,7 @@ char *s21_strerror(int errnum) {
   } else if (!errnum) {
     flag = "Undefined error: 0";
   } else {
-    // s21_sprintf(msg_str, "Unknown error: %d", errnum);
+    sprintf(msg_str, "Unknown error: %d", errnum); ///
     flag = msg_str;
   }
   return flag;

@@ -672,6 +672,52 @@ START_TEST(s21_error){
     ck_assert_str_eq(s21_strerror(_i), strerror(_i));
 }
 
+START_TEST(s21_to_upper_tests) {
+  char *str1 = "abcdefghijklmnopqrstuvwxyz";
+  char *str2 = s21_to_upper(str1);
+  ck_assert_str_eq(str2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  free(str2);
+
+  char *str3 = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  char *str4 = s21_to_upper(str3);
+  ck_assert_str_eq(str4, "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
+  free(str4);
+
+  char *str5 = "1234567890abcdefghijklmnopqrstuvwxyz1234567890";
+  char *str6 = s21_to_upper(str5);
+  ck_assert_str_eq(str6, "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
+  free(str6);
+
+  char *str7 = S21_NULL;
+  char *str8 = s21_to_upper(str7);
+  ck_assert_ptr_null(str8);
+  free(str8);
+}
+END_TEST
+
+START_TEST(s21_to_lower_tests) {
+  char *str1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  char *str2 = s21_to_lower(str1);
+  ck_assert_str_eq(str2, "abcdefghijklmnopqrstuvwxyz");
+  free(str2);
+
+  char *str3 = "1234567890abcdefghijklmnopqrstuvwxyz1234567890";
+  char *str4 = s21_to_lower(str3);
+  ck_assert_str_eq(str4, "1234567890abcdefghijklmnopqrstuvwxyz1234567890");
+  free(str4);
+
+  char *str5 = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  char *str6 = s21_to_lower(str5);
+  ck_assert_str_eq(str6, "1234567890abcdefghijklmnopqrstuvwxyz1234567890");
+  free(str6);
+
+  char *str7 = S21_NULL;
+  char *str8 = s21_to_lower(str7);
+  ck_assert_ptr_null(str8);
+  free(str8);
+}
+END_TEST
+
 int main() {
   Suite *s1 = suite_create("Tests_for_string");
 
@@ -695,6 +741,8 @@ int main() {
   TCase *tc_strspn = tcase_create("Tests_for_strspn ");
   TCase *tc_strtok = tcase_create("Tests_for_strtok ");
   TCase *tc_strerror = tcase_create("Tests_for_strerror ");
+  TCase *tc_upper = tcase_create("Tests_for_upper ");
+  TCase *tc_lower = tcase_create("Tests_for_lower ");
 
   SRunner *sr = srunner_create(s1);
 
@@ -720,6 +768,8 @@ int main() {
   suite_add_tcase(s1, tc_strspn);
   suite_add_tcase(s1, tc_strtok);
   suite_add_tcase(s1, tc_strerror);
+  suite_add_tcase(s1, tc_upper);
+  suite_add_tcase(s1, tc_lower);
 
 
   // memchr
@@ -834,6 +884,12 @@ int main() {
 
   //strerror
   tcase_add_loop_test(tc_strerror, s21_error, -1, 108);
+
+  //upper
+  tcase_add_test(tc_upper, s21_to_upper_tests);
+
+  //lower
+  tcase_add_test(tc_lower, s21_to_lower_tests);
 
 
   srunner_run_all(sr, CK_ENV);

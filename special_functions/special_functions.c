@@ -1,22 +1,29 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../standard_functions/s21_string.h"
+
+
 void *s21_to_upper(const char *str) {
-  char* buff = calloc(s21_strlen(str), sizeof(char));
+  if (str == S21_NULL)
+    return S21_NULL;
+  char* buff = calloc(s21_strlen(str) + 1, sizeof(char));
   for (s21_size_t i = 0; i < s21_strlen(str); i++) {
     if (str[i] > 96 && str[i] < 123)
       buff[i] = str[i] - 32;
     else 
       buff[i] = str[i];
   }
+  buff[s21_strlen(str)] = '\0';
   return buff;
 }
 
 void *s21_to_lower(const char *str) {
-  char* buff = calloc(s21_strlen(str), sizeof(char));
+  if (str == S21_NULL)
+    return S21_NULL;
+  char* buff = calloc(s21_strlen(str) + 1, sizeof(char));
   for (s21_size_t i = 0; i < s21_strlen(str); i++) {
-    if (str[i] > 64 && str[i] < 91)
-      buff[i] = str[i] + 32;
+    if (str[i] >= 'A' && str[i] <= 'Z')
+      buff[i] = str[i] + 'a' - 'A';
     else 
       buff[i] = str[i];
   }
@@ -37,7 +44,9 @@ void ltrim( char * string, const char* trim ){
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-    char *new_str = malloc(strlen(src));
+    if (src == S21_NULL)
+      return S21_NULL;
+    char *new_str = malloc(strlen(src) + 1);
     new_str = s21_strcpy(new_str, src);
     rtrim(new_str, trim_chars);
     ltrim(new_str, trim_chars);
@@ -46,9 +55,11 @@ void *s21_trim(const char *src, const char *trim_chars) {
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
+  if (src == S21_NULL)
+    return S21_NULL;
   if (start_index > s21_strlen(src))
-    return NULL;
-  char* buff = calloc(s21_strlen(str) + s21_strlen(src), sizeof(char));
+    return S21_NULL;
+  char* buff = calloc(s21_strlen(str) + s21_strlen(src) + 1, sizeof(char));
   s21_size_t k = 0;
   for (s21_size_t i = 0; i < s21_strlen(src) + s21_strlen(str); i++) {
     if (i < start_index) {
@@ -61,3 +72,9 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
   }
   return buff;
 }
+
+// int main() {
+//   char *str5 = "1234567890abcdefghijklmnopqrstuvwxyz1234567890";
+//   char *str6 = s21_to_upper((const char*) str5);
+//   puts(str6);
+// }

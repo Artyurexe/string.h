@@ -6,7 +6,6 @@ s21_size_t s21_sprintf(char *str, const char *format, ...) {
   va_list ap;
   va_start(ap, format);
   struct specifier spec;
-  int counter = 0;
   for (s21_size_t i = 0; i < s21_strlen(format); i++) {
     specifier_init(&spec);
     if (format[i] == '%') {
@@ -374,11 +373,9 @@ void num_conversion(unsigned long n, int base, char *outbuf, struct specifier sp
 }
 
 int record_char(char *str, struct specifier spec, va_list *ap) {
-  s21_size_t width = 0;
+  long long width = 0;
   if (s21_strlen(spec.width) != 0) {
     width = s21_atoi(spec.width);
-    if (!width)
-      return 1;
     if (s21_strchr(spec.flag, '-') == S21_NULL)
       for(s21_size_t i = 0; i < width - 1; i++)
         s21_strcat(str, " ");
@@ -390,45 +387,45 @@ int record_char(char *str, struct specifier spec, va_list *ap) {
   }
   else {
     char c = va_arg(*ap, int);
-    s21_size_t len = s21_strlen(str);
+    long long len = s21_strlen(str);
     str[len] = c;
     str[len + 1] = '\0';
   }
   if (width && s21_strchr(spec.flag, '-'))
-    for(s21_size_t i = 0; i < width - 1; i++)
+    for(long long i = 0; i < width - 1; i++)
         s21_strcat(str, " ");
   return 0;
 }
 
 int record_str(char *str, struct specifier spec, va_list *ap) {
-  s21_size_t width = 0;
+  long long width = 0;
   if (s21_strlen(spec.width) != 0) {
     width = s21_atoi(spec.width);
-    if (!width)
-      return 1;
   }
   if (s21_strchr(spec.length, 'l')) {
     wchar_t *ws = va_arg(*ap, wchar_t*);
     width -= wcslen(ws);
-    if (width) {
-      for(s21_size_t i = 0; i < width; i++)
+    if (width>=0) {
+      for(long long i = 0; i < width; i++)
         s21_strcat(str, " ");
     }
-    if (wcstombs(str + s21_strlen(str), ws, wcslen(ws) * sizeof(wchar_t)) == 0)
+    if (wcstombs(str + s21_strlen(str), ws, (wcslen(ws)) * sizeof(wchar_t)) == 0)
       return 1;
   }
   else {
     char* s = va_arg(*ap, char*);
     width -= s21_strlen(s);
-    if (width) {
-      for(s21_size_t i = 0; i < width; i++)
+    if (width>=0 && !s21_strchr(spec.flag, '-')) {
+      for(long long i = 0; i < width; i++) {
         s21_strcat(str, " ");
+      }
+      
     }
     s21_strcat(str, s);
   }
-  if (width && s21_strchr(spec.flag, '-'))
+  if (width >= 0 && s21_strchr(spec.flag, '-'))
     for(s21_size_t i = 0; i < width; i++)
-        s21_strcat(str, " ");
+      s21_strcat(str, " ");
   return 0;
 }
 
@@ -667,13 +664,12 @@ long long count_exp(long double num) {
   return exp;
 }
 // int main() {
-//   char str1[100];
-//   char str2[100];
-//   int val = 0;
-//   double val2 =  123.120000;
-//   char format[] = "int:%7p double:%17p";
-//   s21_sprintf(str1, format, &val, &val2),
-//   sprintf(str2, format,&val, &val2);
+//   char str1[1000];
+//   char str2[1000];
+//   char format[] = "This is a simple b%*sba";
+//   char str[] = "ooooooo";
+//   s21_sprintf(str1, format, 5, str);
+//   sprintf(str2, format, 5, str);
 //   puts(str1);
 //   puts(str2);
 // }

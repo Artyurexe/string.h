@@ -1963,6 +1963,76 @@ START_TEST(spec_n_with_tab){
 }
 END_TEST
 
+START_TEST(sprintf_wchar_NULL) {
+  char str1[100];
+  char str2[100];
+  char *format = "%lc";
+  wchar_t *stringLong = S21_NULL;
+  s21_sprintf(str1, format, stringLong);
+  sprintf(str2, format, stringLong);
+  ck_assert_str_eq(str1, str2);
+}
+END_TEST
+
+START_TEST(sprintf_wstr) {
+  char str1[1000];
+  char str2[1000];
+  wchar_t s = 0xC9;
+  wchar_t str[10] = {0};
+  str[0] = s;
+  str[1] = s;
+  char *format = "%-10ls";
+  s21_sprintf(str1, format, str);
+  sprintf(str2, format, str);
+  ck_assert_str_eq(str1, str2);
+}
+END_TEST
+
+START_TEST(sprintf_wchar) {
+  char str1[1000];
+  char str2[1000];
+
+  char *format = "%03lc";
+  wchar_t longChar = 0xC9;
+  s21_sprintf(str1, format, longChar);
+  sprintf(str2, format, longChar);
+  ck_assert_str_eq(str1, str2);
+}
+END_TEST
+
+START_TEST(sprintf_string) {
+  char str1[1000];
+  char str2[1000];
+  char format[] = "This is a simple b%*sba";
+  char str[] = "ooooooo";
+  s21_sprintf(str1, format, 5, str);
+  sprintf(str2, format, 5, str);
+  ck_assert_str_eq(str1, str2);
+}
+END_TEST
+
+START_TEST(sprintf_char) {
+  char str1[1000];
+  char str2[1000];
+  char format[] = "This is a simple b%cba";
+  char c = 'c';
+  s21_sprintf(str1, format, c);
+  sprintf(str2, format, c);
+  ck_assert_str_eq(str1, str2);
+}
+END_TEST
+
+START_TEST(sprintf_char_spec_both) {
+  char str1[1000];
+  char str2[1000];
+  char format[] = "This is %4c simple %-1s in %02c %*s";
+  char c = 'a';
+  char str[] = "booba";
+  s21_sprintf(str1, format, c, str, c, 9, str);
+  sprintf(str2, format, c, str, c, 9, str);
+  ck_assert_str_eq(str1, str2);
+}
+END_TEST
 
 int main() {
   Suite *s = suite_create("s21_sprintf tests");
@@ -2031,6 +2101,12 @@ int main() {
   tcase_add_test(tc, g_small);
   tcase_add_test(tc, g_mantiss_flags);
 
+  tcase_add_test(tc, sprintf_char);
+  tcase_add_test(tc, sprintf_string);
+  tcase_add_test(tc, sprintf_wstr);
+  tcase_add_test(tc, sprintf_wchar);
+  tcase_add_test(tc, sprintf_wchar_NULL);
+  tcase_add_test(tc, sprintf_char_spec_both);
   srunner_run_all(sr, CK_ENV);
   srunner_ntests_failed(sr);
   srunner_free(sr);

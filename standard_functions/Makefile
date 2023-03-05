@@ -4,13 +4,13 @@ CFLAGS = -Wall -Werror -Wextra -std=c11
 all: s21_string.a
 
 s21_string.a:
-	$(CC) -c s21_string.c ../sprintf/s21_sprintf.c
+	$(CC) -c s21_string.c ../sprintf/s21_sprintf.c ../special_functions/special_functions.c
 	ar rcs s21_string.a *.o
 	ranlib s21_string.a
 	rm *.o
 
 test: rebuild
-	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_test.c s21_string.a  -o tests
+	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_tests.c s21_string.a  -o tests
 	./tests
 	rm tests
 

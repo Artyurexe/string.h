@@ -10,7 +10,7 @@
 #define S21_isinf(x) (!S21_isnan(x) && S21_isnan(x - x))
 struct specifier {
   char flag[4];
-  char width[310];
+  char* width;
   char precision[310];
   char length[3];
   char type;

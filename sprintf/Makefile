@@ -11,7 +11,7 @@ s21_string.a:
 
 test:
 	make s21_string.a
-	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_test.c s21_string.a  -o test
+	$(CC) $(CFLAGS) -lcheck -lm -lpthread s21_string.a s21_test.c -o test
 	./test
 	rm test
 

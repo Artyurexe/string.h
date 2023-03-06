@@ -49,6 +49,8 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_g(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_e(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int s21_isdigit(char c);
 int s21_empty_str(char *str);

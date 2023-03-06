@@ -341,31 +341,54 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
   *j += i;
   return success; 
 }
-int read_e(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+// int read_e(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+//   int i = 0;
+//   int success = 0;
+//   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+//     i++;
+//   }
+//   if (atoi(spec->width) && atoi(spec->width) < i) {
+    
+//     i = atoi(spec->width);
+//   }
+//   if (spec->width[0] != '*') {
+//     char *copy = malloc(i + 1);
+//     strncpy(copy, str + *j, i);
+//     copy[i] = '\0';
+//     printf("%s\n", copy);
+//      if (spec->length[0] == 'l') {
+//        double *f = va_arg(*ap, double *);
+//       char *endptr = NULL;
+//       *f = strtod(copy, &endptr);
+      
+//     } else {
+//        float *f = va_arg(*ap, float *);
+//        *f = atoi(copy);
+//        printf("%f\n", *f);
+//     }
+//     if (strtol(copy, (char **)NULL, 16)|| (copy[0] == '0'))
+//       success = 1;
+//     free(copy);
+//   }
+//   *j += i;
+//   return success; 
+// }
+
+int read_f(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
   int i = 0;
   int success = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
     i++;
   }
   if (atoi(spec->width) && atoi(spec->width) < i) {
-    
     i = atoi(spec->width);
   }
   if (spec->width[0] != '*') {
     char *copy = malloc(i + 1);
     strncpy(copy, str + *j, i);
     copy[i] = '\0';
-    printf("%s\n", copy);
-     if (spec->length[0] == 'l') {
-       double *f = va_arg(*ap, double *);
-      char *endptr = NULL;
-      *f = strtod(copy, &endptr);
-      
-    } else {
-       float *f = va_arg(*ap, float *);
-       *f = atoi(copy);
-       printf("%f\n", *f);
-    }
+    float *f = va_arg(*ap, float *);
+    *f = atof(copy);
     if (strtol(copy, (char **)NULL, 16)|| (copy[0] == '0'))
       success = 1;
     free(copy);
@@ -373,8 +396,29 @@ int read_e(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
   *j += i;
   return success; 
 }
-
-int read_f(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+int read_g(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
+  int i = 0;
+  int success = 0;
+  while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
+    i++;
+  }
+  if (atoi(spec->width) && atoi(spec->width) < i) {
+    i = atoi(spec->width);
+  }
+  if (spec->width[0] != '*') {
+    char *copy = malloc(i + 1);
+    strncpy(copy, str + *j, i);
+    copy[i] = '\0';
+    float *f = va_arg(*ap, float *);
+    *f = atof(copy);
+    if (strtol(copy, (char **)NULL, 16)|| (copy[0] == '0'))
+      success = 1;
+    free(copy);
+  }
+  *j += i;
+  return success; 
+}
+int read_e(char *str, va_list *ap, struct specifier *spec,  int *j, char c) {
   int i = 0;
   int success = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c && str[*j + i] != '%') {
@@ -443,18 +487,22 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
     case 'i': ;
       success = read_i(str, ap, spec, j, c);
       break;
-    case 'e': ;
+    case 'e': 
+    success = read_e(str, ap, spec, j, c);
       break;
     case 'E': ;
+    success = read_e(str, ap, spec, j, c);
       break;
     case 'f': ;
       success = read_f(str, ap, spec, j, c);
       break;
-    case 'g': ;
+    case 'g': 
+    success = read_g(str, ap, spec, j, c);
       break;
     case 'G': ;
+    success = read_g(str, ap, spec, j, c);
       break;
-    case 'o': ;
+    case 'o': 
       success = read_o(str, ap, spec, j, c);
       break;
     case 's': ;
@@ -478,17 +526,27 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
   }
   return success;
 }
-
+// int main () {
+//   char fstr[] = "   \n\n %e  \n\n\n \t %E     %g         %G";
+//   char str[] = "321.123456789 -123456789.987654321 +999.999      \n 0.001";
+//   float a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
+//   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
+//   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
+//   printf("s21 %e %E %g %G\n", a1,b1,c1,d1);
+//   printf("ss %e %E %g %G\n", a2,b2,c2,d2);
+//   printf("res s21 %d\n", res1);
+//   printf("res ss %d\n", res2);
+// }
 // int main() {
-//   long long a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
-//   const char str[] = "-1337 +1 -1 -1";
-//   const char fstr[] = "%15lld %1lld %1lld %5lld";
+//   float a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
+//   const char str[] = "-1533213.3242 -133242.2324 -12.0 -0.01";
+//   const char fstr[] = "%e %e %e %e";
 
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
 //   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
 
-//     printf("s21:  %lld.  %lld.  %lld.  %lld. \n", a1, b1, c1, d1);
-//     printf("ss:   %lld.  %lld.  %lld.  %lld. \n", a2, b2, c2, d2);
+//     printf("s21:  %e  %e  %e  %e \n", a1, b1, c1, d1);
+//     printf("ss:   %e  %e  %e  %e \n", a2, b2, c2, d2);
 //     printf("s21_res:  %d\n", res1);
 //     printf("ss_res:   %d\n", res2);
 // }

@@ -897,7 +897,7 @@ START_TEST(e_inf) {
   char str1[BUFF_SIZE];
   char str2[BUFF_SIZE];
 
-  char *format = "%E, %Le";
+  char *format = "%10E, %Le";
   double var1 = DBL_MAX * 1e20;
   long double var2 = LDBL_MAX * 1e20;
 
@@ -1992,7 +1992,7 @@ START_TEST(sprintf_wchar) {
   char str1[1000];
   char str2[1000];
 
-  char *format = "%03lc";
+  char *format = "%3lc";
   wchar_t longChar = 0xC9;
   s21_sprintf(str1, format, longChar);
   sprintf(str2, format, longChar);
@@ -2025,7 +2025,7 @@ END_TEST
 START_TEST(sprintf_char_spec_both) {
   char str1[1000];
   char str2[1000];
-  char format[] = "This is %4c simple %-1s in %02c %*s";
+  char format[] = "This is %4c simple %-1s in %2c %*s";
   char c = 'a';
   char str[] = "booba";
   s21_sprintf(str1, format, c, str, c, 9, str);

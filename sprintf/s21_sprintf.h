@@ -43,5 +43,6 @@ int record_str(char *str, struct specifier spec, va_list *ap);
 void record(char *str, struct specifier spec, va_list *ap);
 void record_pointer(char *str, struct specifier spec, va_list *ap);
 void record_nan_inf(char* str, long double num, struct specifier *spec, s21_size_t width);
-
+s21_size_t s21_wstrlen(wchar_t *wstr);
+void s21_WchInStr(char *str, wchar_t *wstr, int len);
 #endif  // SRC_SPRINTF_S21_SPRINTF_H_

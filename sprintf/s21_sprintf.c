@@ -381,15 +381,14 @@ int record_char(char *str, struct specifier spec, va_list *ap) {
         s21_strcat(str, " ");
   }
   if (s21_strchr(spec.length, 'l')) {
-    wchar_t wc = va_arg(*ap, wchar_t);
-    if (wcstombs(str + s21_strlen(str), &wc, 1) == 0)
-      return 1;
-  }
-  else {
-    char c = va_arg(*ap, int);
-    long long len = s21_strlen(str);
-    str[len] = c;
-    str[len + 1] = '\0';
+    wchar_t wchar = va_arg(*ap, wchar_t);
+    wchar_t wstr[2] = {0};
+    wstr[0] = wchar;
+    s21_WchInStr(str, wstr, 1);
+  } else {
+    char sym = (char)va_arg(*ap, int);
+    str[s21_strlen(str) + 1] = '\0';
+    str[s21_strlen(str)] = sym;
   }
   if (width && s21_strchr(spec.flag, '-'))
     for(long long i = 0; i < width - 1; i++)
@@ -405,7 +404,7 @@ int record_str(char *str, struct specifier spec, va_list *ap) {
   if (s21_strchr(spec.length, 'l')) {
     wchar_t *ws = va_arg(*ap, wchar_t*);
     width -= wcslen(ws);
-    if (width>=0) {
+    if (width>=0 && !s21_strchr(spec.flag, '-')) {
       for(long long i = 0; i < width; i++)
         s21_strcat(str, " ");
     }
@@ -525,7 +524,7 @@ void record_nan_inf(char* str, long double num, struct specifier *spec, s21_size
   }
 
   if (s21_strlen(temp) < width) {
-    s21_size_t cnt = width - s21_strlen(str);
+    s21_size_t cnt = width - s21_strlen(temp);
     char filler[2] = "";
     s21_strcat(filler, " ");
     if (!s21_strchr(spec->flag, '-')) {
@@ -662,6 +661,16 @@ long long count_exp(long double num) {
   }
   
   return exp;
+}
+void s21_WchInStr(char *str, wchar_t *wstr, int len) {
+  int buflen = 0;
+  char *p = S21_NULL;
+  buflen = s21_strlen(str);
+  p = str + buflen;
+  for (int i = 0; i < len; i++) {
+    *(p++) = (char)*(wstr++);
+  }
+  *p = '\0';
 }
 // int main() {
 //   char str1[1000];

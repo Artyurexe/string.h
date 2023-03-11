@@ -14,15 +14,15 @@ int s21_sscanf(const char *str, const char *format, ...) {
   int j = 0;
   char c = '\0';
 
-  if (string[0] != '\0') {
+  if (!s21_empty_str(string) && string[0] != '\0') {
     for (size_t i = 0; i < strlen(format) && (size_t)j < strlen(string); i++) {
       specifier_init(&spec);
-      if (s21_isspace(format[i])) {
+      if (format[i] && s21_isspace(format[i])) {
         while (s21_isspace(string[j]) && string[i]) {
           j++;
         }
       }
-      while (s21_isspace(format[i])) {
+      while (format[i] && s21_isspace(format[i])) {
         i++;
       }
       if (format[i] != '%' && (format[i] == string[j])) {
@@ -31,8 +31,9 @@ int s21_sscanf(const char *str, const char *format, ...) {
         break;
       }
       else if (format[i] == '%' && format[i + 1] == '%') {
+        i++;
       }
-      else if (format[i] == '%' && string[j]) {
+      else if (format[i] && string[j] && format[i] == '%' && string[j]) {
         specifier_parsing((char *)&format[i + 1], &spec);
         i += strcspn(&format[i + 1], types) + 1;
         while (s21_isspace(string[j]) && spec.type != 'c') {
@@ -157,7 +158,7 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c)
       int *d = va_arg(*ap, int *);
       *d = atoi(copy);
     }
-      if (atol(copy) || atoll(copy) || atoi(copy) || (strcmp(copy, "0") == 0 && atoi(copy) == 0))
+      if ((copy) && (atol(copy) || atoll(copy) || atoi(copy) || (strcmp(copy, "0") == 0 && atoi(copy) == 0)))
         success = 1;  
   } 
   else if (copy) {
@@ -348,7 +349,6 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
 //     i++;
 //   }
 //   if (atoi(spec->width) && atoi(spec->width) < i) {
-    
 //     i = atoi(spec->width);
 //   }
 //   if (spec->width[0] != '*') {
@@ -360,7 +360,6 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c)
 //        double *f = va_arg(*ap, double *);
 //       char *endptr = NULL;
 //       *f = strtod(copy, &endptr);
-      
 //     } else {
 //        float *f = va_arg(*ap, float *);
 //        *f = atoi(copy);
@@ -526,27 +525,17 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
   }
   return success;
 }
-// int main () {
-//   char fstr[] = "   \n\n %e  \n\n\n \t %E     %g         %G";
-//   char str[] = "321.123456789 -123456789.987654321 +999.999      \n 0.001";
-//   float a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
-//   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
-//   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
-//   printf("s21 %e %E %g %G\n", a1,b1,c1,d1);
-//   printf("ss %e %E %g %G\n", a2,b2,c2,d2);
-//   printf("res s21 %d\n", res1);
-//   printf("res ss %d\n", res2);
-// }
+
+
 // int main() {
-//   float a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
-//   const char str[] = "-1533213.3242 -133242.2324 -12.0 -0.01";
-//   const char fstr[] = "%e %e %e %e";
+//   int a1 = 1234, a2 = 33333;
+//   int b1 = 1234, b2 = 33333;
 
-//   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
-//   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
+//   const char str[] = "%%123%888";
+//   const char fstr[] = "%%%%%d%%%d";
+//   int res1 = s21_sscanf(str, fstr, &a1, &b1);
+//   int res2 = sscanf(str, fstr, &a2, &b2);
 
-//     printf("s21:  %e  %e  %e  %e \n", a1, b1, c1, d1);
-//     printf("ss:   %e  %e  %e  %e \n", a2, b2, c2, d2);
-//     printf("s21_res:  %d\n", res1);
-//     printf("ss_res:   %d\n", res2);
+//   printf("res21: %d  %d  %d\n", res1, a1, b1);
+//   printf("resss: %d  %d  %d\n", res2, a2, b2);
 // }

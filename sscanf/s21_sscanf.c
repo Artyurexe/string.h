@@ -33,6 +33,11 @@ int s21_sscanf(const char *str, const char *format, ...) {
       else if (format[i] == '%' && format[i + 1] == '%') {
         i++;
       }
+      else if (format[i] == '%' && string[j] == '%')
+      {
+        i++;
+        j++;
+      }
       else if (format[i] && string[j] && format[i] == '%' && string[j]) {
         specifier_parsing((char *)&format[i + 1], &spec);
         i += strcspn(&format[i + 1], types) + 1;
@@ -541,15 +546,14 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 
 
 // int main() {
-//   long long a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
-//   const char str[] = "-0 +0 +0 -0";
-//   const char fstr[] = "%2lld %1lld %1lld %1lld";
-
+//   char fstr[] = "%d%d%%%d%d";
+//   char str[] = "11111 22222 % 33333";
+//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
 //   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
 
 //   long double v1 = 0, v2 = 0;
 
-//   printf("res21: %d %lld  %lld  %lld  %lld  %Lf\n", res1, a1, b1, c1, d1, v1);
-//   printf("resss: %d %lld  %lld  %lld  %lld  %Lf\n", res2, a2, b2, c2, d2, v2);
+//   printf("res21: %d %d  %d  %d  %d  %Lf\n", res1, a1, b1, c1, d1, v1);
+//   printf("resss: %d %d  %d  %d  %d  %Lf\n", res2, a2, b2, c2, d2, v2);
 // }

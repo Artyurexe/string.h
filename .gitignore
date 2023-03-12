@@ -8,3 +8,5 @@
 *.gcda
 *.gcno
 report/
+test
+test.info

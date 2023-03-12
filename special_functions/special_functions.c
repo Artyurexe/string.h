@@ -27,6 +27,7 @@ void *s21_to_lower(const char *str) {
     else 
       buff[i] = str[i];
   }
+  
   return buff;
 }
 

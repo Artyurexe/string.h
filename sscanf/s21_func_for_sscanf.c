@@ -54,7 +54,7 @@ long s21_strtol(const char *nptr, char **endptr, register int base) {
     base = 16;
   }
   if (base == 0) base = c == '0' ? 8 : 10;
-  cutoff = neg ? -(unsigned long)LONG_MIN : LONG_MAX;
+  cutoff = neg ? -(unsigned long)S21_LONG_MIN : S21_LONG_MAX;
   cutlim = cutoff % (unsigned long)base;
   cutoff /= (unsigned long)base;
   for (acc = 0, any = 0;; c = *s++) {
@@ -74,7 +74,7 @@ long s21_strtol(const char *nptr, char **endptr, register int base) {
     }
   }
   if (any < 0) {
-    acc = neg ? LONG_MIN : LONG_MAX;
+    acc = neg ? S21_LONG_MIN : S21_LONG_MAX;
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
@@ -102,7 +102,7 @@ llong_type s21_strtoll(const char *nptr, char **endptr, register int base) {
   }
   if (base == 0) base = c == '0' ? 8 : 10;
 
-  cutoff = neg ? -(ullong_type)LLONG_MIN : LLONG_MAX;
+  cutoff = neg ? -(ullong_type) S21_LLONG_MIN : S21_LLONG_MAX;
   cutlim = cutoff % (ullong_type)base;
   cutoff /= (ullong_type)base;
   for (acc = 0, any = 0;; c = *s++) {
@@ -122,7 +122,7 @@ llong_type s21_strtoll(const char *nptr, char **endptr, register int base) {
     }
   }
   if (any < 0) {
-    acc = neg ? LLONG_MIN : LLONG_MAX;
+    acc = neg ? S21_LLONG_MIN : S21_LLONG_MAX;
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
@@ -151,8 +151,8 @@ unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
     base = 16;
   }
   if (base == 0) base = c == '0' ? 8 : 10;
-  cutoff = (unsigned long)ULONG_MAX / (unsigned long)base;
-  cutlim = (unsigned long)ULONG_MAX % (unsigned long)base;
+  cutoff = (unsigned long)S21_ULONG_MAX / (unsigned long)base;
+  cutlim = (unsigned long)S21_ULONG_MAX % (unsigned long)base;
   for (acc = 0, any = 0;; c = *s++) {
     if (s21_isdigit(c))
       c -= '0';
@@ -170,7 +170,7 @@ unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
     }
   }
   if (any < 0) {
-    acc = ULONG_MAX;
+    acc = S21_ULONG_MAX;
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
@@ -198,8 +198,8 @@ ullong_type s21_strtoull(const char *nptr, char **endptr, register int base) {
     base = 16;
   }
   if (base == 0) base = c == '0' ? 8 : 10;
-  cutoff = (ullong_type)ULLONG_MAX / (ullong_type)base;
-  cutlim = (ullong_type)ULLONG_MAX % (ullong_type)base;
+  cutoff = (ullong_type)S21_ULLONG_MAX / (ullong_type)base;
+  cutlim = (ullong_type)S21_ULLONG_MAX % (ullong_type)base;
   for (acc = 0, any = 0;; c = *s++) {
     if (s21_isdigit(c))
       c -= '0';
@@ -217,7 +217,7 @@ ullong_type s21_strtoull(const char *nptr, char **endptr, register int base) {
     }
   }
   if (any < 0) {
-    acc = ULLONG_MAX;
+    acc = S21_ULLONG_MAX;
     errno = ERANGE;
   } else if (neg)
     acc = -acc;

@@ -3,6 +3,7 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef unsigned int s21_size_t;
 #define S21_NULL (void*)0
@@ -27,7 +28,7 @@ char *s21_strpbrk(const char *str1, const char *str2);
 char *s21_strrchr(const char *str, int c);
 s21_size_t s21_strspn(const char *str1, const char *str2);
 char *s21_strstr(const char *haystack, const char *needle);
-long long s21_atoi(char *str);
+int s21_atoi(char *str);
 
 void *s21_to_upper(const char *str);
 void *s21_to_lower(const char *str);

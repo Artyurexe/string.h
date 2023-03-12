@@ -1,12 +1,11 @@
 #include "s21_sscanf.h"
-#include "../standard_functions/s21_string.h"
 
 int s21_sscanf(const char *str, const char *format, ...) {
   const char *types = "cdieEfgGosuxXpn%%";
   va_list ap;
   va_start(ap, format);
   struct specif spec;
-  char *string = malloc((s21_strlen(str) + 1) * sizeof(char));
+  char *string = malloc((strlen(str) + 1) * sizeof(char));
   s21_strcpy(string, str);
   int success = 0;
   int count_successes = 0;
@@ -16,8 +15,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
   char c = '\0';
 
   if (!s21_empty_str(string) && string[0] != '\0') {
-    for (size_t i = 0; i < s21_strlen(format) && (size_t)j < s21_strlen(string); i++) {
-      scanf_specif_init(&spec);
+    for (size_t i = 0; i < strlen(format) && (size_t)j < strlen(string); i++) {
+      scanf_specifier_init(&spec);
       if (format[i] && s21_isspace(format[i])) {
         while (s21_isspace(string[j]) && string[i]) {
           j++;
@@ -36,7 +35,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         i++;
         j++;
       } else if (format[i] && string[j] && format[i] == '%' && string[j]) {
-        scanf_specifier_parse((char *)&format[i + 1], &spec);
+        scanf_specifier_parsing((char *)&format[i + 1], &spec);
         i += s21_strcspn(&format[i + 1], types) + 1;
         while (s21_isspace(string[j]) && spec.type != 'c') {
           j++;
@@ -64,7 +63,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
   return count_successes;
 }
 
-void scanf_specifier_parse(char *str, struct specif *spec) {
+void scanf_specifier_parsing(char *str, struct specif *spec) {
   char *buff = str;
   char *buff1 = malloc(1024);
   char *buff2 = buff1;
@@ -76,35 +75,35 @@ void scanf_specifier_parse(char *str, struct specif *spec) {
   spec->type = str[s21_strcspn(str, types)];
   scanf_pointer_shift(&buff, buff1, flags);
   for (int i = 0; i < 5; i++) {
-    if (s21_strchr(buff1, flags[i]) != S21_NULL &&
-        ((flags[i] == ' ' && s21_strchr(buff1, '+') == S21_NULL) ||
-         (flags[i] == '0' && s21_strchr(buff1, '-') == S21_NULL) || flags[i] == '-' ||
+    if (s21_strchr(buff1, flags[i]) != NULL &&
+        ((flags[i] == ' ' && s21_strchr(buff1, '+') == NULL) ||
+         (flags[i] == '0' && s21_strchr(buff1, '-') == NULL) || flags[i] == '-' ||
          flags[i] == '+' || flags[i] == '#'))
       spec->flag[k++] = flags[i];
   }
   spec->flag[k] = '\0';
   k = 0;
   scanf_pointer_shift(&buff, buff1, numbers);
-  scanf_numbers_parse(spec->width, buff1);
+  scanf_numbers_parsing(spec->width, buff1);
   if (*buff == '.') {
     buff++;
     scanf_pointer_shift(&buff, buff1, numbers);
     if (*buff1 == '\0')
       s21_strcpy(spec->precision, "0");
     else
-      scanf_numbers_parse(spec->precision, buff1);
+      scanf_numbers_parsing(spec->precision, buff1);
   }
   s21_memcpy(buff1, buff, s21_strspn((const char *)buff, length));
   for (int i = 0; i < 3; i++) {
     char *c = s21_strchr(buff1, length[i]);
-    if (c != S21_NULL) {
+    if (c != NULL) {
       if (length[i] == 'L' ||
           (length[i] == 'h' &&
-           (c < s21_strchr(buff1, 'l') || s21_strchr(buff1, 'l') == S21_NULL)) ||
-          (length[i] == 'l' && s21_strchr(c + 1, length[i]) == S21_NULL &&
+           (c < s21_strchr(buff1, 'l') || s21_strchr(buff1, 'l') == NULL)) ||
+          (length[i] == 'l' && s21_strchr(c + 1, length[i]) == NULL &&
            spec->length[0] != 'h')) {
         spec->length[k++] = length[i];
-      } else if (length[i] == 'l' && s21_strchr(c + 1, length[i]) != S21_NULL &&
+      } else if (length[i] == 'l' && s21_strchr(c + 1, length[i]) != NULL &&
                  spec->length[0] != 'h') {
         spec->length[k++] = length[i];
         spec->length[k++] = length[i];
@@ -115,7 +114,7 @@ void scanf_specifier_parse(char *str, struct specif *spec) {
   free(buff2);
 }
 
-void scanf_numbers_parse(char *str, char *buff) {
+void scanf_numbers_parsing(char *str, char *buff) {
   size_t length = s21_strspn((const char *)buff, "1234567890");
   if (*buff == '*' && length == 0) length = 1;
   s21_strcpy(str, buff);
@@ -129,7 +128,7 @@ void scanf_pointer_shift(char **buff, char *buff1, const char *str) {
   *buff += length;
 }
 
-void scanf_specif_init(struct specif *spec) {
+void scanf_specifier_init(struct specif *spec) {
   spec->flag[0] = '\0';
   spec->width[0] = '\0';
   spec->precision[0] = '\0';
@@ -215,7 +214,7 @@ int read_c(char *str, va_list *ap, struct specif *spec, int *j) {
 }
 
 int read_u(char *str, va_list *ap, struct specif *spec, int *j, char c) {
-  char *end = S21_NULL;
+  char *end = NULL;
   int success = 0;
   int i = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
@@ -272,18 +271,18 @@ int read_o(char *str, va_list *ap, struct specif *spec, int *j, char c) {
     copy[i] = '\0';
     if (s21_strcmp(spec->length, "l") == 0) {
       long int *d = va_arg(*ap, long int *);
-      *d = s21_strtol(copy, (char **)S21_NULL, 8);
+      *d = s21_strtol(copy, (char **)NULL, 8);
     } else if (s21_strcmp(spec->length, "ll") == 0) {
       long long *d = va_arg(*ap, long long *);
-      *d = s21_strtoll(copy, (char **)S21_NULL, 8);
+      *d = s21_strtoll(copy, (char **)NULL, 8);
     } else if (s21_strcmp(spec->length, "h") == 0) {
       short *d = va_arg(*ap, short *);
-      *d = s21_strtol(copy, (char **)S21_NULL, 8);
+      *d = s21_strtol(copy, (char **)NULL, 8);
     } else {
       int *d = va_arg(*ap, int *);
-      *d = s21_strtol(copy, (char **)S21_NULL, 8);
+      *d = s21_strtol(copy, (char **)NULL, 8);
     }
-    if (s21_strtol(copy, (char **)S21_NULL, 8) || (copy[0] == '0')) success = 1;
+    if (s21_strtol(copy, (char **)NULL, 8) || (copy[0] == '0')) success = 1;
     free(copy);
   }
   *j += i;
@@ -307,16 +306,16 @@ int read_xX(char *str, va_list *ap, struct specif *spec, int *j, char c) {
 
     if (s21_strcmp(spec->length, "l") == 0) {
       unsigned long int *x = va_arg(*ap, unsigned long int *);
-      *x = s21_strtol(copy, (char **)S21_NULL, 16);
+      *x = s21_strtol(copy, (char **)NULL, 16);
     } else if (s21_strcmp(spec->length, "ll") == 0) {
       unsigned long long int *x = va_arg(*ap, unsigned long long int *);
-      *x = s21_strtol(copy, (char **)S21_NULL, 16);
+      *x = s21_strtol(copy, (char **)NULL, 16);
     } else {
       unsigned int *x = va_arg(*ap, unsigned int *);
-      *x = s21_strtol(copy, (char **)S21_NULL, 16);
+      *x = s21_strtol(copy, (char **)NULL, 16);
     }
     // if X?????how to make upper case
-    if (s21_strtol(copy, (char **)S21_NULL, 16) || (copy[0] == '0')) success = 1;
+    if (s21_strtol(copy, (char **)NULL, 16) || (copy[0] == '0')) success = 1;
     free(copy);
   }
   *j += i;
@@ -389,8 +388,8 @@ int read_i(char *str, va_list *ap, struct specif *spec, int *j, char c) {
         success = read_o(str, ap, spec, j, c);
       }
     }
-    if (s21_atoll(copy) || s21_strtol(copy, (char **)S21_NULL, 16) ||
-        s21_strtol(copy, (char **)S21_NULL, 8) || (copy[0] == '0'))
+    if (s21_atoll(copy) || s21_strtol(copy, (char **)NULL, 16) ||
+        s21_strtol(copy, (char **)NULL, 8) || (copy[0] == '0'))
       success = 1;
     free(copy);
   }
@@ -449,3 +448,14 @@ int match_str_and_format(char *str, struct specif *spec, va_list *ap, int *j,
   }
   return success;
 }
+
+// int main() {
+// char fstr[] = "%c %c %c %c";
+//   char str[] = "z ' ' /";
+//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
+
+//   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
+//   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
+//   printf("res21: %d %d %d %d %df\n", res1, a1, b1, c1, d1);
+//   printf("resss: %d %d %d %d %d\n", res2, a2, b2, c2, d2);
+// }

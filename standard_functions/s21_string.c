@@ -230,11 +230,20 @@ char *s21_strerror(int errnum) {
   return flag;
 }
 
-long long s21_atoi(char *str) {
-  long long res = 0;
-  while ((*str > 47) && (*str < 58)) {
+int s21_atoi(char *str) {
+  long long res = 0, sign = 1;
+  if (*str == '-') {
+    sign = -1;
+    str++;
+  }
+  while (*str == ' ')
+    str++;
+  while ((*str > 47) && (*str < 58) && *str) {
+    if (res >= INT16_MAX)
+      return sign == -1 ? 0 : -1;
     res = res * 10 + (int)*str - 48;
     str += 1;
   }
+  res *= sign;
   return res;
 }

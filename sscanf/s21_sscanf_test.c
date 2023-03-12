@@ -3569,8 +3569,7 @@ END_TEST
 // END_TEST
 
 // START_TEST(mixed_ptrs2) {
-//   char *a1 = 0, *a2 = 0, *b1 = 0, *b2 = 0, *c1 = 0, *c2 = 0, *d1 = 0, *d2 =
-//   0;
+//   char *a1 = 0, *a2 = 0, *b1 = 0, *b2 = 0, *c1 = 0, *c2 = 0, *d1 = 0, *d2 = 0;
 
 //   const char str[] = "0x4 0x3 0x2 0x1";
 //   const char fstr[] = "%p %p %p %p";

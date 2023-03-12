@@ -179,7 +179,6 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-
 int read_s(char *str, va_list *ap, struct specifier *spec, int *j) {
   int success = 0;
   int i = 0;
@@ -242,8 +241,9 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
       unsigned int *u = va_arg(*ap, unsigned int *);
       *u = s21_strtoul(copy, &end, 10);
     }
-    if (s21_strtoul(copy, &end, 10) || strcmp(copy, "0") == 0 )   
-    {success = 1;}
+    if (s21_strtoul(copy, &end, 10) || strcmp(copy, "0") == 0) {
+      success = 1;
+    }
     free(copy);
   }
   *j += i;
@@ -339,11 +339,10 @@ int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
     if (strcmp(spec->length, "L") == 0) {
       long double *f = va_arg(*ap, long double *);
       *f = s21_atold(copy);
-    } 
-    else if (strcmp(spec->length, "l") == 0) {
+    } else if (strcmp(spec->length, "l") == 0) {
       double *f = va_arg(*ap, double *);
       *f = s21_atold(copy);
-    }else {
+    } else {
       float *f = va_arg(*ap, float *);
       *f = s21_atold(copy);
     }

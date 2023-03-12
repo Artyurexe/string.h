@@ -4,8 +4,7 @@ int s21_empty_str(char *str) {
   int found_not_space = 1;
   int i = 0;
   while (str[i]) {
-    if (!s21_isspace(str[i]))
-      found_not_space = 0;
+    if (!s21_isspace(str[i])) found_not_space = 0;
     i++;
   }
   return found_not_space;
@@ -54,8 +53,7 @@ long s21_strtol(const char *nptr, char **endptr, register int base) {
     s += 2;
     base = 16;
   }
-  if (base == 0)
-    base = c == '0' ? 8 : 10;
+  if (base == 0) base = c == '0' ? 8 : 10;
   cutoff = neg ? -(unsigned long)LONG_MIN : LONG_MAX;
   cutlim = cutoff % (unsigned long)base;
   cutoff /= (unsigned long)base;
@@ -66,8 +64,7 @@ long s21_strtol(const char *nptr, char **endptr, register int base) {
       c -= s21_isupper(c) ? 'A' - 10 : 'a' - 10;
     else
       break;
-    if (c >= base)
-      break;
+    if (c >= base) break;
     if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
       any = -1;
     else {
@@ -81,8 +78,7 @@ long s21_strtol(const char *nptr, char **endptr, register int base) {
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
-  if (endptr != 0)
-    *endptr = (char *)(any ? s - 1 : nptr);
+  if (endptr != 0) *endptr = (char *)(any ? s - 1 : nptr);
   return (acc);
 }
 llong_type s21_strtoll(const char *nptr, char **endptr, register int base) {
@@ -104,8 +100,7 @@ llong_type s21_strtoll(const char *nptr, char **endptr, register int base) {
     s += 2;
     base = 16;
   }
-  if (base == 0)
-    base = c == '0' ? 8 : 10;
+  if (base == 0) base = c == '0' ? 8 : 10;
 
   cutoff = neg ? -(ullong_type)LLONG_MIN : LLONG_MAX;
   cutlim = cutoff % (ullong_type)base;
@@ -117,8 +112,7 @@ llong_type s21_strtoll(const char *nptr, char **endptr, register int base) {
       c -= s21_isupper(c) ? 'A' - 10 : 'a' - 10;
     else
       break;
-    if (c >= base)
-      break;
+    if (c >= base) break;
     if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
       any = -1;
     else {
@@ -132,13 +126,11 @@ llong_type s21_strtoll(const char *nptr, char **endptr, register int base) {
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
-  if (endptr != 0)
-    *endptr = (char *)(any ? s - 1 : nptr);
+  if (endptr != 0) *endptr = (char *)(any ? s - 1 : nptr);
   return (acc);
 }
 
 unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
-
   register const char *s = nptr;
   register unsigned long acc;
   register int c;
@@ -158,8 +150,7 @@ unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
     s += 2;
     base = 16;
   }
-  if (base == 0)
-    base = c == '0' ? 8 : 10;
+  if (base == 0) base = c == '0' ? 8 : 10;
   cutoff = (unsigned long)ULONG_MAX / (unsigned long)base;
   cutlim = (unsigned long)ULONG_MAX % (unsigned long)base;
   for (acc = 0, any = 0;; c = *s++) {
@@ -169,8 +160,7 @@ unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
       c -= s21_isupper(c) ? 'A' - 10 : 'a' - 10;
     else
       break;
-    if (c >= base)
-      break;
+    if (c >= base) break;
     if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
       any = -1;
     else {
@@ -184,8 +174,7 @@ unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
-  if (endptr != 0)
-    *endptr = (char *)(any ? s - 1 : nptr);
+  if (endptr != 0) *endptr = (char *)(any ? s - 1 : nptr);
   return (acc);
 }
 
@@ -208,8 +197,7 @@ ullong_type s21_strtoull(const char *nptr, char **endptr, register int base) {
     s += 2;
     base = 16;
   }
-  if (base == 0)
-    base = c == '0' ? 8 : 10;
+  if (base == 0) base = c == '0' ? 8 : 10;
   cutoff = (ullong_type)ULLONG_MAX / (ullong_type)base;
   cutlim = (ullong_type)ULLONG_MAX % (ullong_type)base;
   for (acc = 0, any = 0;; c = *s++) {
@@ -219,8 +207,7 @@ ullong_type s21_strtoull(const char *nptr, char **endptr, register int base) {
       c -= s21_isupper(c) ? 'A' - 10 : 'a' - 10;
     else
       break;
-    if (c >= base)
-      break;
+    if (c >= base) break;
     if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
       any = -1;
     else {
@@ -234,8 +221,7 @@ ullong_type s21_strtoull(const char *nptr, char **endptr, register int base) {
     errno = ERANGE;
   } else if (neg)
     acc = -acc;
-  if (endptr != 0)
-    *endptr = (char *)(any ? s - 1 : nptr);
+  if (endptr != 0) *endptr = (char *)(any ? s - 1 : nptr);
   return (acc);
 }
 
@@ -256,8 +242,7 @@ long double s21_atold(char *str) {
       i++;
     }
   }
-  if (str[i] == '.')
-    i++;
+  if (str[i] == '.') i++;
   while (str[i]) {
     if (!(str[i] >= '0' && str[i] <= '9')) {
       break;

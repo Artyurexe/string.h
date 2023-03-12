@@ -77,4 +77,4 @@ int s21_empty_str(char *str);
 // int s21_isunsigned(char c);
 int s21_ishex(char c);
 int s21_isoctal(char c);
-#endif // SRC_sscanf_s21_sscanf_H_
+#endif  // SRC_sscanf_s21_sscanf_H_

@@ -73,15 +73,6 @@ void specifier_parsing(char *str, struct specifier* spec, va_list *ap) {
   spec->length[k] = '\0';
 }
 
-long long s21_atoi(char *str) {
-  long long res = 0;
-  while ((*str > 47) && (*str < 58)) {
-    res = res * 10 + (int)*str - 48;
-    str += 1;
-  }
-  return res;
-}
-
 void numbers_parsing(char* str, char* buff, struct specifier* spec, va_list *ap) {
   if (*buff == '*') {
     int star = va_arg(*ap, int);

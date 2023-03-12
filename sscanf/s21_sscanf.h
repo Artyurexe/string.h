@@ -1,7 +1,7 @@
 #ifndef SRC_sscanf_S21_SSCANF_H_
 #define SRC_sscanf_S21_SSCANF_H_
 
-// #include "s21_string.h"
+//include "s21_string.h"
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -35,7 +35,7 @@ enum type_flag {
 
 void specifier_parsing(char *str, struct specifier* spec);
 void numbers_parsing(char* str, char* buff);
-void pointer_shift(size_t* length, char* buff, char* buff1, const char* str);
+void pointer_shift(char** buff, char* buff1, const char* str);
 void vararg_init(char type, va_list* ap);
 void specifier_init(struct specifier* spec);
 int match_str_and_format(char* str, struct specifier *spec, va_list* ap, int *j, char c);
@@ -48,7 +48,12 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_g(char *str, va_list *ap, struct specifier *spec, int *j, char c);
+int read_e(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c);
 int s21_isdigit(char c);
 int s21_empty_str(char *str);
+// int s21_isunsigned(char c);
+int s21_ishex(char c);
+int s21_isoctal(char c);
 #endif  // SRC_sscanf_s21_sscanf_H_

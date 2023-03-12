@@ -229,3 +229,12 @@ char *s21_strerror(int errnum) {
   }
   return flag;
 }
+
+long long s21_atoi(char *str) {
+  long long res = 0;
+  while ((*str > 47) && (*str < 58)) {
+    res = res * 10 + (int)*str - 48;
+    str += 1;
+  }
+  return res;
+}

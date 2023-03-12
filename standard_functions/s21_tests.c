@@ -722,7 +722,6 @@ END_TEST
 Suite *s21_string_suite(void) {
   Suite *s;
 
-  // tests of copy functions Jesicahi
   TCase *tc_tests_copy;
   s = suite_create("s21_string.h tests");
   tc_tests_copy = tcase_create("copy_func");
@@ -740,7 +739,6 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_tests_copy, strncpy_loop_check);
   suite_add_tcase(s, tc_tests_copy);
 
-  // tests of help functions Jesicahi
   TCase *tc_tests_help;
   tc_tests_help = tcase_create("help_func");
   tcase_add_loop_test(tc_tests_help, s21_strcat_tests, 0, 5);
@@ -754,7 +752,6 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_tests_help, s21_strtok_tests_2);
   suite_add_tcase(s, tc_tests_help);
 
-  // tests of comparison functions Takakoka
   TCase *tc_tests_comp;
   tc_tests_comp = tcase_create("comparison_func");
   tcase_add_test(tc_tests_comp, s21_strcmp_tests);
@@ -762,7 +759,6 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_tests_comp, s21_memcmp_tests);
   suite_add_tcase(s, tc_tests_comp);
 
-  // tests for search functions Takakoka
   TCase *tc_tests_strchr = tcase_create("Tests_strchr");
   tcase_add_test(tc_tests_strchr, test_s21_strchr_test);
   tcase_add_test(tc_tests_strchr, test_s21_strchr_test1);
@@ -802,7 +798,6 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_tests_memchr, test_s21_memchr_test5);
   suite_add_tcase(s, tc_tests_memchr);
 
-  // tests of calculation functions Cupcakep
   TCase *tc_tests_calc;
   tc_tests_calc = tcase_create("calculation_func");
   tcase_add_test(tc_tests_calc, s21_strlen_tests);
@@ -810,7 +805,6 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_tests_calc, s21_strspn_tests);
   suite_add_tcase(s, tc_tests_calc);
 
-  // tests of C# functions Cupcakep
   TCase *tc_tests_CS;
   tc_tests_CS = tcase_create("C#_func");
   tcase_add_test(tc_tests_CS, s21_to_upper_tests);

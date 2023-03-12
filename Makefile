@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
-SRCS= sprintf/s21_sprintf.c special_functions/special_functions.c standard_functions/s21_string.c
-TEST_SRC= sprintf/s21_test.c 
+SRCS= sprintf/s21_sprintf.c special_functions/special_functions.c standard_functions/s21_string.c sscanf/s21_sscanf.c sscanf/s21_func_for_sscanf.c
+TEST_SRC= standard_functions/s21_test.c sprintf/s21_test.c sscanf/s21_sscanf_test.c
 TEST_FLAGS_LINUX= -lcheck -lm -lsubunit -lpthread
 TEST_FLAGS= -lcheck -lm -lpthread
 GCOV_FLAGS = -ftest-coverage -fprofile-arcs

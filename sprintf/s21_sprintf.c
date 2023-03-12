@@ -663,13 +663,3 @@ void s21_WchInStr(char *str, wchar_t *wstr, int len) {
   }
   *p = '\0';
 }
-// int main() {
-//   char str1[1000];
-//   char str2[1000];
-//   char format[] = "This is a simple b%*sba";
-//   char str[] = "ooooooo";
-//   s21_sprintf(str1, format, 5, str);
-//   sprintf(str2, format, 5, str);
-//   puts(str1);
-//   puts(str2);
-// }

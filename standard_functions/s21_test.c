@@ -1,5 +1,7 @@
 #include <check.h>
 #include <string.h>
+#include "../sprintf/s21_sprintf_tests.h"
+#include "../sscanf/s21_sscanf_tests.h"
 
 #include "s21_string.h"
 
@@ -672,7 +674,7 @@ START_TEST(s21_error){
     ck_assert_str_eq(s21_strerror(_i), strerror(_i));
 }
 
-int main() {
+Suite *s21_string_suite(void) {
   Suite *s1 = suite_create("Tests_for_string");
 
   TCase *tc_memchr = tcase_create("Tests_for_memchr ");
@@ -695,8 +697,6 @@ int main() {
   TCase *tc_strspn = tcase_create("Tests_for_strspn ");
   TCase *tc_strtok = tcase_create("Tests_for_strtok ");
   TCase *tc_strerror = tcase_create("Tests_for_strerror ");
-
-  SRunner *sr = srunner_create(s1);
 
   suite_add_tcase(s1, tc_memchr);
   suite_add_tcase(s1, tc_memcmp);
@@ -835,10 +835,29 @@ int main() {
   //strerror
   tcase_add_loop_test(tc_strerror, s21_error, -1, 108);
 
+  return s1;
+}
 
-  srunner_run_all(sr, CK_ENV);
-  int a = srunner_ntests_failed(sr);
-  srunner_free(sr);
+int main() {
+ Suite *s, *s1, *s2;
+  SRunner *runner, *runner1, *runner2;
 
-  return a == 0 ? 0 : 1;
+  s = s21_string_suite();
+  s1 = s21_sprintf_test();
+  s2 = s21_sscanf_test();
+  runner = srunner_create(s);
+  runner1 = srunner_create(s1);
+  runner2 = srunner_create(s2);
+
+  srunner_run_all(runner, CK_VERBOSE);
+  srunner_run_all(runner1, CK_VERBOSE);
+  srunner_run_all(runner2, CK_VERBOSE);
+
+  srunner_ntests_failed(runner);
+  srunner_ntests_failed(runner1);
+  srunner_ntests_failed(runner2);
+  srunner_free(runner);
+  srunner_free(runner1);
+  srunner_free(runner2);
+  return 0;
 }

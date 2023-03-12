@@ -815,19 +815,3 @@ Suite *s21_string_suite(void) {
 
   return s;
 }
-
-int main(void) {
-  Suite *s;
-  SRunner *runner;
-
-  s = s21_string_suite();
-
-  runner = srunner_create(s);
-
-  srunner_run_all(runner, CK_VERBOSE);
-
-  srunner_ntests_failed(runner);
-  srunner_free(runner);
-
-  return 0;
-}

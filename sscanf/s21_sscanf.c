@@ -5,7 +5,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
   const char *types = "cdieEfgGosuxXpn%%";
   va_list ap;
   va_start(ap, format);
-  struct specifier spec;
+  struct specif spec;
   char *string = malloc((strlen(str) + 1) * sizeof(char));
   strcpy(string, str);
   int success = 0;
@@ -17,7 +17,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
 
   if (!s21_empty_str(string) && string[0] != '\0') {
     for (size_t i = 0; i < strlen(format) && (size_t)j < strlen(string); i++) {
-      specifier_init(&spec);
+      specif_init(&spec);
       if (format[i] && s21_isspace(format[i])) {
         while (s21_isspace(string[j]) && string[i]) {
           j++;
@@ -36,7 +36,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         i++;
         j++;
       } else if (format[i] && string[j] && format[i] == '%' && string[j]) {
-        specifier_parsing((char *)&format[i + 1], &spec);
+        specifier_parse((char *)&format[i + 1], &spec);
         i += strcspn(&format[i + 1], types) + 1;
         while (s21_isspace(string[j]) && spec.type != 'c') {
           j++;
@@ -64,7 +64,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
   return count_successes;
 }
 
-void specifier_parsing(char *str, struct specifier *spec) {
+void specifier_parse(char *str, struct specif *spec) {
   char *buff = str;
   char *buff1 = malloc(1024);
   char *buff2 = buff1;
@@ -85,14 +85,14 @@ void specifier_parsing(char *str, struct specifier *spec) {
   spec->flag[k] = '\0';
   k = 0;
   pointer_shift(&buff, buff1, numbers);
-  numbers_parsing(spec->width, buff1);
+  numbers_parse(spec->width, buff1);
   if (*buff == '.') {
     buff++;
     pointer_shift(&buff, buff1, numbers);
     if (*buff1 == '\0')
       strcpy(spec->precision, "0");
     else
-      numbers_parsing(spec->precision, buff1);
+      numbers_parse(spec->precision, buff1);
   }
   memcpy(buff1, buff, strspn((const char *)buff, length));
   for (int i = 0; i < 3; i++) {
@@ -115,7 +115,7 @@ void specifier_parsing(char *str, struct specifier *spec) {
   free(buff2);
 }
 
-void numbers_parsing(char *str, char *buff) {
+void numbers_parse(char *str, char *buff) {
   size_t length = strspn((const char *)buff, "1234567890");
   if (*buff == '*' && length == 0) length = 1;
   strcpy(str, buff);
@@ -129,7 +129,7 @@ void pointer_shift(char **buff, char *buff1, const char *str) {
   *buff += length;
 }
 
-void specifier_init(struct specifier *spec) {
+void specif_init(struct specif *spec) {
   spec->flag[0] = '\0';
   spec->width[0] = '\0';
   spec->precision[0] = '\0';
@@ -137,7 +137,7 @@ void specifier_init(struct specifier *spec) {
   spec->type = 0;
 }
 
-int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+int read_d(char *str, va_list *ap, struct specif *spec, int *j, char c) {
   int success = 0;
   int i = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
@@ -180,7 +180,7 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-int read_s(char *str, va_list *ap, struct specifier *spec, int *j) {
+int read_s(char *str, va_list *ap, struct specif *spec, int *j) {
   int success = 0;
   int i = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i])) {
@@ -203,7 +203,7 @@ int read_s(char *str, va_list *ap, struct specifier *spec, int *j) {
   return success;
 }
 
-int read_c(char *str, va_list *ap, struct specifier *spec, int *j) {
+int read_c(char *str, va_list *ap, struct specif *spec, int *j) {
   int success = 0;
   if (spec->width[0] != '*') {
     char *c = va_arg(*ap, char *);
@@ -214,7 +214,7 @@ int read_c(char *str, va_list *ap, struct specifier *spec, int *j) {
   return success;
 }
 
-int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+int read_u(char *str, va_list *ap, struct specif *spec, int *j, char c) {
   char *end = NULL;
   int success = 0;
   int i = 0;
@@ -251,7 +251,7 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+int read_o(char *str, va_list *ap, struct specif *spec, int *j, char c) {
   int i = 0;
   int success = 0;
   while (str[*j] == '0') (*j)++;
@@ -290,7 +290,7 @@ int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+int read_xX(char *str, va_list *ap, struct specif *spec, int *j, char c) {
   int i = 0;
   int success = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
@@ -323,7 +323,7 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+int read_f(char *str, va_list *ap, struct specif *spec, int *j, char c) {
   int i = 0;
   int success = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
@@ -354,15 +354,15 @@ int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-int read_g(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
-  read_f(str, ap, spec, j, c);
+int read_g(char *str, va_list *ap, struct specif *spec, int *j, char c) {
+  return read_f(str, ap, spec, j, c);
 }
 
-int read_e(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
-  read_f(str, ap, spec, j, c);
+int read_e(char *str, va_list *ap, struct specif *spec, int *j, char c) {
+  return read_f(str, ap, spec, j, c);
 }
 
-int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
+int read_i(char *str, va_list *ap, struct specif *spec, int *j, char c) {
   int i = 0;
   int success = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
@@ -397,7 +397,7 @@ int read_i(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
+int match_str_and_format(char *str, struct specif *spec, va_list *ap, int *j,
                          char c) {
   int success = 0;
   switch (spec->type) {
@@ -449,14 +449,3 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
   }
   return success;
 }
-
-// int main() {
-// char fstr[] = "%c %c %c %c";
-//   char str[] = "z ' ' /";
-//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
-
-//   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
-//   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
-//   printf("res21: %d %d %d %d %df\n", res1, a1, b1, c1, d1);
-//   printf("resss: %d %d %d %d %d\n", res2, a2, b2, c2, d2);
-// }

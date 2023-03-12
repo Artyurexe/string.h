@@ -128,9 +128,3 @@ int check_falid_format(const char *format) {
   }
   return flag;
 }
-
-// int main(){
-//     char format[] = "\0";
-//     printf("%d", check_falid_format(format));
-//     return 0;
-// }

@@ -1,8 +1,4 @@
-#define BUFF_SIZE 200
-#include <check.h>
-#include "../standard_functions/s21_string.h"
-#include <limits.h>
-#include "s21_sprintf.h"
+#include "s21_sprintf_tests.h"
 
 START_TEST(d_len) {
   char str1[BUFF_SIZE];
@@ -2034,10 +2030,9 @@ START_TEST(sprintf_char_spec_both) {
 }
 END_TEST
 
-int main() {
+Suite *s21_sprintf_test(void) {
   Suite *s = suite_create("s21_sprintf tests");
   TCase *tc = tcase_create("SPRINTF TESTS");
-  SRunner *sr = srunner_create(s);
   suite_add_tcase(s, tc);
   tcase_add_test(tc, pointer);
   tcase_add_test(tc, width_pointer_on_number_1);
@@ -2107,8 +2102,5 @@ int main() {
   tcase_add_test(tc, sprintf_wchar);
   tcase_add_test(tc, sprintf_wchar_NULL);
   tcase_add_test(tc, sprintf_char_spec_both);
-  srunner_run_all(sr, CK_ENV);
-  srunner_ntests_failed(sr);
-  srunner_free(sr);
-  return 0;
+  return s;
 }

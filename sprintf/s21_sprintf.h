@@ -8,6 +8,7 @@
 #include <float.h>
 #define S21_isnan(x) ((x) != x)
 #define S21_isinf(x) (!S21_isnan(x) && S21_isnan(x - x))
+
 struct specifier {
   char flag[4];
   char width[310];
@@ -16,7 +17,6 @@ struct specifier {
   char type;
 };
 
-long long s21_atoi(char *str);
 void dec_to_hex(char* buf,long long dec);
 void pointer_shift(char** buff, char* buff1, const char* str);
 void record_f(char *temp, long double num, s21_size_t precision, char type, long long exp, char* flag);

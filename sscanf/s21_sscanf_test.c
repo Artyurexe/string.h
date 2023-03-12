@@ -1,11 +1,4 @@
-#include "s21_sscanf.h"
-
-#include <check.h>
-#include <string.h>
-
-#define BUFFERSIZE 1024
-#define BUFF_SIZE 100
-#define EPS 0.000001f
+#include "s21_sscanf_tests.h"
 
 // empty
 START_TEST(test_empty) {
@@ -3655,7 +3648,7 @@ START_TEST(dobivnaya) {
 }
 END_TEST
 
-int main() {
+Suite *s21_sscanf_test(void) {
   Suite *s1 = suite_create("Tests_for_sscanf");
 
   TCase *tc_s = tcase_create("Test_string");
@@ -3671,14 +3664,11 @@ int main() {
   TCase *tc_llu = tcase_create("test_llu");
   TCase *tc_i = tcase_create("test_i");
   TCase *tc_f = tcase_create("test_f");
-  ;
   TCase *tc_lf = tcase_create("test_lf");
   TCase *tc_llf = tcase_create("test_llf");
   TCase *tc_mix = tcase_create("test_mix");
   TCase *tc_o = tcase_create("test_o");
   TCase *tc_x = tcase_create("test_xX");
-
-  SRunner *sr = srunner_create(s1);
 
   suite_add_tcase(s1, tc_empty);
   suite_add_tcase(s1, tc_s);
@@ -4009,10 +3999,5 @@ int main() {
   // tcase_add_test(tc_mix, mixed_ptrs4);
   tcase_add_test(tc_mix, mixed_ptrs5);
   tcase_add_test(tc_mix, dobivnaya);
-
-  srunner_run_all(sr, CK_ENV);
-  int a = srunner_ntests_failed(sr);
-  srunner_free(sr);
-
-  return a == 0 ? 0 : 1;
+  return s1;
 }

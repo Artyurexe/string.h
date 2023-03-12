@@ -15,10 +15,10 @@ s21_string.a:
 	rm *.o
 
 test: rebuild
-	$(CC) ${CFLAGS} -c ${TEST_SRC}
-	$(CC) ${CFLAGS} *.o s21_string.a ${TEST_FLAGS} -o test
+#	$(CC) ${CFLAGS} -c 
+	$(CC) ${CFLAGS} ${TEST_SRC} s21_string.a ${TEST_FLAGS} -o test
 	./test
-	rm *.o *.a test
+	rm -rf *.o *.a test
 
 test_linux: rebuild
 	$(CC) -c ${TEST_SRC}	

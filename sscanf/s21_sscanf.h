@@ -7,8 +7,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <limits.h>
+#include "../sprintf/s21_sprintf.h"
 typedef unsigned long long ullong_type;
 typedef long long llong_type;
 
@@ -44,11 +44,10 @@ long double s21_atold(char *str);
 long long s21_atoll(const char *str);
 long s21_atol(const char *str);
 int s21_sscanf(const char *str, const char *format, ...);
-void specifier_parse(char *str, struct specif *spec);
-void numbers_parse(char *str, char *buff);
-void pointer_shift(char **buff, char *buff1, const char *str);
-void vararg_init(char type, va_list *ap);
-void specif_init(struct specif *spec);
+void scanf_specifier_parse(char *str, struct specif *spec);
+void scanf_numbers_parse(char *str, char *buff);
+void scanf_pointer_shift(char **buff, char *buff1, const char *str);
+void scanf_specif_init(struct specif *spec);
 int match_str_and_format(char *str, struct specif *spec, va_list *ap, int *j,
                          char c);
 int check_falid_format(const char *format);

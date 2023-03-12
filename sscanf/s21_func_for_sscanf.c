@@ -25,13 +25,13 @@ int s21_isdigit(char c) {
 }
 
 int s21_ishex(char c) {
-  return (c >= '0' && c <= '9' || (c >= 'a' && c <= 'f') ||
+  return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
           (c >= 'A' && c <= 'F') || c == 'x' || c == 'X' || c == '-' ||
           c == '+');
 }
 
 int s21_isoctal(char c) {
-  return (c >= '0' && c <= '7' || c == '-' || c == '+');
+  return ((c >= '0' && c <= '7') || c == '-' || c == '+');
 }
 
 long s21_strtol(const char *nptr, char **endptr, register int base) {
@@ -161,7 +161,7 @@ unsigned long s21_strtoul(const char *nptr, char **endptr, register int base) {
     else
       break;
     if (c >= base) break;
-    if (any < 0 || acc > cutoff || acc == cutoff && c > cutlim)
+    if (any < 0 || acc > cutoff ||(acc == cutoff && c > cutlim))
       any = -1;
     else {
       any = 1;

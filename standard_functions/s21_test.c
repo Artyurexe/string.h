@@ -996,13 +996,13 @@ int main() {
   runner1 = srunner_create(s1);
   runner2 = srunner_create(s2);
 
-  srunner_run_all(runner, CK_VERBOSE);
-  srunner_run_all(runner1, CK_VERBOSE);
-  srunner_run_all(runner2, CK_VERBOSE);
+  srunner_run_all(runner, CK_ENV);
+  srunner_run_all(runner1, CK_ENV);
+  srunner_run_all(runner2, CK_ENV);
 
-  srunner_ntests_failed(runner);
-  srunner_ntests_failed(runner1);
-  srunner_ntests_failed(runner2);
+  // srunner_ntests_failed(runner);
+  // srunner_ntests_failed(runner1);
+  // srunner_ntests_failed(runner2);
   srunner_free(runner);
   srunner_free(runner1);
   srunner_free(runner2);

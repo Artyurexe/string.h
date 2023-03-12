@@ -220,6 +220,9 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   int i = 0;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
          str[*j + i] != '%' && s21_isdigit(str[*j + i])) {
+    if (i > 0 && (str[*j + i] == '-' || str[*j + i] == '+')) {
+      break;
+    }
     i++;
   }
   if (atoi(spec->width) && atoi(spec->width) < i) {
@@ -239,7 +242,8 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
       unsigned int *u = va_arg(*ap, unsigned int *);
       *u = s21_strtoul(copy, &end, 10);
     }
-    if (s21_strtoul(copy, &end, 10) || (copy[0] == '0')) success = 1;
+    if (s21_strtoul(copy, &end, 10) || strcmp(copy, "0") == 0 )   
+    {success = 1;}
     free(copy);
   }
   *j += i;
@@ -335,7 +339,11 @@ int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
     if (strcmp(spec->length, "L") == 0) {
       long double *f = va_arg(*ap, long double *);
       *f = s21_atold(copy);
-    } else {
+    } 
+    else if (strcmp(spec->length, "l") == 0) {
+      double *f = va_arg(*ap, double *);
+      *f = s21_atold(copy);
+    }else {
       float *f = va_arg(*ap, float *);
       *f = s21_atold(copy);
     }
@@ -443,14 +451,12 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
 }
 
 // int main() {
-//   char fstr[] = "%f%e%%%e%E";
-//   char str[] = "11111.32423 22222.234 % 0.01";
-//   float a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
+// char fstr[] = "%c %c %c %c";
+//   char str[] = "z ' ' /";
+//   int a1 = 0, a2 = 0, b1 = 0, b2 = 0, c1 = 0, c2 = 0, d1 = 0, d2 = 0;
+
 //   int res1 = s21_sscanf(str, fstr, &a1, &b1, &c1, &d1);
 //   int res2 = sscanf(str, fstr, &a2, &b2, &c2, &d2);
-
-//   long double v1 = 0, v2 = 0;
-
-//   printf("res21: %D %f %e  %e  %E\n", res1, a1, b1, c1, d1);
-//   printf("resss: \n", res2, a2, b2, c2, d2, v2);
+//   printf("res21: %d %d %d %d %df\n", res1, a1, b1, c1, d1);
+//   printf("resss: %d %d %d %d %d\n", res2, a2, b2, c2, d2);
 // }

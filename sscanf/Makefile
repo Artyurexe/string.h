@@ -1,7 +1,7 @@
 NAME = s21_sscanf.a
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
-SRCS=	s21_sscanf.c test_falid_format.c
+SRCS=	s21_sscanf.c test_falid_format.c s21_func_for_sscanf.c
 TEST_SRC=	s21_sscanf_test.c 
 TEST_FLAGS_LINUX=  -lcheck -lm -lsubunit
 TEST_FLAGS= -lcheck -lm -lpthread

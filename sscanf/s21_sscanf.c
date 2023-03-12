@@ -59,7 +59,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
       j++;
     }
   }
-  if (string) free(string);
+  if (string)
+    free(string);
   return count_successes;
 }
 
@@ -116,7 +117,8 @@ void specifier_parsing(char *str, struct specifier *spec) {
 
 void numbers_parsing(char *str, char *buff) {
   size_t length = strspn((const char *)buff, "1234567890");
-  if (*buff == '*' && length == 0) length = 1;
+  if (*buff == '*' && length == 0)
+    length = 1;
   strcpy(str, buff);
   buff[length + 1] = '\0';
 }
@@ -179,7 +181,6 @@ int read_d(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   return success;
 }
 
-
 int read_s(char *str, va_list *ap, struct specifier *spec, int *j) {
   int success = 0;
   int i = 0;
@@ -196,7 +197,8 @@ int read_s(char *str, va_list *ap, struct specifier *spec, int *j) {
 
     char *new_str = va_arg(*ap, char *);
     strcpy(new_str, copy);
-    if (new_str) success++;
+    if (new_str)
+      success++;
     free(copy);
   }
   *j += i;
@@ -208,7 +210,8 @@ int read_c(char *str, va_list *ap, struct specifier *spec, int *j) {
   if (spec->width[0] != '*') {
     char *c = va_arg(*ap, char *);
     *c = str[*j];
-    if (c) success = 1;
+    if (c)
+      success = 1;
   }
   (*j)++;
   return success;
@@ -242,8 +245,9 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
       unsigned int *u = va_arg(*ap, unsigned int *);
       *u = s21_strtoul(copy, &end, 10);
     }
-    if (s21_strtoul(copy, &end, 10) || strcmp(copy, "0") == 0 )   
-    {success = 1;}
+    if (s21_strtoul(copy, &end, 10) || strcmp(copy, "0") == 0) {
+      success = 1;
+    }
     free(copy);
   }
   *j += i;
@@ -253,7 +257,8 @@ int read_u(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
 int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
   int i = 0;
   int success = 0;
-  while (str[*j] == '0') (*j)++;
+  while (str[*j] == '0')
+    (*j)++;
   while (str[*j + i] != '\0' && !s21_isspace(str[*j + i]) && str[*j + i] != c &&
          str[*j + i] != '%' && s21_isoctal(str[*j + i])) {
     i++;
@@ -282,7 +287,8 @@ int read_o(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
       int *d = va_arg(*ap, int *);
       *d = s21_strtol(copy, (char **)NULL, 8);
     }
-    if (s21_strtol(copy, (char **)NULL, 8) || (copy[0] == '0')) success = 1;
+    if (s21_strtol(copy, (char **)NULL, 8) || (copy[0] == '0'))
+      success = 1;
     free(copy);
   }
   *j += i;
@@ -315,7 +321,8 @@ int read_xX(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
       *x = s21_strtol(copy, (char **)NULL, 16);
     }
     // if X?????how to make upper case
-    if (s21_strtol(copy, (char **)NULL, 16) || (copy[0] == '0')) success = 1;
+    if (s21_strtol(copy, (char **)NULL, 16) || (copy[0] == '0'))
+      success = 1;
     free(copy);
   }
   *j += i;
@@ -339,15 +346,15 @@ int read_f(char *str, va_list *ap, struct specifier *spec, int *j, char c) {
     if (strcmp(spec->length, "L") == 0) {
       long double *f = va_arg(*ap, long double *);
       *f = s21_atold(copy);
-    } 
-    else if (strcmp(spec->length, "l") == 0) {
+    } else if (strcmp(spec->length, "l") == 0) {
       double *f = va_arg(*ap, double *);
       *f = s21_atold(copy);
-    }else {
+    } else {
       float *f = va_arg(*ap, float *);
       *f = s21_atold(copy);
     }
-    if (s21_atold(copy) || (copy[0] == '0')) success = 1;
+    if (s21_atold(copy) || (copy[0] == '0'))
+      success = 1;
     free(copy);
   }
   *j += i;
@@ -401,51 +408,51 @@ int match_str_and_format(char *str, struct specifier *spec, va_list *ap, int *j,
                          char c) {
   int success = 0;
   switch (spec->type) {
-    case 'd':;
-      success = read_d(str, ap, spec, j, c);
-      break;
-    case 'c':;
-      success = read_c(str, ap, spec, j);
-      break;
-    case 'i':;
-      success = read_i(str, ap, spec, j, c);
-      break;
-    case 'e':
-      success = read_e(str, ap, spec, j, c);
-      break;
-    case 'E':;
-      success = read_e(str, ap, spec, j, c);
-      break;
-    case 'f':;
-      success = read_f(str, ap, spec, j, c);
-      break;
-    case 'g':
-      success = read_g(str, ap, spec, j, c);
-      break;
-    case 'G':;
-      success = read_g(str, ap, spec, j, c);
-      break;
-    case 'o':
-      success = read_o(str, ap, spec, j, c);
-      break;
-    case 's':;
-      success = read_s(str, ap, spec, j);
-      break;
-    case 'u':;
-      success = read_u(str, ap, spec, j, c);
-      break;
-    case 'x':;
-      success = read_xX(str, ap, spec, j, c);
-      break;
-    case 'X':;
-      success = read_xX(str, ap, spec, j, c);
-      break;
-    case 'p':;
-      break;
-    case 'n':;
-      int *n = va_arg(*ap, int *);
-      *n = *j;
-      break;
+  case 'd':;
+    success = read_d(str, ap, spec, j, c);
+    break;
+  case 'c':;
+    success = read_c(str, ap, spec, j);
+    break;
+  case 'i':;
+    success = read_i(str, ap, spec, j, c);
+    break;
+  case 'e':
+    success = read_e(str, ap, spec, j, c);
+    break;
+  case 'E':;
+    success = read_e(str, ap, spec, j, c);
+    break;
+  case 'f':;
+    success = read_f(str, ap, spec, j, c);
+    break;
+  case 'g':
+    success = read_g(str, ap, spec, j, c);
+    break;
+  case 'G':;
+    success = read_g(str, ap, spec, j, c);
+    break;
+  case 'o':
+    success = read_o(str, ap, spec, j, c);
+    break;
+  case 's':;
+    success = read_s(str, ap, spec, j);
+    break;
+  case 'u':;
+    success = read_u(str, ap, spec, j, c);
+    break;
+  case 'x':;
+    success = read_xX(str, ap, spec, j, c);
+    break;
+  case 'X':;
+    success = read_xX(str, ap, spec, j, c);
+    break;
+  case 'p':;
+    break;
+  case 'n':;
+    int *n = va_arg(*ap, int *);
+    *n = *j;
+    break;
   }
   return success;
 }

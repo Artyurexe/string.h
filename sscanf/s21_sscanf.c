@@ -206,7 +206,7 @@ int read_c(char *str, va_list *ap, struct specif *spec, int *j) {
   int success = 0;
   if (spec->width[0] != '*') {
     char *c = va_arg(*ap, char *);
-    *c = str[*j];
+    *c = (int)str[*j];
     if (c) success = 1;
   }
   (*j)++;
@@ -237,7 +237,13 @@ int read_u(char *str, va_list *ap, struct specif *spec, int *j, char c) {
     } else if (s21_strcmp(spec->length, "ll") == 0) {
       unsigned long long int *u = va_arg(*ap, unsigned long long int *);
       *u = s21_strtoull(copy, &end, 10);
-    } else {
+    } else if (s21_strcmp(spec->length, "h") == 0){
+      unsigned int *u = va_arg(*ap, unsigned int *);
+      // if(s21_atoxi(copy) == -1)
+      //   *u = 0;
+      // else
+      *u = s21_strtoul(copy, &end, 10);
+    }else{
       unsigned int *u = va_arg(*ap, unsigned int *);
       *u = s21_strtoul(copy, &end, 10);
     }

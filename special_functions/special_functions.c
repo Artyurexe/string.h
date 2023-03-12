@@ -47,7 +47,7 @@ void ltrim( char * string, const char* trim ){
 void *s21_trim(const char *src, const char *trim_chars) {
     if (src == S21_NULL)
       return S21_NULL;
-    char *new_str = malloc(strlen(src) + 1);
+    char *new_str = malloc(s21_strlen(src) + 1);
     new_str = s21_strcpy(new_str, src);
     rtrim(new_str, trim_chars);
     ltrim(new_str, trim_chars);
@@ -56,9 +56,14 @@ void *s21_trim(const char *src, const char *trim_chars) {
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-  if (src == S21_NULL)
-    return S21_NULL;
-  if (start_index > s21_strlen(src))
+  if (src == S21_NULL && start_index == 0) {
+    printf("%u", s21_strlen(str));
+    char* str_new = malloc((s21_strlen(str) + 1) * sizeof(char));
+    str_new[0] = '\0';
+    s21_strcpy(str_new, str);
+    return (void *)str_new;
+  }
+  if (src == S21_NULL || start_index > s21_strlen(src))
     return S21_NULL;
   char* buff = calloc(s21_strlen(str) + s21_strlen(src) + 1, sizeof(char));
   s21_size_t k = 0;

@@ -1,4 +1,4 @@
-#define BUFF_SIZE 100
+#define BUFF_SIZE 200
 #include <check.h>
 #include "../standard_functions/s21_string.h"
 #include <limits.h>

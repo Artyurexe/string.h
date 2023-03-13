@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define BUFFERSIZE 1024
-#define BUFF_SIZE 100
+#define BUFF_SIZE 200
 #define EPS 0.000001f
 
 Suite *s21_sscanf_test(void);

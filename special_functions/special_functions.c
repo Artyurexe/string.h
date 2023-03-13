@@ -47,23 +47,25 @@ void ltrim( char * string, const char* trim ){
 void *s21_trim(const char *src, const char *trim_chars) {
     if (src == S21_NULL)
       return S21_NULL;
+    char *trims;
+    if (trim_chars == S21_NULL || s21_strlen(trim_chars) == 0) {
+      trims = malloc(4 * sizeof(char));
+      s21_strcpy(trims, " \n\t");
+    }
+    else 
+      trims = (char *) trim_chars;
     char *new_str = malloc(s21_strlen(src) + 1);
     new_str = s21_strcpy(new_str, src);
-    rtrim(new_str, trim_chars);
-    ltrim(new_str, trim_chars);
+    rtrim(new_str, trims);
+    ltrim(new_str, trims);
     new_str = realloc(new_str, s21_strlen(new_str));
+    if (trim_chars == S21_NULL || s21_strlen(trim_chars) == 0) 
+      free(trims);
     return new_str;
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-  if (src == S21_NULL && start_index == 0) {
-    printf("%u", s21_strlen(str));
-    char* str_new = malloc((s21_strlen(str) + 1) * sizeof(char));
-    str_new[0] = '\0';
-    s21_strcpy(str_new, str);
-    return (void *)str_new;
-  }
-  if (src == S21_NULL || start_index > s21_strlen(src))
+  if (start_index > s21_strlen(src) || start_index < 0)
     return S21_NULL;
   char* buff = calloc(s21_strlen(str) + s21_strlen(src) + 1, sizeof(char));
   s21_size_t k = 0;

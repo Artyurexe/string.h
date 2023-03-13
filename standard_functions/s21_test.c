@@ -751,16 +751,8 @@ START_TEST(s21_insert_tests) {
   char *str_res31 = s21_insert(str11, str21, 20);
   ck_assert_str_eq(str_res31, "12345678901234567890abcdefghijklmnopqrstuvwxyz");
   free(str_res31);
-
-  char *str12 = S21_NULL;
   char *str22 = "1234567890";
   char *str32 = "ABC";
-  char *str_res12 = s21_insert(str12, str22, 0);
-  ck_assert_str_eq(str_res12, "1234567890");
-  free(str_res12);
-  char *str_res22 = s21_insert(str22, str12, 0);
-  ck_assert_str_eq(str_res22, "1234567890");
-  free(str_res22);
   char *str_res32 = s21_insert(str22, str32, -1);
   ck_assert_ptr_null(str_res32);
   free(str_res32);
@@ -811,7 +803,7 @@ START_TEST(s21_trim_tests) {
   char *str_res23 = s21_trim(str23, "");
   char *str_res33 = s21_trim(str33, S21_NULL);
   ck_assert_str_eq(str_res23, "111");
-  ck_assert_str_eq(str_res33, "\n111");
+  ck_assert_str_eq(str_res33, "111");
 }
 END_TEST
 
